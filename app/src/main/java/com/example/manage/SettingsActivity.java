@@ -1,15 +1,19 @@
 package com.example.manage;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -18,22 +22,28 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.Objects;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class SettingsActivity extends AppCompatActivity {
 
-    private static final int REQUEST_PERMISSION = 100;
-    private static final int REQUEST_IMAGE_CAPTURE = 101;
-
+    ActivityResultLauncher<String> mGetContent;
     private Button btnUpgradeAccountSettings;
     private EditText etUsername, etUserStatus;
-    private ImageView ivUserProfileImage;
+    private CircleImageView ivUserProfileImage;
 
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
+
+    private StorageReference UserProfileImageRef;
+    private ProgressDialog loadingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,19 +58,80 @@ public class SettingsActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
+        UserProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
         btnUpgradeAccountSettings.setOnClickListener(v -> updateSettings());
 
         retrieveUserInfo();
-    }
 
+        // TODO: Use 'ActivityResultLauncher<Intent>' instead of 'startActivityForResult'
+        ivUserProfileImage.setOnClickListener(v -> mGetContent.launch("image/*"));
+        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            Intent imageCropperActivityIntent = new Intent(SettingsActivity.this, CropperActivity.class);
+            imageCropperActivityIntent.putExtra("DATA", result.toString());
+            startActivityForResult(imageCropperActivityIntent, 101);
+        });
+
+    }
 
     private void initializeFields() {
         btnUpgradeAccountSettings = findViewById(R.id.btn_update_settings);
         etUsername = findViewById(R.id.et_set_user_name);
         etUserStatus = findViewById(R.id.et_set_profile_status);
         ivUserProfileImage = findViewById(R.id.iv_set_profile_image);
+        loadingBar = new ProgressDialog(this);
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == -1 && requestCode == 101) {
+            loadingBar.setTitle("Setting profile image");
+            loadingBar.setMessage("Updating the profile image...");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
+
+            assert data != null;
+            String result = data.getStringExtra("RESULT");
+            Uri resultUri = null;
+            if (result != null) {
+                resultUri = Uri.parse(result);
+            }
+
+            StorageReference filePath = UserProfileImageRef.child(currentUserID + ".jpg");
+
+            assert resultUri != null;
+            filePath.putFile(resultUri).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+
+                    task.getResult().getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadedUrl = uri.toString();
+                        RootRef.child("Users").child(currentUserID).child("image")
+                                .setValue(downloadedUrl)
+                                .addOnCompleteListener(task1 -> {
+                                    if (task1.isSuccessful()) {
+                                        Toast.makeText(SettingsActivity.this, "Image saved", Toast.LENGTH_SHORT).show();
+                                        loadingBar.dismiss();
+                                    } else {
+                                        Toast.makeText(SettingsActivity.this, "Error: " +
+                                                Objects.requireNonNull(task1.getException()), Toast.LENGTH_SHORT).show();
+                                        loadingBar.dismiss();
+                                    }
+                                });
+                    }).addOnFailureListener(e -> {
+                        String message = e.getMessage();
+                        Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                        loadingBar.dismiss();
+                    });
+                } else {
+                    String message = Objects.requireNonNull(task.getException()).toString();
+                    Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                    loadingBar.dismiss();
+                }
+            });
+        }
+    }
+
 
     private void updateSettings() {
         String setUsername = etUsername.getText().toString();
@@ -108,6 +179,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                     etUsername.setText(retrieveUsername);
                     etUserStatus.setText(retrieveStatus);
+                    Picasso.get().load(retrieveProfileImage).into(ivUserProfileImage);
 
                 } else if ((snapshot.exists()) && (snapshot.hasChild("name"))) {
                     // TODO: Add the profile image
@@ -129,4 +201,5 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
     }
+
 }
