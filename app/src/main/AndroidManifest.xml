@@ -18,6 +18,10 @@
         android:theme="@style/Theme.Manage"
         tools:targetApi="31">
         <activity
+            android:name=".Menu.FindFriendsActivity"
+            android:parentActivityName=".MainActivity"
+            android:exported="false" />
+        <activity
             android:name=".Menu.ImageCropper.CropperActivity"
             android:exported="false" />
         <activity

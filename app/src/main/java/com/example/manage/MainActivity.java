@@ -18,6 +18,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.manage.Adapter.TabAccessorAdapter;
 import com.example.manage.Authentication.LoginActivity;
+import com.example.manage.Menu.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -119,11 +120,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (item.getItemId() == R.id.main_find_friends_option) {
-
+            sendUserToFindFriendsActivity();
         }
 
         return true;
     }
+
 
     private void requestNewGroup() {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
@@ -176,5 +178,10 @@ public class MainActivity extends AppCompatActivity {
         settingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(settingsIntent);
         finish();
+    }
+
+    private void sendUserToFindFriendsActivity() {
+        Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
+        startActivity(findFriendsIntent);
     }
 }
