@@ -1,4 +1,4 @@
-package com.example.manage;
+package com.example.manage.Menu.ImageCropper;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.manage.R;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;

@@ -9,7 +9,7 @@
         android:id="@+id/et_group_name"
         android:layout_width="300dp"
         android:layout_gravity="center_horizontal"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:hint="@string/name_of_the_group"
         android:autofillHints="name"
         android:inputType="text" />

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".Authentication.LoginActivity">
     <!-- TODO: remove the tools:ignore-->
     <ScrollView
         android:layout_width="match_parent"
@@ -135,7 +135,7 @@
                 android:text="@string/login_with_google"
                 android:textAlignment="center"
                 android:textAllCaps="false"
-                android:textColor="@color/black"
+                android:textColor="@color/colorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

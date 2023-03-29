@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".SettingsActivity">
+    tools:context=".Menu.SettingsActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_set_profile_image"
@@ -69,8 +69,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="18sp" />
 
 
 </LinearLayout>

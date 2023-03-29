@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterActivity"
+    tools:context=".Authentication.RegisterActivity"
     android:orientation="vertical"
     android:gravity="center_horizontal">
 
@@ -104,7 +104,7 @@
             android:paddingEnd="16dp"
             android:textAlignment="center"
             android:drawableStart="@drawable/ic_google"
-            android:textColor="@color/black"
+            android:textColor="@color/colorPrimary"
             android:textSize="18sp"/>
 
         <Button

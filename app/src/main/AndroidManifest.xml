@@ -18,22 +18,22 @@
         android:theme="@style/Theme.Manage"
         tools:targetApi="31">
         <activity
-            android:name=".CropperActivity"
+            android:name=".Menu.ImageCropper.CropperActivity"
             android:exported="false" />
         <activity
-            android:name=".PhoneLoginActivity"
+            android:name=".Authentication.PhoneLoginActivity"
             android:exported="false" />
         <activity
-            android:name=".GroupChatActivity"
+            android:name=".Groups.GroupChatActivity"
             android:exported="false" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".Menu.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".Authentication.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Authentication.LoginActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
