@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="90dp"
@@ -10,44 +10,45 @@
     android:paddingEnd="12dp"
     android:paddingBottom="12dp">
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cvGroupProfile"
+
+    <FrameLayout
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_centerVertical="true"
-        app:cardCornerRadius="60dp">
+        android:layout_gravity="center"
+        android:id="@+id/flProfile"
+        >
 
-        <ImageView
-            android:id="@+id/ivGroupImage"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profilePic"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:contentDescription="@string/cd_group_profile_image"
-            android:scaleType="centerInside"
-            android:src="@drawable/user_group" />
+            android:src="@drawable/user_default_profile_pic"
+            android:layout_gravity="bottom|center_horizontal"/>
+<!--            app:civ_border_width="1dp"-->
+<!--            app:civ_border_color="#72b043"-->
 
-    </androidx.cardview.widget.CardView>
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_camera"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/circle_solid"
+            android:layout_gravity="bottom|end"
+            android:visibility="invisible"
+            />
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvGroupName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_toEndOf="@+id/cvGroupProfile"
+        android:layout_toEndOf="@+id/flProfile"
         android:text="Name"
         android:textColor="@color/black"
         android:textSize="20sp"
         tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@id/tvGroupName"
-        android:text="10:24am"
-        android:textAlignment="textEnd"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tvLastMessage"
@@ -55,8 +56,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvGroupName"
         android:layout_marginStart="12dp"
-        android:layout_toEndOf="@+id/cvGroupProfile"
-        android:text="Last message"
+        android:layout_toEndOf="@+id/flProfile"
+        android:text="Status"
         android:textSize="15sp"
         tools:ignore="HardcodedText" />
 

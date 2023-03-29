@@ -53,4 +53,5 @@
     <string name="welcome_back">Welcome back</string>
     <string name="please_provide_a_name_for_the_group">Please, provide a name for the group</string>
     <string name="permission_denied">Permission denied</string>
+    <string name="user_profile_image">User profile image</string>
 </resources>
