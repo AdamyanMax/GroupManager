@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    tools:context=".Menu.SettingsActivity">
+    tools:context=".Menu.SettingsActivity"
+    android:id="@+id/llSettingActivity">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_set_profile_image"
@@ -16,8 +17,7 @@
         android:contentDescription="@string/cd_user_profile_image"
         android:src="@drawable/user_default_profile_pic"
         app:civ_border_color="@color/colorPrimary"
-        app:civ_border_width="3dp"
-        />
+        app:civ_border_width="3dp" />
 
     <EditText
         android:id="@+id/et_set_user_name"
@@ -70,6 +70,13 @@
         android:textAllCaps="false"
         android:textColor="@color/colorAccent"
         android:textSize="18sp" />
+
+    <ProgressBar
+        android:id="@+id/pb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone" />
 
 
 </LinearLayout>

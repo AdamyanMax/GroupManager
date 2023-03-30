@@ -32,6 +32,10 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Objects;
 
+// TODOs for the whole project
+// TODO: Replace Activities with Fragments
+// TODO: Replace ProgressDialog with ProgressBar
+
 public class MainActivity extends AppCompatActivity {
 
     private final String[] titles = new String[]{"Chats", "Groups", "Contacts"};

@@ -28,7 +28,7 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
-        android:id="@+id/tvGroupName"
+        android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -43,17 +43,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
-        android:layout_toEndOf="@id/tvGroupName"
+        android:layout_toEndOf="@id/tvUsername"
         android:text="10:24am"
         android:textAlignment="textEnd"
         android:textSize="12sp"
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/tvLastMessage"
+        android:id="@+id/tvUserStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvGroupName"
+        android:layout_below="@+id/tvUsername"
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@+id/cvGroupProfile"
         android:text="Last message"

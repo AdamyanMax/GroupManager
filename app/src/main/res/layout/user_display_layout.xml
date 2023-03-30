@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="90dp"
@@ -12,34 +12,33 @@
 
 
     <FrameLayout
+        android:id="@+id/flProfile"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_gravity="center"
-        android:id="@+id/flProfile"
-        >
+        android:layout_gravity="center">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/profilePic"
+            android:id="@+id/civProfile"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_gravity="bottom|center_horizontal"
             android:src="@drawable/user_default_profile_pic"
-            android:layout_gravity="bottom|center_horizontal"/>
-<!--            app:civ_border_width="1dp"-->
-<!--            app:civ_border_color="#72b043"-->
+            app:civ_border_color="@color/colorPrimary"
+            app:civ_border_width="1dp" />
+        <!--        #72b043-->
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/iv_camera"
+            android:id="@+id/civOnline"
             android:layout_width="16dp"
             android:layout_height="16dp"
-            android:src="@drawable/circle_solid"
             android:layout_gravity="bottom|end"
-            android:visibility="invisible"
-            />
+            android:src="@drawable/circle_solid"
+            android:visibility="invisible" />
     </FrameLayout>
 
     <TextView
-        android:id="@+id/tvGroupName"
+        android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
@@ -51,10 +50,10 @@
 
 
     <TextView
-        android:id="@+id/tvLastMessage"
+        android:id="@+id/tvUserStatus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tvGroupName"
+        android:layout_below="@+id/tvUsername"
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@+id/flProfile"
         android:text="Status"
