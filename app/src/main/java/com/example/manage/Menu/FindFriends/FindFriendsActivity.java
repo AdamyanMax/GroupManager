@@ -1,5 +1,6 @@
-package com.example.manage.Menu;
+package com.example.manage.Menu.FindFriends;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,6 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class FindFriendsActivity extends AppCompatActivity {
 
-    private Toolbar mToolbar;
     private RecyclerView rvFindFriends;
     private DatabaseReference UsersReference;
 
@@ -41,7 +41,7 @@ public class FindFriendsActivity extends AppCompatActivity {
         rvFindFriends = findViewById(R.id.rv_find_friends);
         rvFindFriends.setLayoutManager(new LinearLayoutManager(this));
 
-        mToolbar = findViewById(R.id.find_friends_toolbar);
+        Toolbar mToolbar = findViewById(R.id.find_friends_toolbar);
         setSupportActionBar(mToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -70,6 +70,14 @@ public class FindFriendsActivity extends AppCompatActivity {
                 holder.name.setText(model.getName());
                 holder.status.setText(model.getStatus());
                 Picasso.get().load(model.getImage()).placeholder(R.drawable.user_default_profile_pic).into(holder.profileImage);
+
+                holder.itemView.setOnClickListener(v -> {
+                    String visit_user_id = getRef(position).getKey();
+
+                    Intent profileIntent = new Intent(FindFriendsActivity.this, ProfileActivity.class);
+                    profileIntent.putExtra("visit_user_id", visit_user_id);
+                    startActivity(profileIntent);
+                });
             }
         };
 

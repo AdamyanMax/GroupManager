@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Menu.FindFriendsActivity">
+    tools:context=".Menu.FindFriends.FindFriendsActivity">
 
     <include
         android:id="@+id/find_friends_toolbar"
