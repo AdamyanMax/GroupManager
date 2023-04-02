@@ -10,6 +10,7 @@
 
 <!--TODO: Add some sort of wave background at the top-->
     <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/civ_profile_user_image"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="52dp"
@@ -19,6 +20,7 @@
 
 
     <TextView
+        android:id="@+id/tv_profile_username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -28,6 +30,7 @@
         tools:ignore="HardcodedText" />
 
     <TextView
+        android:id="@+id/tv_profile_user_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -36,6 +39,7 @@
         tools:ignore="HardcodedText" />
 
     <Button
+        android:id="@+id/btn_send_message_request"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
