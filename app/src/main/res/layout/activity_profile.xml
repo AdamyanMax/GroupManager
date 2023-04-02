@@ -8,7 +8,7 @@
     android:orientation="vertical"
     tools:context=".Menu.FindFriends.ProfileActivity">
 
-<!--TODO: Add some sort of wave background at the top-->
+    <!--TODO: Add some sort of wave background at the top, and also the back button-->
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/civ_profile_user_image"
         android:layout_width="150dp"
@@ -53,7 +53,7 @@
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@color/grey"
-        android:textSize="16sp"
+        android:textSize="18sp"
 
         />
 
