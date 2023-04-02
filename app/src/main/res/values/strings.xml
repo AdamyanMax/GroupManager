@@ -56,4 +56,6 @@
     <string name="user_profile_image">User profile image</string>
     <string name="send_message">Send message</string>
     <string name="cancel_chat_request">Cancel chat request</string>
+    <string name="decline_chat_request">Decline chat request</string>
+    <string name="accept_chat_request">Accept chat request</string>
 </resources>

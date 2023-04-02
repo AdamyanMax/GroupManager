@@ -27,10 +27,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     private CircleImageView civProfileImage;
     private TextView tvUsername, tvUserStatus;
-    private Button btnSendMessageRequest;
+    private Button btnSendMessageRequest, btnDeclineRequest;
 
     private DatabaseReference UserRef, ChatRequestRef;
-    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(R.layout.activity_profile);
 
         UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         ChatRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
 
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
@@ -49,6 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
         tvUsername = findViewById(R.id.tv_profile_username);
         tvUserStatus = findViewById(R.id.tv_profile_user_status);
         btnSendMessageRequest = findViewById(R.id.btn_send_message_request);
+        btnDeclineRequest = findViewById(R.id.btn_decline_message_request);
 
         retrieveUserInfo();
     }
@@ -88,25 +88,34 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void manageChatRequests() {
-        ChatRequestRef.child(senderUserID)
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.hasChild(receiverUserID)) {
-                            String request_type = Objects.requireNonNull(snapshot.child(receiverUserID)
-                                    .child("request_type").getValue()).toString();
-                            if (request_type.equals("sent")) {
-                                currentState = "request_sent";
-                                btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                            }
-                        }
-                    }
+        ChatRequestRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChild(receiverUserID)) {
+                    String request_type = Objects.requireNonNull(snapshot.child(receiverUserID).child("request_type").getValue()).toString();
+                    if (request_type.equals("sent")) {
+                        currentState = "request_sent";
+                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
+                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_cross, 0, 0, 0);
+                    } else if (request_type.equals("received")) {
+                        currentState = "request_received";
+                        btnSendMessageRequest.setText(R.string.accept_chat_request);
+                        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons);
+                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                        btnDeclineRequest.setVisibility(View.VISIBLE);
+                        btnDeclineRequest.setEnabled(true);
 
+                        btnDeclineRequest.setOnClickListener(v -> cancelChatRequest());
                     }
-                });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         if (!senderUserID.equals(receiverUserID)) {
             btnSendMessageRequest.setOnClickListener(v -> {
@@ -126,38 +135,37 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cancelChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID)
-                .removeValue()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        ChatRequestRef.child(receiverUserID).child(senderUserID)
-                                .removeValue()
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        btnSendMessageRequest.setEnabled(true);
-                                        currentState = "new";
-                                        btnSendMessageRequest.setText(R.string.send_message);
-                                    }
-                                });
+        ChatRequestRef.child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ChatRequestRef.child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        btnSendMessageRequest.setEnabled(true);
+                        currentState = "new";
+                        btnSendMessageRequest.setText(R.string.send_message);
+                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_send_message, 0, 0, 0);
+                        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons_end);
+
+                        btnDeclineRequest.setVisibility(View.INVISIBLE);
+                        btnDeclineRequest.setEnabled(false);
+
                     }
                 });
+            }
+        });
     }
 
     private void sendChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID)
-                .child("request_type").setValue("sent")
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        ChatRequestRef.child(receiverUserID).child(senderUserID)
-                                .child("request_type").setValue("received")
-                                .addOnCompleteListener(task1 -> {
-                                    if (task1.isSuccessful()) {
-                                        btnSendMessageRequest.setEnabled(true);
-                                        currentState = "request_sent";
-                                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                                    }
-                                });
+        ChatRequestRef.child(senderUserID).child(receiverUserID).child("request_type").setValue("sent").addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ChatRequestRef.child(receiverUserID).child(senderUserID).child("request_type").setValue("received").addOnCompleteListener(task1 -> {
+                    if (task1.isSuccessful()) {
+                        btnSendMessageRequest.setEnabled(true);
+                        currentState = "request_sent";
+                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
+                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_cross, 0, 0, 0);
                     }
                 });
+            }
+        });
     }
 }
