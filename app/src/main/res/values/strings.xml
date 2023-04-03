@@ -58,4 +58,5 @@
     <string name="cancel_chat_request">Cancel chat request</string>
     <string name="decline_chat_request">Decline chat request</string>
     <string name="accept_chat_request">Accept chat request</string>
+    <string name="remove_this_contact">Remove this contact</string>
 </resources>
