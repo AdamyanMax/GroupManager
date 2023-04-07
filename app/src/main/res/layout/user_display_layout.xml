@@ -44,18 +44,19 @@
             android:id="@+id/tv_display_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:maxWidth="130dp"
             android:text="Name"
             android:textColor="@color/black"
             android:textSize="20sp"
             tools:ignore="HardcodedText" />
 
-<!--        TODO: Make status go on a new line when a certain character limit is reached-->
         <TextView
             android:id="@+id/tv_display_user_status"
             android:layout_width="wrap_content"
+            android:maxWidth="130dp"
             android:layout_height="wrap_content"
             android:text="Status"
-            android:textSize="15sp"
+            android:textSize="13sp"
             tools:ignore="HardcodedText" />
     </LinearLayout>
 
