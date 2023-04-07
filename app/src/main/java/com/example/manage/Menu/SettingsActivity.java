@@ -56,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
         initializeFields();
 
         // TODO: Make up your mind about this
-        etUsername.setVisibility(View.INVISIBLE);
+        etUsername.setVisibility(View.GONE);
 
         mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();

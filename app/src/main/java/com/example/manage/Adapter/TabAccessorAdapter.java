@@ -9,9 +9,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 import com.example.manage.Chats.ChatsFragment;
 import com.example.manage.Contacts.ContactsFragment;
 import com.example.manage.Groups.GroupsFragment;
+import com.example.manage.Requests.RequestsFragment;
 
 public class TabAccessorAdapter extends FragmentStateAdapter {
-    private final String[] titles = new String[]{"Chats", "Groups", "Contacts"};
+    private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
 
     public TabAccessorAdapter(@NonNull FragmentActivity fragmentActivity) {
         super(fragmentActivity);
@@ -27,6 +28,8 @@ public class TabAccessorAdapter extends FragmentStateAdapter {
                 return new GroupsFragment();
             case 2:
                 return new ContactsFragment();
+            case 3:
+                return new RequestsFragment();
         }
         return new ChatsFragment();
     }
@@ -45,6 +48,8 @@ public class TabAccessorAdapter extends FragmentStateAdapter {
                 return "Groups";
             case 2:
                 return "Contacts";
+            case 3:
+                return "Requests";
             default:
                 return null;
         }

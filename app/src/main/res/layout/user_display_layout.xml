@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
+    android:layout_height="76dp"
     android:background="@color/white"
-    android:paddingStart="12dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="12dp"
-    android:paddingBottom="12dp">
+    android:padding="8dp">
 
 
     <FrameLayout
@@ -18,7 +15,7 @@
         android:layout_gravity="center">
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/civProfile"
+            android:id="@+id/civ_display_profile_image"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="bottom|center_horizontal"
@@ -29,7 +26,7 @@
 
 
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/civOnline"
+            android:id="@+id/civ_display_online"
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_gravity="bottom|end"
@@ -37,28 +34,66 @@
             android:visibility="invisible" />
     </FrameLayout>
 
-    <TextView
-        android:id="@+id/tvUsername"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_toEndOf="@+id/flProfile"
-        android:text="Name"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        tools:ignore="HardcodedText" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_display_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Name"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            tools:ignore="HardcodedText" />
 
 
-    <TextView
-        android:id="@+id/tvUserStatus"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvUsername"
-        android:layout_marginStart="12dp"
-        android:layout_toEndOf="@+id/flProfile"
-        android:text="Status"
-        android:textSize="15sp"
-        tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/tv_display_user_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textSize="15sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_accept_decline_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_accept"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical|end"
+            android:background="@drawable/bg_button_next"
+            android:text="@string/accept"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/btn_decline"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/bg_button_test"
+            android:text="@string/decline"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="14sp" />
+
+    </LinearLayout>
 
 
-</RelativeLayout>
+    <!--    TODO: Add a line at the bottom using View-->
+
+
+</LinearLayout>

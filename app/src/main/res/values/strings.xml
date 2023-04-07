@@ -9,7 +9,6 @@
     <string name="login_with_phone">Login with phone</string>
     <string name="register">Register</string>
     <string name="create_account">Create account</string>
-    <string name="already_have_an_account_login_now">Already have an account? Login now</string>
     <string name="register_with_phone">Register with phone</string>
     <string name="register_with_google">Register with Google</string>
     <string name="button_login_description">Sign in with your account</string>
@@ -59,4 +58,10 @@
     <string name="decline_chat_request">Decline chat request</string>
     <string name="accept_chat_request">Accept chat request</string>
     <string name="remove_this_contact">Remove this contact</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="accept">Accept</string>
+    <string name="decline">Decline</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="login_now">Login now!</string>
 </resources>

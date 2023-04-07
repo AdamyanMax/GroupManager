@@ -38,7 +38,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final String[] titles = new String[]{"Chats", "Groups", "Contacts"};
+    private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
     private Toolbar mToolBar;
     private ViewPager2 mViewPager2;
     private TabLayout mTabLayout;
@@ -68,17 +68,6 @@ public class MainActivity extends AppCompatActivity {
         new TabLayoutMediator(mTabLayout, mViewPager2, ((tab, position) -> tab.setText(titles[position]))).attach();
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        if (currentUser == null) {
-            sendUserToLoginActivity();
-        } else {
-            verifyUserExistence();
-        }
-    }
 
     private void verifyUserExistence() {
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
