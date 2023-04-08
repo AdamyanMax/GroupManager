@@ -99,9 +99,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
-        if (item.getItemId() == R.id.main_logout_option) {
-            mAuth.signOut();
-            sendUserToLoginActivity();
+
+        if (item.getItemId() == R.id.main_find_friends_option) {
+            sendUserToFindFriendsActivity();
         }
 
         if (item.getItemId() == R.id.main_create_group_option) {
@@ -112,8 +112,9 @@ public class MainActivity extends AppCompatActivity {
             sendUserToSettingsActivity();
         }
 
-        if (item.getItemId() == R.id.main_find_friends_option) {
-            sendUserToFindFriendsActivity();
+        if (item.getItemId() == R.id.main_logout_option) {
+            mAuth.signOut();
+            sendUserToLoginActivity();
         }
 
         return true;
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
 
         // Inflate the custom view and set it as the dialog content
-        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.custom_alert_dialogue, null);
+        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.alert_dialogue_new_group, null);
         final EditText etGroupName = view.findViewById(R.id.et_group_name);
         builder.setView(view);
 

@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.GroupsAdapter;
-import com.example.manage.Groups.GroupChatActivity;
 import com.example.manage.R;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,8 +28,6 @@ public class GroupsFragment extends Fragment {
     private View vGroupFragment;
     private ArrayList<String> listOfGroups = new ArrayList<>();
     private GroupsAdapter groupsAdapter;
-    private RecyclerView recyclerView;
-
     private DatabaseReference GroupRef;
 
     public GroupsFragment() {

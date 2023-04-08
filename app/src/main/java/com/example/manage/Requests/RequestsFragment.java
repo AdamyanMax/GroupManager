@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -32,7 +33,7 @@ public class RequestsFragment extends Fragment {
     private View RequestsFragmentView;
     private RecyclerView rvRequestsList;
 
-    private DatabaseReference ChatRequestsRef, UsersRef;
+    private DatabaseReference ChatRequestsRef, UsersRef, ContactsRef;
     private FirebaseAuth mAuth;
     private String currentUserID;
 
@@ -41,8 +42,7 @@ public class RequestsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         RequestsFragmentView = inflater.inflate(R.layout.fragment_requests, container, false);
 
@@ -50,6 +50,7 @@ public class RequestsFragment extends Fragment {
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         ChatRequestsRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
 
         rvRequestsList = RequestsFragmentView.findViewById(R.id.rv_chat_requests);
         rvRequestsList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -61,75 +62,87 @@ public class RequestsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Contacts> options =
-                new FirebaseRecyclerOptions.Builder<Contacts>()
-                        .setQuery(ChatRequestsRef.child(currentUserID), Contacts.class)
-                        .build();
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(ChatRequestsRef.child(currentUserID), Contacts.class).build();
 
-        FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
+        FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull RequestViewHolder holder, int position, @NonNull Contacts model) {
+                holder.itemView.findViewById(R.id.ll_accept_decline_layout).setVisibility(View.VISIBLE);
+
+                final String list_user_id = getRef(position).getKey();
+
+                DatabaseReference getTypeRef = getRef(position).child("request_type").getRef();
+
+                getTypeRef.addValueEventListener(new ValueEventListener() {
                     @Override
-                    protected void onBindViewHolder(@NonNull RequestViewHolder holder, int position, @NonNull Contacts model) {
-                        holder.itemView.findViewById(R.id.ll_accept_decline_layout).setVisibility(View.VISIBLE);
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String type = Objects.requireNonNull(snapshot.getValue()).toString();
+                            if (type.equals("received")) {
+                                assert list_user_id != null;
+                                UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.hasChild("image")) {
 
-                        final String list_user_id = getRef(position).getKey();
+                                            final String requestProfileImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                            Picasso.get().load(requestProfileImage).into(holder.civProfileImage);
+                                        }
+                                        final String requestUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                        final String requestUserStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
 
-                        DatabaseReference getTypeRef = getRef(position).child("request_type").getRef();
+                                        holder.tvUserName.setText(requestUsername);
+                                        holder.tvUserStatus.setText(requestUserStatus);
 
-                        getTypeRef.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    String type = Objects.requireNonNull(snapshot.getValue()).toString();
-                                    if (type.equals("received")) {
-                                        assert list_user_id != null;
-                                        UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                if (snapshot.hasChild("image")) {
-                                                    final String requestUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
-                                                    final String requestUserStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
-                                                    final String requestProfileImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
-
-                                                    holder.tvUserName.setText(requestUsername);
-                                                    holder.tvUserStatus.setText(requestUserStatus);
-                                                    Picasso.get().load(requestProfileImage).into(holder.civProfileImage);
-                                                } else {
-                                                    final String requestUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
-                                                    final String requestUserStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
-
-                                                    holder.tvUserName.setText(requestUsername);
-                                                    holder.tvUserStatus.setText(requestUserStatus);
-                                                }
+                                        holder.btnAccept.setOnClickListener(v -> ContactsRef.child(list_user_id).child(currentUserID).child("Contact").setValue("Saved").addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                ContactsRef.child(currentUserID).child(list_user_id).child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
+                                                            if (task2.isSuccessful()) {
+                                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), "Contact saved", Toast.LENGTH_SHORT).show());
+                                                            }
+                                                        });
+                                                    }
+                                                });
                                             }
+                                        }));
 
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-
+                                        holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), "Contact deleted", Toast.LENGTH_SHORT).show());
                                             }
-                                        });
+                                        }));
                                     }
-                                }
-                            }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
 
+                                    }
+                                });
                             }
-                        });
+                        }
                     }
 
-                    @NonNull
                     @Override
-                    public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
-                        return new RequestViewHolder(view);
+                    public void onCancelled(@NonNull DatabaseError error) {
+
                     }
-                };
+                });
+            }
+
+            @NonNull
+            @Override
+            public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                return new RequestViewHolder(view);
+            }
+        };
 
         rvRequestsList.setAdapter(adapter);
         adapter.startListening();
     }
+
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
