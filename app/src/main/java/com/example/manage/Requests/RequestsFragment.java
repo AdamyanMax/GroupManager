@@ -133,9 +133,9 @@ public class RequestsFragment extends Fragment {
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView tvUserName, tvUserStatus;
-        private CircleImageView civProfileImage;
-        private Button btnAccept, btnDecline;
+        TextView tvUserName, tvUserStatus;
+        CircleImageView civProfileImage;
+        Button btnAccept, btnDecline;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);

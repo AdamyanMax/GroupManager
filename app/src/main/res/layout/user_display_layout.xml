@@ -53,8 +53,8 @@
         <TextView
             android:id="@+id/tv_display_user_status"
             android:layout_width="wrap_content"
-            android:maxWidth="130dp"
             android:layout_height="wrap_content"
+            android:maxWidth="130dp"
             android:text="Status"
             android:textSize="13sp"
             tools:ignore="HardcodedText" />
@@ -65,8 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btn_request_accept"
@@ -90,6 +89,28 @@
             android:textAllCaps="false"
             android:textColor="@color/colorPrimaryDark"
             android:textSize="14sp" />
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/btn_accept"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:text="@string/accept"-->
+<!--            android:textSize="14sp"-->
+<!--            app:backgroundTint="@color/colorPrimary"-->
+<!--            app:rippleColor="@color/colorPrimaryDark"-->
+<!--            style="@style/Widget.MaterialComponents.Button.TextButton" />-->
+
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:id="@+id/btn_decline"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_marginStart="8dp"-->
+<!--            android:text="@string/decline"-->
+<!--            android:textSize="14sp"-->
+<!--            app:backgroundTint="@android:color/transparent"-->
+<!--            app:rippleColor="@color/colorPrimaryDark"-->
+<!--            style="@style/Widget.MaterialComponents.Button.TextButton" />-->
+
 
     </LinearLayout>
 
