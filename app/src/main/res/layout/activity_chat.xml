@@ -1,58 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Groups.GroupChatActivity">
+    tools:context=".Chats.ChatActivity">
 
     <include
-        android:id="@+id/group_chat_bar_layout"
-        layout="@layout/app_bar_layout" />
-
-    <ScrollView
-        android:id="@+id/scroll_view"
-        android:layout_width="match_parent"
+        android:id="@+id/chat_toolbar"
+        layout="@layout/app_bar_layout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/constraint_layout"
-        android:layout_below="@id/group_chat_bar_layout">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_group_chat_text_display"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
-                android:layout_marginBottom="50dp"
-                android:padding="10dp"
-                android:textAllCaps="false"
-                android:textColor="@android:color/background_dark"
-                android:textSize="12sp" />
-        </LinearLayout>
-
-    </ScrollView>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_private_chats_list_of_users"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar"
+        app:layout_constraintBottom_toTopOf="@+id/message_input_container"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/message_input_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="false"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:padding="4dp"
-        android:id="@+id/constraint_layout">
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <EditText
             android:id="@+id/et_input_private_message"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:autofillHints="name"
             android:background="@drawable/fully_rounded_corners_empty"
             android:hint="@string/message_ignore_lots_of_spaces"
             android:inputType="text"
@@ -64,7 +48,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ib_send_private_message"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:autofillHints="name" />
 
         <ImageButton
             android:id="@+id/ib_send_private_message"
@@ -79,5 +64,4 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

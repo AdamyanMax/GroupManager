@@ -86,7 +86,7 @@ public class SettingsActivity extends AppCompatActivity {
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
         loadingBar = new ProgressDialog(this);
-        settingsToolbar = findViewById(R.id.settingsToolbar);
+        settingsToolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(settingsToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);

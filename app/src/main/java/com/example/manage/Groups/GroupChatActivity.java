@@ -28,7 +28,6 @@ import java.util.Iterator;
 import java.util.Objects;
 
 public class GroupChatActivity extends AppCompatActivity {
-    private Toolbar mToolbar;
     private ImageButton ibSendMessage;
     private EditText etUserMessage;
     private ScrollView mScrollView;
@@ -100,12 +99,12 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
     private void initializeFields() {
-        mToolbar = findViewById(R.id.group_chat_bar_layout);
+        Toolbar mToolbar = findViewById(R.id.group_chat_bar_layout);
         setSupportActionBar(mToolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(currentGroupName);
 
-        ibSendMessage = findViewById(R.id.ib_send_message);
-        etUserMessage = findViewById(R.id.et_input_group_message);
+        ibSendMessage = findViewById(R.id.ib_send_private_message);
+        etUserMessage = findViewById(R.id.et_input_private_message);
         mScrollView = findViewById(R.id.scroll_view);
         tvDisplayMessage = findViewById(R.id.tv_group_chat_text_display);
     }

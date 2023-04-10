@@ -18,6 +18,9 @@
         android:theme="@style/Theme.Manage"
         tools:targetApi="31">
         <activity
+            android:name=".Chats.ChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".Menu.FindFriends.ProfileActivity"
             android:exported="false" />
         <activity
