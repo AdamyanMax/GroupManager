@@ -31,7 +31,7 @@ public class CropperActivity extends AppCompatActivity {
         // Use mainly 'options.' for customization. More at: https://github.com/Yalantis/uCrop#customization
         UCrop.Options options = new UCrop.Options();
         options.setCircleDimmedLayer(true);
-        options.setCropGridCornerColor(262626);
+        options.setCropGridColor(262626);
 
         UCrop.of(fileUri, Uri.fromFile(new File(getCacheDir(), destinationUri)))
                 .withOptions(options)

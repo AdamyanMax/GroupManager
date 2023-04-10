@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -29,6 +30,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -47,6 +49,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private StorageReference UserProfileImageRef;
     private ProgressDialog loadingBar;
+    private Toolbar settingsToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +86,11 @@ public class SettingsActivity extends AppCompatActivity {
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
         loadingBar = new ProgressDialog(this);
+        settingsToolbar = findViewById(R.id.settingsToolbar);
+        setSupportActionBar(settingsToolbar);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setTitle("Settings");
     }
 
     @Override
@@ -140,24 +148,27 @@ public class SettingsActivity extends AppCompatActivity {
 
         if (TextUtils.isEmpty(setUsername)) {
             Toast.makeText(this, R.string.please_provide_a_username, Toast.LENGTH_SHORT).show();
-            return;
         }
         if (TextUtils.isEmpty(setStatus)) {
             Toast.makeText(this, R.string.please_provide_a_status, Toast.LENGTH_SHORT).show();
-            return;
-        }
+        } else {
+            HashMap<String, Object> profileMap = new HashMap<>();
+            profileMap.put("uid", currentUserID);
+            profileMap.put("name", setUsername);
+            profileMap.put("status", setStatus);
 
-        DatabaseReference userRef = RootRef.child("Users").child(currentUserID);
-        userRef.child("name").setValue(setUsername);
-        userRef.child("status").setValue(setStatus).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                sendToMainActivity();
-                Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
-            } else {
-                String message = Objects.requireNonNull(task.getException()).toString();
-                Toast.makeText(this, "Error: " + message, Toast.LENGTH_SHORT).show();
-            }
-        });
+            RootRef.child("Users").child(currentUserID).updateChildren(profileMap)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()){
+                            sendToMainActivity();
+                            Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            String message = Objects.requireNonNull(task.getException()).toString();
+                            Toast.makeText(this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+        }
     }
 
 

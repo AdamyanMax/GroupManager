@@ -30,30 +30,30 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RequestsFragment extends Fragment {
-    private View RequestsFragmentView;
     private RecyclerView rvRequestsList;
-
     private DatabaseReference ChatRequestsRef, UsersRef, ContactsRef;
     private FirebaseAuth mAuth;
     private String currentUserID;
+    private View RequestsFragmentView;
+    private FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter;
 
     public RequestsFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        RequestsFragmentView = inflater.inflate(R.layout.fragment_requests, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        ChatRequestsRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
+        RequestsFragmentView = inflater.inflate(R.layout.fragment_requests, container, false);
 
         rvRequestsList = RequestsFragmentView.findViewById(R.id.rv_chat_requests);
         rvRequestsList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mAuth = FirebaseAuth.getInstance();
+        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+        ChatRequestsRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
 
         return RequestsFragmentView;
     }
@@ -64,7 +64,14 @@ public class RequestsFragment extends Fragment {
 
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(ChatRequestsRef.child(currentUserID), Contacts.class).build();
 
-        FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
+            @NonNull
+            @Override
+            public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                return new RequestViewHolder(view);
+            }
+
             @Override
             protected void onBindViewHolder(@NonNull RequestViewHolder holder, int position, @NonNull Contacts model) {
                 holder.itemView.findViewById(R.id.ll_accept_decline_layout).setVisibility(View.VISIBLE);
@@ -130,19 +137,16 @@ public class RequestsFragment extends Fragment {
                     }
                 });
             }
-
-            @NonNull
-            @Override
-            public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
-                return new RequestViewHolder(view);
-            }
         };
-
         rvRequestsList.setAdapter(adapter);
         adapter.startListening();
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }
 
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
 
@@ -158,7 +162,6 @@ public class RequestsFragment extends Fragment {
             civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
             btnAccept = itemView.findViewById(R.id.btn_request_accept);
             btnDecline = itemView.findViewById(R.id.btn_request_decline);
-
         }
     }
 }
