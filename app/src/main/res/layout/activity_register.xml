@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/fully_rounded_corners_empty"
+            android:background="@drawable/bg_fully_rounded_corners_empty"
             android:orientation="vertical"
             android:padding="24dp">
 
@@ -39,13 +39,13 @@
                 android:layout_height="50dp"
                 android:layout_marginTop="40dp"
                 android:autofillHints="emailAddress"
-                android:background="@drawable/fully_rounded_corners_empty"
+                android:background="@drawable/bg_fully_rounded_corners_empty"
                 android:drawableStart="@drawable/ic_user"
                 android:drawablePadding="8dp"
                 android:hint="@string/email"
                 android:inputType="textEmailAddress"
                 android:padding="8dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/dark_teal" />
 
             <EditText
                 android:id="@+id/et_register_password"
@@ -54,13 +54,13 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="4dp"
                 android:autofillHints="password"
-                android:background="@drawable/fully_rounded_corners_empty"
+                android:background="@drawable/bg_fully_rounded_corners_empty"
                 android:drawableStart="@drawable/ic_lock"
                 android:drawablePadding="8dp"
                 android:hint="@string/password"
                 android:inputType="textPassword"
                 android:padding="8dp"
-                android:textColor="@color/black" />
+                android:textColor="@color/dark_teal" />
 
             <Button
                 android:id="@+id/btn_register"
@@ -68,7 +68,7 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/fully_rounded_corners_empty"
+                android:background="@drawable/bg_fully_rounded_corners_empty"
                 android:backgroundTint="@color/colorPrimary"
                 android:letterSpacing=".02"
                 android:text="@string/create_account"
@@ -109,7 +109,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_margin="10dp"
-        android:background="@drawable/fully_rounded_corners_empty"
+        android:background="@drawable/bg_fully_rounded_corners_empty"
         android:drawableStart="@drawable/ic_google"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
@@ -125,7 +125,7 @@
         android:layout_width="300dp"
         android:layout_height="50dp"
         android:layout_margin="10dp"
-        android:background="@drawable/fully_rounded_corners_full"
+        android:background="@drawable/bg_fully_rounded_corners_full"
         android:drawableStart="@drawable/ic_phone"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"

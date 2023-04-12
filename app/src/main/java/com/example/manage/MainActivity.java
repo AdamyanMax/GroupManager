@@ -2,7 +2,9 @@ package com.example.manage;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,14 +38,11 @@ import java.util.Objects;
 // TODO: Replace Activities with Fragments
 // TODO: Replace ProgressDialog with ProgressBar
 // TODO: Clicking on the user in the FindFriends tab for the first time will cause for the 1st person in the list profile to be opened
-
+// TODO: When in gallery clicking the back button causes the app to crash.
+// TODO: Concatenate all 4 RVs into a single Adapter
 public class MainActivity extends AppCompatActivity {
 
     private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
-    private Toolbar mToolBar;
-    private ViewPager2 mViewPager2;
-    private TabLayout mTabLayout;
-    private TabAccessorAdapter mTabAccessorAdapter;
 
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
@@ -58,15 +57,25 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
-        mToolBar = findViewById(R.id.main_app_bar);
+        Toolbar mToolBar = findViewById(R.id.main_app_bar);
         setSupportActionBar(mToolBar);
 
-        mViewPager2 = findViewById(R.id.main_tabs_pager);
-        mTabAccessorAdapter = new TabAccessorAdapter(this);
+        ViewPager2 mViewPager2 = findViewById(R.id.main_tabs_pager);
+        TabAccessorAdapter mTabAccessorAdapter = new TabAccessorAdapter(this);
         mViewPager2.setAdapter(mTabAccessorAdapter);
 
-        mTabLayout = findViewById(R.id.main_tabs);
+        TabLayout mTabLayout = findViewById(R.id.main_tabs);
         new TabLayoutMediator(mTabLayout, mViewPager2, ((tab, position) -> tab.setText(titles[position]))).attach();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (currentUser == null) {
+            sendUserToLoginActivity();
+        } else {
+            verifyUserExistence();
+        }
     }
 
 
@@ -75,9 +84,7 @@ public class MainActivity extends AppCompatActivity {
         RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if ((snapshot.child("name").exists())) {
-                    Toast.makeText(MainActivity.this, R.string.welcome_back, Toast.LENGTH_SHORT).show();
-                } else {
+                if (!(snapshot.child("name").exists())) {
                     sendUserToSettingsActivity();
                 }
             }
@@ -89,13 +96,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.options_menu_nav, menu);
+
+        // Set the text color of all items in the menu to colorPrimary.
+        // Just delete the for loop, if you're satisfied with the current color
+        for (int i = 0; i < menu.size(); i++) {
+            MenuItem menuItem = menu.getItem(i);
+            SpannableString spannableString = new SpannableString(menuItem.getTitle().toString());
+            spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.dark_teal)), 0, spannableString.length(), 0);
+            menuItem.setTitle(spannableString);
+        }
+
         return true;
     }
+
+
+
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
@@ -130,10 +149,8 @@ public class MainActivity extends AppCompatActivity {
         final EditText etGroupName = view.findViewById(R.id.et_group_name);
         builder.setView(view);
 
-        // Set the dialog title
         builder.setTitle(R.string.enter_group_details);
 
-        // Set the positive button and its action
         builder.setPositiveButton(R.string.create, (dialog, which) -> {
             String groupName = etGroupName.getText().toString();
 
@@ -144,10 +161,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Set the negative button and its action
         builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
 
-        // Show the dialog
         AlertDialog dialog = builder.create();
         dialog.show();
     }

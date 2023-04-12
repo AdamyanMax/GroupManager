@@ -53,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:autofillHints="name"
-            android:background="@drawable/fully_rounded_corners_empty"
+            android:background="@drawable/bg_fully_rounded_corners_empty"
             android:hint="@string/message_ignore_lots_of_spaces"
             android:inputType="text"
             android:paddingStart="16dp"

@@ -16,9 +16,10 @@
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_private_chats_list_of_users"
+        android:id="@+id/rv_private_chat_list_of_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@color/colorAccent"
         app:layout_constraintTop_toBottomOf="@+id/chat_toolbar"
         app:layout_constraintBottom_toTopOf="@+id/message_input_container"
         app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +38,7 @@
             android:id="@+id/et_input_private_message"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:background="@drawable/fully_rounded_corners_empty"
+            android:background="@drawable/bg_fully_rounded_corners_empty"
             android:hint="@string/message_ignore_lots_of_spaces"
             android:inputType="text"
             android:paddingStart="16dp"

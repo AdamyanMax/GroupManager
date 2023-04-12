@@ -21,7 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,11 +32,9 @@ public class GroupChatActivity extends AppCompatActivity {
     private EditText etUserMessage;
     private ScrollView mScrollView;
     private TextView tvDisplayMessage;
+    private DatabaseReference UsersRef, GroupNameRef;
+    private String currentGroupName, currentUserID, currentUsername;
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef, GroupNameRef, GroupMessageKeyRef;
-
-    private String currentGroupName, currentUserID, currentUsername, currentDate, currentTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,7 +42,7 @@ public class GroupChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_group_chat);
         currentGroupName = getIntent().getExtras().get("groupName").toString();
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         GroupNameRef = FirebaseDatabase.getInstance().getReference()
@@ -133,39 +131,40 @@ public class GroupChatActivity extends AppCompatActivity {
         // TODO: Reminder in case you want to add a voice message system.
         if (!(TextUtils.isEmpty(message))) {
             Calendar callForDate = Calendar.getInstance();
-            SimpleDateFormat currentDateFormat = new SimpleDateFormat("MMM dd, yyyy");
-            currentDate = currentDateFormat.format(callForDate.getTime());
+            DateFormat dateFormat = DateFormat.getDateInstance();
+            String currentDate = dateFormat.format(callForDate.getTime());
 
             Calendar callForTime = Calendar.getInstance();
-            SimpleDateFormat currentTimeFormat = new SimpleDateFormat("hh:mm a");
-            currentTime = currentTimeFormat.format(callForTime.getTime());
+            DateFormat timeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
+            String currentTime = timeFormat.format(callForTime.getTime());
 
             HashMap<String, Object> groupMessageKey = new HashMap<>();
             GroupNameRef.updateChildren(groupMessageKey);
 
             assert messageKey != null;
-            GroupMessageKeyRef = GroupNameRef.child(messageKey);
+            DatabaseReference groupMessageKeyRef = GroupNameRef.child(messageKey);
 
             HashMap<String, Object> messageInfoMap = new HashMap<>();
             messageInfoMap.put("name", currentUsername);
             messageInfoMap.put("message", message);
             messageInfoMap.put("date", currentDate);
             messageInfoMap.put("time", currentTime);
-            GroupMessageKeyRef.updateChildren(messageInfoMap);
+            groupMessageKeyRef.updateChildren(messageInfoMap);
         }
     }
+
 
     private void DisplayMessages(@NonNull DataSnapshot snapshot) {
         Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
 
         while (iterator.hasNext()) {
-            String chatDate = (String) iterator.next().getValue();
+//            String chatDate = (String) iterator.next().getValue();
             String chatMessage = (String) iterator.next().getValue();
             String chatName = (String) iterator.next().getValue();
             String chatTime = (String) iterator.next().getValue();
 
             tvDisplayMessage.append(chatName + " :\n" + chatMessage + "\n"
-                    + chatTime + "    " + chatDate + "\n\n\n");
+                    + chatTime + "\n\n");
 
             mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
         }

@@ -32,30 +32,27 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class RequestsFragment extends Fragment {
     private RecyclerView rvRequestsList;
     private DatabaseReference ChatRequestsRef, UsersRef, ContactsRef;
-    private FirebaseAuth mAuth;
     private String currentUserID;
-    private View RequestsFragmentView;
     private FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter;
 
-    public RequestsFragment() {
-    }
+    public RequestsFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        RequestsFragmentView = inflater.inflate(R.layout.fragment_requests, container, false);
+        View requestsFragmentView = inflater.inflate(R.layout.fragment_requests, container, false);
 
-        rvRequestsList = RequestsFragmentView.findViewById(R.id.rv_chat_requests);
+        rvRequestsList = requestsFragmentView.findViewById(R.id.rv_chat_requests);
         rvRequestsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
         ChatRequestsRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
 
-        return RequestsFragmentView;
+        return requestsFragmentView;
     }
 
     @Override
@@ -107,7 +104,7 @@ public class RequestsFragment extends Fragment {
                                                     if (task1.isSuccessful()) {
                                                         ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
                                                             if (task2.isSuccessful()) {
-                                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), "Contact saved", Toast.LENGTH_SHORT).show());
+                                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved + "", Toast.LENGTH_SHORT).show());
                                                             }
                                                         });
                                                     }
@@ -117,7 +114,7 @@ public class RequestsFragment extends Fragment {
 
                                         holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
-                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), "Contact deleted", Toast.LENGTH_SHORT).show());
+                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined + "", Toast.LENGTH_SHORT).show());
                                             }
                                         }));
                                     }

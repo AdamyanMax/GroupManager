@@ -30,7 +30,7 @@
             android:layout_width="16dp"
             android:layout_height="16dp"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/circle_solid"
+            android:src="@drawable/ic_circle_solid"
             android:visibility="invisible" />
     </FrameLayout>
 
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:maxWidth="130dp"
             android:text="Name"
-            android:textColor="@color/black"
+            android:textColor="@color/dark_teal"
             android:textSize="20sp"
             tools:ignore="HardcodedText" />
 

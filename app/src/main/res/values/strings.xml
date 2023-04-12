@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Group Manager</string>
+    <string name="app_name" translatable="false">Group Manager</string>
     <string name="text_login">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -31,7 +31,7 @@
     <string name="cancel">Cancel</string>
     <string name="message">Message</string>
     <string name="cd_send_message">Send message</string>
-    <string name="message_ignore_lots_of_spaces">Message                                                         </string>
+    <string name="message_ignore_lots_of_spaces">Message</string>
     <string name="cd_group_profile_image">Group profile image</string>
     <string name="phone_number">Phone number</string>
     <string name="code">Code</string>
@@ -49,7 +49,6 @@
     <string name="verifying_the_verification_code">Verifying the verification code…</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="sign_up">Sign up</string>
-    <string name="welcome_back">Welcome back</string>
     <string name="please_provide_a_name_for_the_group">Please, provide a name for the group</string>
     <string name="permission_denied">Permission denied</string>
     <string name="user_profile_image">User profile image</string>
@@ -58,10 +57,12 @@
     <string name="decline_chat_request">Decline chat request</string>
     <string name="accept_chat_request">Accept chat request</string>
     <string name="remove_this_contact">Remove this contact</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="accept">Accept</string>
     <string name="decline">Decline</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="login_now">Login now!</string>
+    <string name="contact_saved">Contact saved</string>
+    <string name="chat_request_declined">Chat request declined</string>
+    <string name="last_seen_at">Last seen at </string>
+    <string name="tabs">Tabs</string>
 </resources>

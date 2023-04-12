@@ -24,7 +24,7 @@
             android:layout_height="60dp"
             android:contentDescription="@string/cd_group_profile_image"
             android:scaleType="centerInside"
-            android:src="@drawable/user_group" />
+            android:src="@drawable/ic_user_group" />
 
     </androidx.cardview.widget.CardView>
 
@@ -35,7 +35,7 @@
         android:layout_marginStart="12dp"
         android:layout_toEndOf="@+id/___"
         android:text="Name"
-        android:textColor="@color/black"
+        android:textColor="@color/dark_teal"
         android:textSize="20sp"
         tools:ignore="HardcodedText" />
 

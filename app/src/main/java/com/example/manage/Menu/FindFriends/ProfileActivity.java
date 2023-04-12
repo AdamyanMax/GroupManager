@@ -115,7 +115,7 @@ public class ProfileActivity extends AppCompatActivity {
                     } else if (request_type.equals("received")) {
                         currentState = CURRENT_STATE_REQUEST_RECEIVED;
                         btnSendMessageRequest.setText(R.string.accept_chat_request);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons);
+                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons);
                         btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
 
                         btnDeclineRequest.setVisibility(View.VISIBLE);
@@ -181,7 +181,7 @@ public class ProfileActivity extends AppCompatActivity {
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
                         btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_send_message, 0, 0, 0);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons_end);
+                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);
@@ -280,7 +280,7 @@ public class ProfileActivity extends AppCompatActivity {
         currentState = CURRENT_STATE_FRIENDS;
         btnSendMessageRequest.setText(R.string.remove_this_contact);
         btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ban, 0, 0, 0);
-        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons_end);
+        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
 
         btnDeclineRequest.setVisibility(View.INVISIBLE);
         btnDeclineRequest.setEnabled(false);
@@ -295,7 +295,7 @@ public class ProfileActivity extends AppCompatActivity {
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
                         btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_send_message, 0, 0, 0);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons_end);
+                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);

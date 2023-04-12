@@ -3,7 +3,8 @@ package com.example.manage.Contacts;
 public class Contacts {
     public String name, status, image;
 
-    public Contacts(){}
+    public Contacts() {
+    }
 
     public Contacts(String name, String status, String image) {
         this.name = name;
@@ -31,7 +32,4 @@ public class Contacts {
         return image;
     }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 }

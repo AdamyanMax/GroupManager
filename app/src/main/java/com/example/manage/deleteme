@@ -1,0 +1,278 @@
+In my project I have created 4 RecyclerViews from scratch. I want to create my own adapter class only once and change the functionality depending on the fragment.
+Here is the 1st RecyclerView in the onStart() method, and its ViewHolder class:
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(ChatRequestsRef.child(currentUserID), Contacts.class).build();
+
+        adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
+            @NonNull
+            @Override
+            public RequestViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                return new RequestViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull RequestViewHolder holder, int position, @NonNull Contacts model) {
+                holder.itemView.findViewById(R.id.ll_accept_decline_layout).setVisibility(View.VISIBLE);
+
+                final String list_user_id = getRef(position).getKey();
+
+                DatabaseReference getTypeRef = getRef(position).child("request_type").getRef();
+
+                getTypeRef.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            String type = Objects.requireNonNull(snapshot.getValue()).toString();
+                            if (type.equals("received")) {
+                                assert list_user_id != null;
+                                UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.hasChild("image")) {
+
+                                            final String requestProfileImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                            Picasso.get().load(requestProfileImage).into(holder.civProfileImage);
+                                        }
+                                        final String requestUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                        final String requestUserStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                        holder.tvUserName.setText(requestUsername);
+                                        holder.tvUserStatus.setText(requestUserStatus);
+
+                                        holder.btnAccept.setOnClickListener(v -> ContactsRef.child(list_user_id).child(currentUserID).child("Contact").setValue("Saved").addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                ContactsRef.child(currentUserID).child(list_user_id).child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
+                                                    if (task1.isSuccessful()) {
+                                                        ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
+                                                            if (task2.isSuccessful()) {
+                                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved + "", Toast.LENGTH_SHORT).show());
+                                                            }
+                                                        });
+                                                    }
+                                                });
+                                            }
+                                        }));
+
+                                        holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined + "", Toast.LENGTH_SHORT).show());
+                                            }
+                                        }));
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        };
+        rvRequestsList.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+        public static class RequestViewHolder extends RecyclerView.ViewHolder {
+
+            TextView tvUserName, tvUserStatus;
+            CircleImageView civProfileImage;
+            Button btnAccept, btnDecline;
+
+            public RequestViewHolder(@NonNull View itemView) {
+                super(itemView);
+
+                tvUserName = itemView.findViewById(R.id.tv_display_username);
+                tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
+                civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
+                btnAccept = itemView.findViewById(R.id.btn_request_accept);
+                btnDecline = itemView.findViewById(R.id.btn_request_decline);
+            }
+        }
+
+Here is the 2nd RecyclerView in the onStart() method and its ViewHolder class:
+    @Override
+    public void onStart() {
+        super.onStart();
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
+                .setQuery(ChatsRef, Contacts.class)
+                .build();
+        FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Contacts, ChatsViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull ChatsViewHolder holder, int position, @NonNull Contacts model) {
+                        final String userIDs = getRef(position).getKey();
+
+                        assert userIDs != null;
+                        UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.hasChild("image")){
+                                    final String profileImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                    Picasso.get().load(profileImage).into(holder.civProfileImage);
+                                }
+                                final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                final String status = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                holder.tvUsername.setText(name);
+                                holder.tvUserStatus.setText(R.string.last_seen_at);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                        return new ChatsViewHolder(view);
+                    }
+                };
+
+        rvChatList.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class ChatsViewHolder extends RecyclerView.ViewHolder{
+        CircleImageView civProfileImage;
+        TextView tvUserStatus, tvUsername;
+
+        public ChatsViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
+            tvUsername = itemView.findViewById(R.id.tv_display_username);
+            tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
+        }
+    }
+Here is the 3rd RecyclerView in the onStart() method and its ViewHolder class:
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(UsersReference, Contacts.class).build();
+
+        FirebaseRecyclerAdapter<Contacts, FindFriendsViewHolder> adapter = new FirebaseRecyclerAdapter<Contacts, FindFriendsViewHolder>(options) {
+
+            @NonNull
+            @Override
+            public FindFriendsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                return new FindFriendsViewHolder(view);
+            }
+
+            @Override
+            protected void onBindViewHolder(@NonNull FindFriendsViewHolder holder, int position, @NonNull Contacts model) {
+                holder.name.setText(model.getName());
+                holder.status.setText(model.getStatus());
+                Picasso.get().load(model.getImage()).placeholder(R.drawable.user_default_profile_pic).into(holder.profileImage);
+
+                holder.itemView.setOnClickListener(v -> {
+                    String visit_user_id = getRef(position).getKey();
+
+                    Intent profileIntent = new Intent(FindFriendsActivity.this, ProfileActivity.class);
+                    profileIntent.putExtra("visit_user_id", visit_user_id);
+                    startActivity(profileIntent);
+                });
+            }
+        };
+
+        rvFindFriends.setAdapter(adapter);
+
+        adapter.startListening();
+    }
+
+    public static class FindFriendsViewHolder extends RecyclerView.ViewHolder {
+        TextView name, status;
+        CircleImageView profileImage;
+
+        public FindFriendsViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            name = itemView.findViewById(R.id.tv_display_username);
+            status = itemView.findViewById(R.id.tv_display_user_status);
+            profileImage = itemView.findViewById(R.id.civ_display_profile_image);
+        }
+    }
+And finally, here is the 4th RecyclerView in the onStart() method and its ViewHolder class:
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        FirebaseRecyclerOptions<Contacts> options =
+                new FirebaseRecyclerOptions.Builder<Contacts>()
+                        .setQuery(ContactsRef, Contacts.class)
+                        .build();
+        final FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter =
+                new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
+                    @Override
+                    protected void onBindViewHolder(@NonNull ContactsViewHolder holder, int position, @NonNull Contacts model) {
+                        String userIDs = getRef(position).getKey();
+
+                        assert userIDs != null;
+                        UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                if (snapshot.hasChild("image")) {
+                                    String userImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                    String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                    String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                    holder.tvUserName.setText(profileName);
+                                    holder.tvUserStatus.setText(profileStatus);
+                                    Picasso.get().load(userImage).placeholder(R.drawable.user_default_profile_pic).into(holder.civProfileImage);
+                                } else {
+                                    String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                    String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                    holder.tvUserName.setText(profileName);
+                                    holder.tvUserStatus.setText(profileStatus);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+
+                            }
+                        });
+                    }
+
+                    @NonNull
+                    @Override
+                    public ContactsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                        return new ContactsViewHolder(view);
+                    }
+                };
+        rvContactList.setAdapter(adapter);
+        adapter.startListening();
+    }
+
+    public static class ContactsViewHolder extends RecyclerView.ViewHolder {
+        TextView tvUserName, tvUserStatus;
+        CircleImageView civProfileImage;
+
+
+        public ContactsViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            tvUserName = itemView.findViewById(R.id.tv_display_username);
+            tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
+            civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
+        }
+    }
