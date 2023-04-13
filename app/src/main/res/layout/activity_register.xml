@@ -104,35 +104,4 @@
             android:textSize="14sp" />
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_google_register"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/bg_fully_rounded_corners_empty"
-        android:drawableStart="@drawable/ic_google"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/register_with_google"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/colorPrimary"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btn_phone_register"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/bg_fully_rounded_corners_full"
-        android:drawableStart="@drawable/ic_phone"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:text="@string/register_with_phone"
-        android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@color/colorAccent"
-        android:textSize="18sp"
-        android:textStyle="bold" />
 </LinearLayout>

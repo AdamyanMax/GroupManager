@@ -35,7 +35,8 @@ public class RequestsFragment extends Fragment {
     private String currentUserID;
     private FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter;
 
-    public RequestsFragment() {}
+    public RequestsFragment() {
+    }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

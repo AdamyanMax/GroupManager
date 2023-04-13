@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,12 +10,13 @@
     android:paddingBottom="1dp"
     android:paddingStart="4dp"
     android:paddingEnd="4dp">
-<!--TODO-->
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/civ_receiver_profile_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_margin="2dp"
         android:src="@drawable/user_default_profile_pic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,11 +25,16 @@
     <TextView
         android:id="@+id/tv_receiver_message"
         android:layout_width="wrap_content"
+        android:maxWidth="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_receiver_messages_layout"
         android:padding="10dp"
-        android:textColor="@color/black_"
+        app:flow_verticalBias="1.0"
+        android:layout_marginEnd="4dp"
+        android:ellipsize="end"
+        android:textColor="@color/black"
         android:text="Receiver message here"
+        android:textAlignment="textStart"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
         app:layout_constraintTop_toTopOf="parent"
@@ -37,10 +44,11 @@
         android:id="@+id/tv_sender_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:maxWidth="300dp"
         android:background="@drawable/bg_sender_messages_layout"
-        android:gravity="end"
         android:padding="8dp"
-        android:textColor="@color/black_"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
         android:text="Sender message here"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

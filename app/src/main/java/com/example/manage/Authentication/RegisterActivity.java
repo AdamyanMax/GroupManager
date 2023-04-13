@@ -16,6 +16,7 @@ import com.example.manage.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
 
@@ -57,21 +58,24 @@ public class RegisterActivity extends AppCompatActivity {
             loadingBar.setCanceledOnTouchOutside(true);
             loadingBar.show();
 
-            mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            String currentUserID = mAuth.getCurrentUser().getUid();
-                            RootRef.child("Users").child(currentUserID).setValue("");
+            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    String deviceToken = String.valueOf(FirebaseMessaging.getInstance().getToken());
 
-                            sendToMainActivity();
-                            Toast.makeText(RegisterActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
-                            loadingBar.dismiss();
-                        } else {
-                            String message = Objects.requireNonNull(task.getException()).toString();
-                            Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                            loadingBar.dismiss();
-                        }
-                    });
+                    String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+                    RootRef.child("Users").child(currentUserID).setValue("");
+
+                    RootRef.child("Users").child(currentUserID).child("device_token").setValue(deviceToken);
+
+                    sendToMainActivity();
+                    Toast.makeText(RegisterActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
+                    loadingBar.dismiss();
+                } else {
+                    String message = Objects.requireNonNull(task.getException()).toString();
+                    Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                    loadingBar.dismiss();
+                }
+            });
         }
     }
 
@@ -89,8 +93,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void InitializeFields() {
         btnCreateAccount = findViewById(R.id.btn_register);
-        btnGoogleRegister = findViewById(R.id.btn_google_register);
-        btnPhoneRegister = findViewById(R.id.btn_phone_register);
 
         etUserEmail = findViewById(R.id.et_register_email);
         etUserPassword = findViewById(R.id.et_register_password);

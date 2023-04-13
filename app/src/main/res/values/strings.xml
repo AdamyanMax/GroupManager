@@ -5,7 +5,6 @@
     <string name="password">Password</string>
     <string name="reset_password">Reset password</string>
     <string name="button_login">Login</string>
-    <string name="login_with_google">Login with Google</string>
     <string name="login_with_phone">Login with phone</string>
     <string name="register">Register</string>
     <string name="create_account">Create account</string>

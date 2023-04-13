@@ -67,12 +67,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         if (fromMessageType.equals("text")) {
             holder.tvReceiverMessageText.setVisibility(View.INVISIBLE);
             holder.civReceiverProfileImage.setVisibility(View.INVISIBLE);
-
+            holder.tvSenderMessageText.setVisibility(View.INVISIBLE);
             if (fromUserID.equals(messageSenderID)) {
+                holder.tvSenderMessageText.setVisibility(View.VISIBLE);
                 holder.tvSenderMessageText.setBackgroundResource(R.drawable.bg_sender_messages_layout);
                 holder.tvSenderMessageText.setText(messages.getMessage());
             } else {
-                holder.tvSenderMessageText.setVisibility(View.INVISIBLE);
                 holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
                 holder.tvReceiverMessageText.setVisibility(View.VISIBLE);
 

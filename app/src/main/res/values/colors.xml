@@ -16,5 +16,5 @@
     <color name="colorOnSurface">#FFFFFF</color>
     <color name="grey">#696969</color>
     <color name="divider_color">#C9C9C9</color>
-    <color name="black_">#000</color>
+    <color name="black">#000</color>
 </resources>

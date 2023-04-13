@@ -47,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText etMessageInput;
     private DatabaseReference RootRef;
     private MessagesAdapter messagesAdapter;
+    private RecyclerView rvUserMessagesList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,7 @@ public class ChatActivity extends AppCompatActivity {
         ibSendMessage = findViewById(R.id.ib_send_private_message);
         etMessageInput = findViewById(R.id.et_input_private_message);
         messagesAdapter = new MessagesAdapter(messagesList);
-        RecyclerView rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
+        rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvUserMessagesList.setLayoutManager(linearLayoutManager);
         rvUserMessagesList.setAdapter(messagesAdapter);
@@ -106,6 +107,8 @@ public class ChatActivity extends AppCompatActivity {
                 messagesList.add(messages);
 
                 messagesAdapter.notifyDataSetChanged();
+
+                rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
             }
 
             @Override

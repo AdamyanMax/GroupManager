@@ -70,6 +70,7 @@
                         android:padding="8dp"
                         android:textColor="@color/dark_teal" />
 
+                    <!--                    TODO: Add password reset-->
                     <TextView
                         android:id="@+id/tv_reset_password_link"
                         android:layout_width="wrap_content"
@@ -77,7 +78,8 @@
                         android:layout_marginTop="2dp"
                         android:text="@string/reset_password"
                         android:textColor="@color/dark_teal"
-                        android:textSize="15sp" />
+                        android:textSize="15sp"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/btn_login"
@@ -123,37 +125,19 @@
             </LinearLayout>
 
 
-            <Button
-                android:id="@+id/btn_google_login"
-                android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_fully_rounded_corners_empty"
-                android:drawableStart="@drawable/ic_google"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/login_with_google"
-                android:textAlignment="center"
-                android:textAllCaps="false"
-                android:textColor="@color/colorPrimary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_phone_login"
+                style="@style/Widget.Material3.Button.Icon"
                 android:layout_width="300dp"
-                android:layout_height="50dp"
-                android:layout_margin="10dp"
-                android:background="@drawable/bg_fully_rounded_corners_full"
-                android:drawableStart="@drawable/ic_phone"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:layout_height="58dp"
+                android:drawableTint="@color/colorAccent"
                 android:text="@string/login_with_phone"
                 android:textAlignment="center"
                 android:textAllCaps="false"
                 android:textColor="@color/colorAccent"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                app:icon="@drawable/ic_phone" />
 
         </LinearLayout>
     </ScrollView>

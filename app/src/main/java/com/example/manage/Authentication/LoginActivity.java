@@ -9,11 +9,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.manage.MainActivity;
 import com.example.manage.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
 
@@ -21,10 +27,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private ProgressDialog loadingBar;
-
-    private Button btnLogin, btnGoogleLogin, btnPhoneLogin;
+    private DatabaseReference UsersRef;
+    private Button btnLogin, btnPhoneLogin;
     private EditText etUserEmail, etUserPassword;
-    private TextView tvNeedAccountLink, tvForgetPasswordLink;
+    private TextView tvNeedAccountLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
+        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
         InitializeFields();
 
         tvNeedAccountLink.setOnClickListener(v -> sendUserToRegisterActivity());
@@ -44,14 +51,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void InitializeFields() {
         btnLogin = findViewById(R.id.btn_login);
-        btnGoogleLogin = findViewById(R.id.btn_google_login);
         btnPhoneLogin = findViewById(R.id.btn_phone_login);
 
         etUserEmail = findViewById(R.id.et_login_email);
         etUserPassword = findViewById(R.id.et_login_password);
 
         tvNeedAccountLink = findViewById(R.id.tv_login_has_account_link);
-        tvForgetPasswordLink = findViewById(R.id.tv_reset_password_link);
 
         loadingBar = new ProgressDialog(this);
     }
@@ -73,9 +78,20 @@ public class LoginActivity extends AppCompatActivity {
 
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
-                    sendToMainActivity();
-                    Toast.makeText(this, "Logged in successfully", Toast.LENGTH_SHORT).show();
-                    loadingBar.dismiss();
+                    String deviceToken = String.valueOf(FirebaseMessaging.getInstance().getToken());
+                    String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+                    UsersRef.child(currentUserID).child("device_token")
+                            .setValue(deviceToken)
+                            .addOnCompleteListener(task1 -> {
+                                if (task1.isSuccessful()) {
+                                    sendToMainActivity();
+                                    Toast.makeText(LoginActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
+                                    loadingBar.dismiss();
+                                }
+                            });
+
+
                 } else {
                     // TODO: Using try/catch make the error message different for different occasions,
                     //  and more user friendly

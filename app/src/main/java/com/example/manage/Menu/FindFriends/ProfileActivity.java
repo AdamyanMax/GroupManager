@@ -4,15 +4,16 @@ import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,6 +23,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -34,14 +36,15 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String CURRENT_STATE_REQUEST_SENT = "request_sent";
     private static final String CURRENT_STATE_FRIENDS = "friends";
     private static final String CURRENT_STATE_REQUEST_RECEIVED = "request_received";
+    private static final String NODE_REQUEST_TYPE = "request_type";
 
     private String receiverUserID, currentState, senderUserID;
 
     private CircleImageView civProfileImage;
     private TextView tvUsername, tvUserStatus;
-    private Button btnSendMessageRequest, btnDeclineRequest;
+    private MaterialButton btnSendMessageRequest, btnDeclineRequest;
 
-    private DatabaseReference UserRef, ChatRequestRef, ContactsRef;
+    private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
 
 
     @Override
@@ -53,6 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         ChatRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
         ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
+        NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
 
 
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
@@ -107,16 +111,16 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(receiverUserID)) {
-                    String request_type = Objects.requireNonNull(snapshot.child(receiverUserID).child("request_type").getValue()).toString();
+                    String request_type = Objects.requireNonNull(snapshot.child(receiverUserID).child(NODE_REQUEST_TYPE).getValue()).toString();
                     if (request_type.equals("sent")) {
                         currentState = CURRENT_STATE_REQUEST_SENT;
                         btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_cross, 0, 0, 0);
+                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_cross));
                     } else if (request_type.equals("received")) {
                         currentState = CURRENT_STATE_REQUEST_RECEIVED;
                         btnSendMessageRequest.setText(R.string.accept_chat_request);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons);
-                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check, 0, 0, 0);
+//                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons);
+                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_check));
 
                         btnDeclineRequest.setVisibility(View.VISIBLE);
                         btnDeclineRequest.setEnabled(true);
@@ -131,7 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
                                     if (snapshot.hasChild(receiverUserID)) {
                                         currentState = CURRENT_STATE_FRIENDS;
                                         btnSendMessageRequest.setText(R.string.remove_this_contact);
-                                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ban, 0, 0, 0);
+                                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_ban));
                                     }
                                 }
 
@@ -180,8 +184,8 @@ public class ProfileActivity extends AppCompatActivity {
                         btnSendMessageRequest.setEnabled(true);
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
-                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_send_message, 0, 0, 0);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
+                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
+//                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);
@@ -192,38 +196,6 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    //    private void acceptChatRequest() {
-//        ContactsRef.child(senderUserID).child(receiverUserID)
-//                .child("Contacts").setValue("Saved")
-//                .addOnCompleteListener(task -> {
-//                    if (task.isSuccessful()) {
-//                        ContactsRef.child(receiverUserID).child(senderUserID)
-//                                .child("Contacts").setValue("Saved")
-//                                .addOnCompleteListener(task1 -> {
-//                                    if (task.isSuccessful()) {
-//                                        ChatRequestRef.child(senderUserID).child(receiverUserID)
-//                                                .removeValue()
-//                                                .addOnCompleteListener(task2 -> {
-//                                                    if (task2.isSuccessful()) {
-//                                                        ChatRequestRef.child(receiverUserID).child(senderUserID)
-//                                                                .removeValue()
-//                                                                .addOnCompleteListener(task3 -> {
-//                                                                    btnSendMessageRequest.setEnabled(true);
-//                                                                    currentState = CURRENT_STATE_FRIENDS;
-//                                                                    btnSendMessageRequest.setText(R.string.remove_this_contact);
-//                                                                    btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ban, 0, 0, 0);
-//                                                                    btnSendMessageRequest.setBackgroundResource(R.drawable.profile_buttons_end);
-//
-//                                                                    btnDeclineRequest.setVisibility(View.INVISIBLE);
-//                                                                    btnDeclineRequest.setEnabled(false);
-//                                                                });
-//                                                    }
-//                                                });
-//                                    }
-//                                });
-//                    }
-//                });
-//    }
     private void acceptChatRequest() {
         List<Task<Void>> tasks = new ArrayList<>();
 
@@ -279,8 +251,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnSendMessageRequest.setEnabled(true);
         currentState = CURRENT_STATE_FRIENDS;
         btnSendMessageRequest.setText(R.string.remove_this_contact);
-        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_ban, 0, 0, 0);
-        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
+        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_ban));
 
         btnDeclineRequest.setVisibility(View.INVISIBLE);
         btnDeclineRequest.setEnabled(false);
@@ -294,8 +265,8 @@ public class ProfileActivity extends AppCompatActivity {
                         btnSendMessageRequest.setEnabled(true);
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
-                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_send_message, 0, 0, 0);
-                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
+                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
+                        // TODO
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);
@@ -307,14 +278,27 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void sendChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID).child("request_type").setValue("sent").addOnCompleteListener(task -> {
+        ChatRequestRef.child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                ChatRequestRef.child(receiverUserID).child(senderUserID).child("request_type").setValue("received").addOnCompleteListener(task1 -> {
+                ChatRequestRef.child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received").addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
-                        btnSendMessageRequest.setEnabled(true);
-                        currentState = CURRENT_STATE_REQUEST_SENT;
-                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                        btnSendMessageRequest.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_cross, 0, 0, 0);
+                        HashMap<String, String> chatNotificationMap = new HashMap<>();
+                        chatNotificationMap.put("from", senderUserID);
+                        chatNotificationMap.put("type", "request");
+
+                        NotificationRef.child(receiverUserID).push()
+                                .setValue(chatNotificationMap)
+                                .addOnCompleteListener(task2 -> {
+                                    if (task2.isSuccessful()) {
+                                        btnSendMessageRequest.setEnabled(true);
+                                        currentState = CURRENT_STATE_REQUEST_SENT;
+                                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
+                                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_cross));
+
+                                    }
+                                });
+
+
                     }
                 });
             }

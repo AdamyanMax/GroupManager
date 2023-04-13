@@ -11,19 +11,19 @@
         layout="@layout/app_bar_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_private_chat_list_of_messages"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:background="@color/colorAccent"
-        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar"
         app:layout_constraintBottom_toTopOf="@+id/message_input_container"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/message_input_container"
@@ -31,31 +31,35 @@
         android:layout_height="wrap_content"
         android:padding="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <EditText
             android:id="@+id/et_input_private_message"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+            android:layout_marginEnd="4dp"
+            android:autofillHints="name"
             android:background="@drawable/bg_fully_rounded_corners_empty"
             android:hint="@string/message_ignore_lots_of_spaces"
-            android:inputType="text"
+            android:inputType="textMultiLine"
+            android:maxLines="4"
             android:paddingStart="16dp"
             android:paddingTop="10dp"
             android:paddingEnd="16dp"
             android:paddingBottom="10dp"
-            android:layout_marginEnd="4dp"
+            app:flow_verticalBias="0.0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ib_send_private_message"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:autofillHints="name" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/ib_send_private_message"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            app:layout_constraintVertical_bias="1.0"
             android:background="@drawable/bg_send_message_image_button"
             android:contentDescription="@string/cd_send_message"
             android:src="@drawable/ic_send_message"

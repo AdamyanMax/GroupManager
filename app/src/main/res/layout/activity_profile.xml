@@ -38,37 +38,50 @@
         android:textSize="16sp"
         tools:ignore="HardcodedText" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_send_message_request"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="48dp"
-        android:background="@drawable/bg_profile_buttons_end"
-        android:drawableStart="@drawable/ic_send_message"
-        android:drawablePadding="18dp"
-        android:drawableTint="@color/colorPrimary"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         android:text="@string/send_message"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@color/grey"
-        android:textSize="18sp" />
-    <Button
+        android:textSize="18sp"
+        app:cornerRadius="0dp"
+        app:icon="@drawable/ic_send_message"
+        app:iconPadding="24dp"
+        app:iconSize="22dp"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_decline_message_request"
+        style="@style/Widget.Material3.Button.OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_profile_buttons_end"
-        android:drawableStart="@drawable/ic_ban"
-        android:drawablePadding="18dp"
-        android:drawableTint="@color/colorPrimary"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
+        android:minHeight="48dp"
         android:text="@string/decline_chat_request"
         android:textAlignment="textStart"
         android:textAllCaps="false"
         android:textColor="@color/grey"
         android:textSize="18sp"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        app:cornerRadius="0dp"
+        app:icon="@drawable/ic_ban"
+        app:iconPadding="24dp"
+        app:iconSize="22dp"
+        app:strokeColor="@color/colorPrimary"
+        app:strokeWidth="1dp" />
+
 
 </LinearLayout>

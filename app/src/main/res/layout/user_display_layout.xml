@@ -68,51 +68,35 @@
         android:orientation="horizontal"
         android:visibility="invisible">
 
-        <Button
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_request_accept"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_gravity="center_vertical|end"
-            android:background="@drawable/bg_button_next"
+            android:layout_height="wrap_content"
+            android:letterSpacing="0"
             android:text="@string/accept"
             android:textAllCaps="false"
-            android:textColor="@color/white"
+            android:textColor="@color/colorAccent"
             android:textSize="14sp"
-            tools:ignore="ButtonStyle" />
+            app:backgroundTint="@color/colorPrimary"
+            app:rippleColor="@color/colorPrimaryDark" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_request_decline"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="36dp"
-            android:layout_gravity="center_vertical|end"
+            android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:background="@drawable/bg_button_test"
+            android:letterSpacing="0"
             android:text="@string/decline"
             android:textAllCaps="false"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp"
-            tools:ignore="ButtonStyle" />
-
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/btn_accept"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:text="@string/accept"-->
-<!--            android:textSize="14sp"-->
-<!--            app:backgroundTint="@color/colorPrimary"-->
-<!--            app:rippleColor="@color/colorPrimaryDark"-->
-<!--            style="@style/Widget.MaterialComponents.Button.TextButton" />-->
-
-<!--        <com.google.android.material.button.MaterialButton-->
-<!--            android:id="@+id/btn_decline"-->
-<!--            android:layout_width="wrap_content"-->
-<!--            android:layout_height="wrap_content"-->
-<!--            android:layout_marginStart="8dp"-->
-<!--            android:text="@string/decline"-->
-<!--            android:textSize="14sp"-->
-<!--            app:backgroundTint="@android:color/transparent"-->
-<!--            app:rippleColor="@color/colorPrimaryDark"-->
-<!--            style="@style/Widget.MaterialComponents.Button.TextButton" />-->
+            app:backgroundTint="@android:color/transparent"
+            app:rippleColor="@color/colorPrimaryDark"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="1dp" />
 
 
     </LinearLayout>
