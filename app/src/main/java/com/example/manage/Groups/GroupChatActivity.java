@@ -24,7 +24,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Objects;
 
 public class GroupChatActivity extends AppCompatActivity {
@@ -155,13 +154,12 @@ public class GroupChatActivity extends AppCompatActivity {
 
 
     private void DisplayMessages(@NonNull DataSnapshot snapshot) {
-        Iterator<DataSnapshot> iterator = snapshot.getChildren().iterator();
 
-        while (iterator.hasNext()) {
-//            String chatDate = (String) iterator.next().getValue();
-            String chatMessage = (String) iterator.next().getValue();
-            String chatName = (String) iterator.next().getValue();
-            String chatTime = (String) iterator.next().getValue();
+        for (DataSnapshot messageSnapshot : snapshot.getChildren()) {
+//            String chatDate = messageSnapshot.getKey();
+            String chatMessage = messageSnapshot.child("message").getValue(String.class);
+            String chatName = messageSnapshot.child("name").getValue(String.class);
+            String chatTime = messageSnapshot.child("time").getValue(String.class);
 
             tvDisplayMessage.append(chatName + " :\n" + chatMessage + "\n"
                     + chatTime + "\n\n");
@@ -169,4 +167,5 @@ public class GroupChatActivity extends AppCompatActivity {
             mScrollView.fullScroll(ScrollView.FOCUS_DOWN);
         }
     }
+
 }

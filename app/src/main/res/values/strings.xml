@@ -64,4 +64,5 @@
     <string name="chat_request_declined">Chat request declined</string>
     <string name="last_seen_at">Last seen at </string>
     <string name="tabs">Tabs</string>
+    <string name="search">Search</string>
 </resources>

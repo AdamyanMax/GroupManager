@@ -26,7 +26,7 @@ import java.util.ArrayList;
 public class GroupsFragment extends Fragment {
 
     private View vGroupFragment;
-    private ArrayList<String> listOfGroups = new ArrayList<>();
+    private final ArrayList<String> listOfGroups = new ArrayList<>();
     private GroupsAdapter groupsAdapter;
     private DatabaseReference GroupRef;
 

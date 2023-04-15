@@ -266,7 +266,7 @@ public class ProfileActivity extends AppCompatActivity {
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
                         btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
-                        // TODO
+                        //
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);
