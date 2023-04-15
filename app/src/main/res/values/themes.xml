@@ -44,7 +44,8 @@
     </style>
 
     <style name="TabText" parent="@style/Widget.AppCompat.TextView">
-        <item name="android:textSize">16sp</item>
+<!--        TODO: Make this attribute responsive-->
+        <item name="android:textSize">15sp</item>
     </style>
 
     <style name="MyPopupMenuStyle" parent="@style/Widget.Material3.PopupMenu">

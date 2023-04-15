@@ -42,8 +42,9 @@
         android:id="@+id/btn_send_message_request"
         style="@style/Widget.Material3.Button.OutlinedButton.Icon"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
+        android:minHeight="48dp"
         android:insetLeft="0dp"
         android:insetTop="0dp"
         android:insetRight="0dp"
@@ -54,15 +55,15 @@
         android:textColor="@color/grey"
         android:textSize="18sp"
         app:cornerRadius="0dp"
-        app:icon="@drawable/ic_cross"
+        app:icon="@drawable/ic_send_message"
         app:iconPadding="24dp"
         app:iconSize="24dp"
         app:strokeColor="@color/colorPrimary"
-        app:strokeWidth="2dp" />
+        app:strokeWidth="1dp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_decline_message_request"
-        style="@style/Widget.Material3.Button.OutlinedButton"
+        style="@style/Widget.Material3.Button.OutlinedButton.Icon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:insetLeft="0dp"
