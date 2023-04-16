@@ -44,12 +44,10 @@ public class SettingsActivity extends AppCompatActivity {
     private CircleImageView civUserProfileImage;
 
     private String currentUserID;
-    private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
 
     private StorageReference UserProfileImageRef;
     private ProgressDialog loadingBar;
-    private Toolbar settingsToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +59,7 @@ public class SettingsActivity extends AppCompatActivity {
         // TODO: Make up your mind about this
         etUsername.setVisibility(View.GONE);
 
-        mAuth = FirebaseAuth.getInstance();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
@@ -86,7 +84,7 @@ public class SettingsActivity extends AppCompatActivity {
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
         loadingBar = new ProgressDialog(this);
-        settingsToolbar = findViewById(R.id.settings_toolbar);
+        Toolbar settingsToolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(settingsToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);

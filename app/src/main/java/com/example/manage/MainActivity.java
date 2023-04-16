@@ -57,8 +57,6 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
-        Toolbar mToolBar = findViewById(R.id.main_app_bar);
-        setSupportActionBar(mToolBar);
 
         ViewPager2 mViewPager2 = findViewById(R.id.main_tabs_pager);
         TabAccessorAdapter mTabAccessorAdapter = new TabAccessorAdapter(this);
@@ -76,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             verifyUserExistence();
         }
+        Toolbar mToolBar = findViewById(R.id.main_app_bar);
+        setSupportActionBar(mToolBar);
     }
 
 
