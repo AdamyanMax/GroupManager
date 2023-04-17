@@ -52,15 +52,15 @@ public class FindFriendsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_search, menu);
+
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
 
-        // Customize the search icon and close icon colors
+        // Customize the search view
         customizeSearchView(searchView, searchItem);
 
-        return super.onCreateOptionsMenu(menu);
+        return true;
     }
-
 
     private void customizeSearchView(@NonNull SearchView searchView, MenuItem searchItem) {
         ImageView searchIcon = searchView.findViewById(androidx.appcompat.R.id.search_button);

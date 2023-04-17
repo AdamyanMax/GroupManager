@@ -32,6 +32,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 // TODOs for the whole project
@@ -47,7 +51,6 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,12 +75,29 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser == null) {
             sendUserToLoginActivity();
         } else {
+            updateUserStatus("online");
             verifyUserExistence();
         }
         Toolbar mToolBar = findViewById(R.id.main_app_bar);
         setSupportActionBar(mToolBar);
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (currentUser != null) {
+            updateUserStatus("offline");
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (currentUser != null) {
+            updateUserStatus("offline");
+        }
+    }
 
     private void verifyUserExistence() {
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -96,13 +116,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.options_menu_nav, menu);
 
         // Set the text color of all items in the menu to colorPrimary.
-        // Just delete the for loop, if you're satisfied with the current color
         for (int i = 0; i < menu.size(); i++) {
             MenuItem menuItem = menu.getItem(i);
             SpannableString spannableString = new SpannableString(menuItem.getTitle().toString());
@@ -112,8 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
-
-
 
 
     @Override
@@ -191,5 +209,28 @@ public class MainActivity extends AppCompatActivity {
     private void sendUserToFindFriendsActivity() {
         Intent findFriendsIntent = new Intent(MainActivity.this, FindFriendsActivity.class);
         startActivity(findFriendsIntent);
+    }
+
+    private void updateUserStatus(String state) {
+        String saveCurrentTime, saveCurrentDate;
+
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        saveCurrentTime = currentTime.format(calendar.getTime());
+
+        HashMap<String, Object> onlineStateMap = new HashMap<>();
+        onlineStateMap.put("time", saveCurrentTime);
+        onlineStateMap.put("date", saveCurrentDate);
+        onlineStateMap.put("state", state);
+
+        String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+
+        RootRef.child("Users").child(currentUserID).child("userState")
+                .updateChildren(onlineStateMap);
+
     }
 }

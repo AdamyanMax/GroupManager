@@ -125,6 +125,40 @@ public class RequestsFragment extends Fragment {
 
                                     }
                                 });
+                            } else if (type.equals("sent")) {
+                                Button btnRequestSent = holder.itemView.findViewById(R.id.btn_request_decline);
+                                btnRequestSent.setText(R.string.cancel);
+
+                                holder.itemView.findViewById(R.id.btn_request_accept).setVisibility(View.INVISIBLE);
+
+                                assert list_user_id != null;
+                                UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (snapshot.hasChild("image")) {
+
+                                            final String requestProfileImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                            Picasso.get().load(requestProfileImage).into(holder.civProfileImage);
+                                        }
+                                        final String requestUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                        final String requestUserStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                        holder.tvUserName.setText(requestUsername);
+                                        holder.tvUserStatus.setText(requestUserStatus);
+
+                                        holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
+                                            if (task.isSuccessful()) {
+                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), "Chat request canceled", Toast.LENGTH_SHORT).show());
+                                            }
+                                        }));
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+
+                                    }
+                                });
+
                             }
                         }
                     }

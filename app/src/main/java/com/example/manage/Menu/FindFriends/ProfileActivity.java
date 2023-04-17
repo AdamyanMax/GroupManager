@@ -128,22 +128,21 @@ public class ProfileActivity extends AppCompatActivity {
                         btnDeclineRequest.setOnClickListener(v -> cancelChatRequest());
                     }
                 } else {
-                    ContactsRef.child(senderUserID)
-                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if (snapshot.hasChild(receiverUserID)) {
-                                        currentState = CURRENT_STATE_FRIENDS;
-                                        btnSendMessageRequest.setText(R.string.remove_this_contact);
-                                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_ban));
-                                    }
-                                }
+                    ContactsRef.child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.hasChild(receiverUserID)) {
+                                currentState = CURRENT_STATE_FRIENDS;
+                                btnSendMessageRequest.setText(R.string.remove_this_contact);
+                                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_ban));
+                            }
+                        }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
 
-                                }
-                            });
+                        }
+                    });
                 }
             }
 
@@ -199,32 +198,24 @@ public class ProfileActivity extends AppCompatActivity {
     private void acceptChatRequest() {
         List<Task<Void>> tasks = new ArrayList<>();
 
-        Task<Void> task1 = ContactsRef.child(senderUserID).child(receiverUserID)
-                .child("Contacts").setValue("Saved")
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
+        Task<Void> task1 = ContactsRef.child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
+            // Handle error
+        });
         tasks.add(task1);
 
-        Task<Void> task2 = ContactsRef.child(receiverUserID).child(senderUserID)
-                .child("Contacts").setValue("Saved")
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
+        Task<Void> task2 = ContactsRef.child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
+            // Handle error
+        });
         tasks.add(task2);
 
-        Task<Void> task3 = ChatRequestRef.child(senderUserID).child(receiverUserID)
-                .removeValue()
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
+        Task<Void> task3 = ChatRequestRef.child(senderUserID).child(receiverUserID).removeValue().addOnFailureListener(e -> {
+            // Handle error
+        });
         tasks.add(task3);
 
-        Task<Void> task4 = ChatRequestRef.child(receiverUserID).child(senderUserID)
-                .removeValue()
-                .addOnFailureListener(e -> {
-                    // Handle error
-                });
+        Task<Void> task4 = ChatRequestRef.child(receiverUserID).child(senderUserID).removeValue().addOnFailureListener(e -> {
+            // Handle error
+        });
         tasks.add(task4);
 
         ProgressDialog progressDialog = new ProgressDialog(this);
@@ -286,17 +277,15 @@ public class ProfileActivity extends AppCompatActivity {
                         chatNotificationMap.put("from", senderUserID);
                         chatNotificationMap.put("type", "request");
 
-                        NotificationRef.child(receiverUserID).push()
-                                .setValue(chatNotificationMap)
-                                .addOnCompleteListener(task2 -> {
-                                    if (task2.isSuccessful()) {
-                                        btnSendMessageRequest.setEnabled(true);
-                                        currentState = CURRENT_STATE_REQUEST_SENT;
-                                        btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_cross));
+                        NotificationRef.child(receiverUserID).push().setValue(chatNotificationMap).addOnCompleteListener(task2 -> {
+                            if (task2.isSuccessful()) {
+                                btnSendMessageRequest.setEnabled(true);
+                                currentState = CURRENT_STATE_REQUEST_SENT;
+                                btnSendMessageRequest.setText(R.string.cancel_chat_request);
+                                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_cross));
 
-                                    }
-                                });
+                            }
+                        });
 
 
                     }
