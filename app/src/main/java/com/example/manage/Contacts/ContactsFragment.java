@@ -27,12 +27,9 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactsFragment extends Fragment {
-    private View ContactView;
     private RecyclerView rvContactList;
 
     private DatabaseReference ContactsRef, UsersRef;
-    private FirebaseAuth mAuth;
-    private String currentUserID;
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -49,17 +46,17 @@ public class ContactsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ContactView = inflater.inflate(R.layout.fragment_contacts, container, false);
+        View contactView = inflater.inflate(R.layout.fragment_contacts, container, false);
 
-        rvContactList = ContactView.findViewById(R.id.rvContactList);
+        rvContactList = contactView.findViewById(R.id.rvContactList);
         rvContactList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
         UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
-        return ContactView;
+        return contactView;
     }
 
     @Override
@@ -80,20 +77,38 @@ public class ContactsFragment extends Fragment {
                         UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.hasChild("image")) {
-                                    String userImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
-                                    String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
-                                    String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
 
-                                    holder.tvUserName.setText(profileName);
-                                    holder.tvUserStatus.setText(profileStatus);
-                                    Picasso.get().load(userImage).placeholder(R.drawable.user_default_profile_pic).into(holder.civProfileImage);
-                                } else {
-                                    String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
-                                    String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
 
-                                    holder.tvUserName.setText(profileName);
-                                    holder.tvUserStatus.setText(profileStatus);
+                                if (snapshot.exists()) {
+                                    if (snapshot.child("userState").hasChild("state")) {
+                                        String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
+
+                                        if (state.equals("online")) {
+                                            holder.civOnlineIcon.setVisibility(View.VISIBLE);
+                                        } else if (state.equals("offline")) {
+
+                                            holder.civOnlineIcon.setVisibility(View.INVISIBLE);
+                                        }
+
+                                    } else {
+                                        holder.civOnlineIcon.setVisibility(View.INVISIBLE);
+                                    }
+
+                                    if (snapshot.hasChild("image")) {
+                                        String userImage = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                        String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                        String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                        holder.tvUserName.setText(profileName);
+                                        holder.tvUserStatus.setText(profileStatus);
+                                        Picasso.get().load(userImage).placeholder(R.drawable.user_default_profile_pic).into(holder.civProfileImage);
+                                    } else {
+                                        String profileName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                        String profileStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                                        holder.tvUserName.setText(profileName);
+                                        holder.tvUserStatus.setText(profileStatus);
+                                    }
                                 }
                             }
 
@@ -117,8 +132,7 @@ public class ContactsFragment extends Fragment {
 
     public static class ContactsViewHolder extends RecyclerView.ViewHolder {
         TextView tvUserName, tvUserStatus;
-        CircleImageView civProfileImage;
-
+        CircleImageView civProfileImage, civOnlineIcon;
 
         public ContactsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -126,6 +140,7 @@ public class ContactsFragment extends Fragment {
             tvUserName = itemView.findViewById(R.id.tv_display_username);
             tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
             civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
+            civOnlineIcon = itemView.findViewById(R.id.civ_display_online);
         }
     }
 }

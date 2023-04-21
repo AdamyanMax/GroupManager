@@ -3,6 +3,7 @@ package com.example.manage.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -63,21 +64,30 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             }
         });
-
+        holder.tvReceiverMessageText.setVisibility(View.GONE);
+        holder.civReceiverProfileImage.setVisibility(View.GONE);
+        holder.tvSenderMessageText.setVisibility(View.GONE);
         if (fromMessageType.equals("text")) {
-            holder.tvReceiverMessageText.setVisibility(View.INVISIBLE);
-            holder.civReceiverProfileImage.setVisibility(View.INVISIBLE);
-            holder.tvSenderMessageText.setVisibility(View.INVISIBLE);
+
             if (fromUserID.equals(messageSenderID)) {
                 holder.tvSenderMessageText.setVisibility(View.VISIBLE);
-                holder.tvSenderMessageText.setBackgroundResource(R.drawable.bg_sender_messages_layout);
+                holder.tvSenderMessageTime.setVisibility(View.VISIBLE);
+                holder.llSenderLayout.setBackgroundResource(R.drawable.bg_sender_messages_layout);
+                holder.llReceiverLayout.setVisibility(View.INVISIBLE);
+
                 holder.tvSenderMessageText.setText(messages.getMessage());
+                holder.tvSenderMessageTime.setText(messages.getTime());
+
             } else {
                 holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
                 holder.tvReceiverMessageText.setVisibility(View.VISIBLE);
+                holder.tvReceiverMessageTime.setVisibility(View.VISIBLE);
 
-                holder.tvReceiverMessageText.setBackgroundResource(R.drawable.bg_receiver_messages_layout);
+                holder.llReceiverLayout.setBackgroundResource(R.drawable.bg_receiver_messages_layout);
+                holder.llSenderLayout.setVisibility(View.INVISIBLE);
+
                 holder.tvReceiverMessageText.setText(messages.getMessage());
+                holder.tvReceiverMessageTime.setText(messages.getTime());
 
             }
         }
@@ -89,8 +99,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     public static class MessageViewHolder extends RecyclerView.ViewHolder {
-        public TextView tvSenderMessageText, tvReceiverMessageText;
+        public TextView tvSenderMessageText, tvReceiverMessageText, tvReceiverMessageTime, tvSenderMessageTime;
         public CircleImageView civReceiverProfileImage;
+        public LinearLayout llSenderLayout, llReceiverLayout;
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -98,6 +109,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             tvSenderMessageText = itemView.findViewById(R.id.tv_sender_message);
             tvReceiverMessageText = itemView.findViewById(R.id.tv_receiver_message);
             civReceiverProfileImage = itemView.findViewById(R.id.civ_receiver_profile_image);
+            tvReceiverMessageTime = itemView.findViewById(R.id.tv_receiver_message_time);
+            tvSenderMessageTime = itemView.findViewById(R.id.tv_sender_message_time);
+            llReceiverLayout = itemView.findViewById(R.id.ll_receiver_message_layout);
+            llSenderLayout = itemView.findViewById(R.id.ll_sender_message_layout);
         }
     }
 

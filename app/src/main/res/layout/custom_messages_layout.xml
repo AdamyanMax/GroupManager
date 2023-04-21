@@ -4,56 +4,98 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="4dp"
-    android:paddingTop="1dp"
-    android:paddingEnd="4dp"
-    android:paddingBottom="1dp">
+   android:padding="4dp">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/civ_receiver_profile_image"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/user_default_profile_pic"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <TextView
-        android:id="@+id/tv_receiver_message"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginEnd="4dp"
-        android:background="@drawable/bg_receiver_messages_layout"
-        android:ellipsize="end"
-        android:maxWidth="300dp"
-        android:padding="10dp"
-        android:text="Receiver message here"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        android:textSize="15sp"
-        app:flow_verticalBias="1.0"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/tv_sender_message"
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/civ_receiver_profile_image"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/user_default_profile_pic"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:id="@+id/ll_receiver_message_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <TextView
+                android:id="@+id/tv_receiver_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_receiver_messages_layout"
+                android:ellipsize="end"
+                android:maxWidth="300dp"
+                android:text="Receiver message here"
+                android:textAlignment="textStart"
+                android:textColor="@color/black"
+                android:textSize="15sp"
+                app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
+                tools:ignore="HardcodedText" />
+
+
+            <TextView
+                android:id="@+id/tv_receiver_message_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:text="00:00 am"
+                android:textColor="@color/grey"
+                android:visibility="invisible"
+                android:textSize="12sp"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/ll_sender_message_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_sender_messages_layout"
-        android:maxWidth="300dp"
+        android:orientation="vertical"
         android:padding="8dp"
-        android:text="Sender message here"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="HardcodedText" />
+        tools:ignore="HardcodedText">
+
+        <TextView
+            android:id="@+id/tv_sender_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxWidth="300dp"
+            android:paddingBottom="0dp"
+            android:text="Sender message here"
+            android:textAlignment="textStart"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/tv_sender_message_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:text="00:00 am"
+            android:visibility="invisible"
+            android:textColor="#3F5D7A"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

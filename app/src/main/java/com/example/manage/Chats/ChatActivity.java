@@ -21,18 +21,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.R;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -48,6 +51,8 @@ public class ChatActivity extends AppCompatActivity {
     private DatabaseReference RootRef;
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
+    private String saveCurrentTime, saveCurrentDate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +73,8 @@ public class ChatActivity extends AppCompatActivity {
         Picasso.get().load(messageReceiverImage).placeholder(R.drawable.user_default_profile_pic).into(civProfileImage);
 
         ibSendMessage.setOnClickListener(v -> sendMessage());
+
+        displayLastSeen();
     }
 
     private void initializeControllers() {
@@ -87,14 +94,58 @@ public class ChatActivity extends AppCompatActivity {
         tvUsername = findViewById(R.id.tv_custom_username);
         tvUserLastSeen = findViewById(R.id.tv_custom_last_seen);
         civProfileImage = findViewById(R.id.civ_custom_profile);
+
         ibSendMessage = findViewById(R.id.ib_send_private_message);
+
         etMessageInput = findViewById(R.id.et_input_private_message);
+
         messagesAdapter = new MessagesAdapter(messagesList);
         rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvUserMessagesList.setLayoutManager(linearLayoutManager);
         rvUserMessagesList.setAdapter(messagesAdapter);
+
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        saveCurrentTime = currentTime.format(calendar.getTime());
     }
+
+    private void displayLastSeen() {
+        RootRef.child("Users").child(messageReceiverID)
+                .addValueEventListener(new ValueEventListener() {
+
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.child("userState").hasChild("state")) {
+                            String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
+//                            String date = Objects.requireNonNull(snapshot.child("userState").child("date").getValue()).toString();
+                            String time = Objects.requireNonNull(snapshot.child("userState").child("time").getValue()).toString();
+
+                            if (state.equals("online")) {
+                                tvUserLastSeen.setText(R.string.online);
+                            } else if (state.equals("offline")) {
+
+                                // TODO: Add a check if the user hasn't been online for more than 24 hours than show the date
+                                String lastSeen = getResources().getString(R.string.last_seen_at) + " " + time;
+                                tvUserLastSeen.setText(lastSeen);
+                            }
+
+                        } else {
+                            tvUserLastSeen.setText(R.string.offline);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+    }
+
 
     @Override
     protected void onStart() {
@@ -160,12 +211,16 @@ public class ChatActivity extends AppCompatActivity {
             messageTextBody.put("message", messageText);
             messageTextBody.put("type", "text");
             messageTextBody.put("from", messageSenderID);
+            messageTextBody.put("to", messageReceiverID);
+            messageTextBody.put("message_id", messagePushID);
+            messageTextBody.put("time", saveCurrentTime);
+            messageTextBody.put("date", saveCurrentDate);
 
             Map<String, Object> messageBodyDetails = new HashMap<>();
             messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageTextBody);
             messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageTextBody);
 
-            RootRef.updateChildren(messageBodyDetails).addOnCompleteListener((OnCompleteListener<Void>) task -> {
+            RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(task -> {
                 if (!(task.isSuccessful())) {
                     Toast.makeText(ChatActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }

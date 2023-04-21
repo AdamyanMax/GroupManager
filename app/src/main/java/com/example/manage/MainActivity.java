@@ -44,11 +44,11 @@ import java.util.Objects;
 // TODO: Clicking on the user in the FindFriends tab for the first time will cause for the 1st person in the list profile to be opened
 // TODO: When in gallery clicking the back button causes the app to crash.
 // TODO: Concatenate all 4 RVs into a single Adapter
+// TODO: Add online check for all activities except for Login/Signup activity
 public class MainActivity extends AppCompatActivity {
 
     private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
 
-    private FirebaseUser currentUser;
     private FirebaseAuth mAuth;
     private DatabaseReference RootRef;
     @Override
@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser();
         RootRef = FirebaseDatabase.getInstance().getReference();
 
 
@@ -72,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser == null) {
             sendUserToLoginActivity();
         } else {
@@ -83,8 +84,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onPause() {
+        super.onPause();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+
         if (currentUser != null) {
             updateUserStatus("offline");
         }
@@ -93,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if (currentUser != null) {
             updateUserStatus("offline");
@@ -151,6 +155,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (item.getItemId() == R.id.main_logout_option) {
+            updateUserStatus("offline");
             mAuth.signOut();
             sendUserToLoginActivity();
         }

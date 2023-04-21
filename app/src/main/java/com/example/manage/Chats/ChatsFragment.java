@@ -70,6 +70,20 @@ public class ChatsFragment extends Fragment {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
+                                    if (snapshot.child("userState").hasChild("state")) {
+                                        String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
+
+                                        if (state.equals("online")) {
+                                            holder.civOnlineIcon.setVisibility(View.VISIBLE);
+                                        } else if (state.equals("offline")) {
+
+                                            holder.civOnlineIcon.setVisibility(View.INVISIBLE);
+                                        }
+
+                                    } else {
+                                        holder.civOnlineIcon.setVisibility(View.INVISIBLE);
+                                    }
+
                                     if (snapshot.hasChild("image")) {
                                         profileImage[0] = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
                                         Picasso.get().load(profileImage[0]).into(holder.civProfileImage);
@@ -110,7 +124,7 @@ public class ChatsFragment extends Fragment {
     }
 
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView civProfileImage;
+        CircleImageView civProfileImage, civOnlineIcon;
         TextView tvUserStatus, tvUsername;
 
         public ChatsViewHolder(@NonNull View itemView) {
@@ -119,6 +133,7 @@ public class ChatsFragment extends Fragment {
             civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
             tvUsername = itemView.findViewById(R.id.tv_display_username);
             tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
+            civOnlineIcon = itemView.findViewById(R.id.civ_display_online);
         }
     }
 }
