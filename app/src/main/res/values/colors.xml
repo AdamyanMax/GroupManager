@@ -18,4 +18,5 @@
     <color name="divider_color">#C9C9C9</color>
     <color name="black">#000</color>
     <color name="colorOnline">#4DC920</color>
+    <color name="senderTimeColor">#323232</color>
 </resources>

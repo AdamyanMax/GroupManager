@@ -52,10 +52,13 @@
                 android:layout_gravity="bottom|end"
                 android:text="00:00 am"
                 android:textColor="@color/grey"
-                android:visibility="invisible"
                 android:textSize="12sp"
+                android:visibility="invisible"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
+
+
+
     </LinearLayout>
 
 
@@ -91,10 +94,13 @@
             android:layout_gravity="bottom|end"
             android:text="00:00 am"
             android:visibility="invisible"
-            android:textColor="#3F5D7A"
+            android:textColor="@color/senderTimeColor"
             android:textSize="12sp" />
 
+
+
     </LinearLayout>
+
 
 
 

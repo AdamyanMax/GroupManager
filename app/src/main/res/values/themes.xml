@@ -32,6 +32,10 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="ShapeAppearanceOverlay.App.CornerSize50Percent" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
     <style name="TextAppearance" parent="@style/Theme.Material3.Dark.NoActionBar">
         <item name="actionMenuTextColor">@color/colorPrimary</item>
         <item name="android:actionMenuTextColor">@color/colorPrimary</item>
