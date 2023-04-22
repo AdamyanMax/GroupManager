@@ -9,13 +9,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.example.manage.MainActivity;
 import com.example.manage.Menu.ImageCropper.CropperActivity;
@@ -155,17 +155,15 @@ public class SettingsActivity extends AppCompatActivity {
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
 
-            RootRef.child("Users").child(currentUserID).updateChildren(profileMap)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()){
-                            sendToMainActivity();
-                            Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            String message = Objects.requireNonNull(task.getException()).toString();
-                            Toast.makeText(this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                        }
-                    });
+            RootRef.child("Users").child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    sendToMainActivity();
+                    Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
+                } else {
+                    String message = Objects.requireNonNull(task.getException()).toString();
+                    Toast.makeText(this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -189,7 +187,7 @@ public class SettingsActivity extends AppCompatActivity {
 
                     etUsername.setText(retrieveUsername);
                     etUserStatus.setText(retrieveStatus);
-                    Picasso.get().load(retrieveProfileImage).into(civUserProfileImage);
+                    Picasso.get().load(retrieveProfileImage).placeholder(R.drawable.user_default_profile_pic).into(civUserProfileImage);
 
                 } else if ((snapshot.exists()) && (snapshot.hasChild("name"))) {
                     // TODO: Add the profile image

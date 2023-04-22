@@ -35,7 +35,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/ib_send_file"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="@android:color/transparent"
@@ -64,7 +64,7 @@
             app:flow_verticalBias="0.0"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/ib_send_private_message"
-            app:layout_constraintStart_toEndOf="@+id/imageButton"
+            app:layout_constraintStart_toEndOf="@+id/ib_send_file"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton

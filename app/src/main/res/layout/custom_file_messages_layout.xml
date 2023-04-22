@@ -6,46 +6,39 @@
     android:layout_height="wrap_content"
     android:padding="4dp">
 
-    <LinearLayout
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/civ_receiver_profile_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/user_default_profile_pic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_receiver_file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/civ_receiver_profile_image"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/user_default_profile_pic"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+        android:background="@drawable/bg_receiver_messages_layout"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
+        app:layout_constraintTop_toTopOf="@+id/civ_receiver_profile_image">
 
         <LinearLayout
             android:id="@+id/ll_receiver_file_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
             android:orientation="horizontal"
-            android:padding="6dp">
+            android:padding="8dp">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_marginEnd="8dp"
-                    android:background="@color/colorPrimary"
-                    android:src="@drawable/ic_file"
-                    app:contentPadding="4dp"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
-
-            </LinearLayout>
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_marginEnd="4dp"
+                android:background="@color/colorPrimary"
+                android:src="@drawable/ic_file"
+                app:contentPadding="4dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -56,7 +49,6 @@
                     android:id="@+id/tv_receiver_file"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_receiver_messages_layout"
                     android:ellipsize="middle"
                     android:maxWidth="300dp"
                     android:text="File Name here"
@@ -78,35 +70,35 @@
                     android:id="@+id/tv_receiver_file_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="bottom|end"
+                    android:layout_gravity="end"
                     android:text="00:00 am"
                     android:textColor="@color/grey"
                     android:textSize="12sp"
-                    android:visibility="invisible"
                     tools:ignore="HardcodedText" />
 
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-
-    <LinearLayout
-        android:id="@+id/ll_sender_file_layout"
+    <!-- Sender Layout -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_sender_file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_sender_messages_layout"
-        android:orientation="horizontal"
-        android:padding="6dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:backgroundTint="@color/colorPrimaryLight"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
+            android:id="@+id/ll_sender_file_layout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="36dp"
@@ -118,48 +110,46 @@
                 app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
                 app:tint="@color/colorPrimary" />
 
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_sender_file"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="middle"
+                    android:maxWidth="300dp"
+                    android:text="File Name here"
+                    android:textAlignment="textStart"
+                    android:textColor="@color/black"
+                    android:textSize="15sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tv_sender_file_size"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="100 Kb"
+                    android:textColor="@color/senderTimeColor"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/tv_sender_file_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00 am"
+                    android:textColor="@color/senderTimeColor"
+                    android:textSize="12sp"
+                    android:layout_gravity="end"
+                    tools:ignore="HardcodedText" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_sender_file"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="middle"
-                android:maxWidth="300dp"
-                android:text="File Name here"
-                android:textAlignment="textStart"
-                android:textColor="@color/black"
-                android:textSize="15sp"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:id="@+id/tv_sender_file_size"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="100 Kb"
-                android:textColor="@color/senderTimeColor"
-                android:textSize="12sp"
-                tools:ignore="HardcodedText" />
-
-            <TextView
-                android:id="@+id/tv_sender_file_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:text="00:00 am"
-                android:textColor="@color/senderTimeColor"
-                android:textSize="12sp"
-                android:visibility="invisible"
-                tools:ignore="HardcodedText" />
-
-        </LinearLayout>
-
-    </LinearLayout>
-
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

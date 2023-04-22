@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cl_main"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="4dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/civ_receiver_profile_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/user_default_profile_pic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_receiver_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
+        app:layout_constraintTop_toTopOf="@+id/civ_receiver_profile_image"
+        app:strokeColor="@color/colorPrimaryLight"
+        app:strokeWidth="1dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_receiver_image"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/receiver_image"
+                android:src="@drawable/picture_placeholder" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                app:cardBackgroundColor="#8C000000"
+                app:cardCornerRadius="60dp"
+                app:strokeWidth="0dp"
+                android:layout_margin="8dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tv_receiver_image_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:textSize="12sp"
+                    android:text="00:00 am"
+                    android:textColor="#FFFFFF"
+                    tools:ignore="HardcodedText" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </FrameLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
+    <com.google.android.material.card.MaterialCardView
+        android:visibility="gone"
+
+        android:id="@+id/card_sender_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEndt_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@color/colorPrimaryLight"
+        app:strokeWidth="1dp">
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/iv_sender_image"
+                android:layout_width="250dp"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/receiver_image"
+                android:src="@drawable/picture_placeholder" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                app:cardBackgroundColor="#80878585"
+                app:cardCornerRadius="60dp"
+                app:strokeWidth="0dp"
+                android:layout_margin="8dp"
+                app:cardElevation="0dp">
+
+                <TextView
+                    android:id="@+id/tv_sender_image_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="4dp"
+                    android:textSize="12sp"
+                    android:text="00:00 am"
+                    android:textColor="#FFFFFF"
+                    tools:ignore="HardcodedText" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </FrameLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
