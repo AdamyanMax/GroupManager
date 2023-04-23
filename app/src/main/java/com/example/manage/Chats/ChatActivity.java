@@ -30,14 +30,17 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -46,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
     private String messageReceiverID, messageSenderID;
     private TextView tvUsername, tvUserLastSeen;
     private CircleImageView civProfileImage;
-    private ImageButton ibSendMessage;
+    private ImageButton ibSendMessage, ibSendFile;
     private EditText etMessageInput;
     private DatabaseReference RootRef;
     private MessagesAdapter messagesAdapter;
@@ -75,6 +78,49 @@ public class ChatActivity extends AppCompatActivity {
         ibSendMessage.setOnClickListener(v -> sendMessage());
 
         displayLastSeen();
+
+        ibSendFile.setOnClickListener(v -> {
+            // Send to gallery
+
+            // Using onActivityResult get the file Uri. Check in what tab the user is(image or file)
+            // If he's on the image tab, create a storageReference, with a value of 'FirebaseStorage.getInstance().getReference().child("images")'
+            // You can get the receiver and sender reference like in the code below
+//            String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
+//            String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
+//
+//            DatabaseReference userMessageKeyRef = RootRef.child("Messages").child(messageSenderID).child(messageSenderID).push();
+//
+//            String messagePushID = userMessageKeyRef.getKey();
+            // Next create a filePath which will be the child of storageReference, with a name of messagePushID + ".jpg"
+            // create a putFile, with the filePath as parameter
+            // Then continueWithTask to get the downloadUrl
+            // addOnCompleteListener to get the downloadUrl
+
+            // Store it in the database like below
+//            Map<String, Object> messageImageBody = new HashMap<>();
+//            messageImageBody.put("message", downloadUrl);
+//            messageImageBody.put("name", fileUri.getLasPathSegment());
+//            messageImageBody.put("type", "image");
+//            messageImageBody.put("from", messageSenderID);
+//            messageImageBody.put("to", messageReceiverID);
+//            messageImageBody.put("message_id", messagePushID);
+//            messageImageBody.put("time", saveCurrentTime);
+//            messageImageBody.put("date", saveCurrentDate);
+//
+//            Map<String, Object> messageBodyDetails = new HashMap<>();
+//            messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageImageBody);
+//            messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageImageBody);
+//
+//            RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(task -> {
+//                if (!(task.isSuccessful())) {
+//                    Toast.makeText(ChatActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+//                }
+//                etMessageInput.setText("");
+//            });
+
+            // Also use a ProgressBar, if it is dismissed by touching, don't upload the image, and dismiss it when loading the image is complete
+
+        });
     }
 
     private void initializeControllers() {
@@ -96,6 +142,7 @@ public class ChatActivity extends AppCompatActivity {
         civProfileImage = findViewById(R.id.civ_custom_profile);
 
         ibSendMessage = findViewById(R.id.ib_send_private_message);
+        ibSendFile = findViewById(R.id.ib_send_file);
 
         etMessageInput = findViewById(R.id.et_input_private_message);
 
@@ -115,35 +162,62 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void displayLastSeen() {
-        RootRef.child("Users").child(messageReceiverID)
-                .addValueEventListener(new ValueEventListener() {
+        RootRef.child("Users").child(messageReceiverID).addValueEventListener(new ValueEventListener() {
 
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (snapshot.child("userState").hasChild("state")) {
-                            String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
-//                            String date = Objects.requireNonNull(snapshot.child("userState").child("date").getValue()).toString();
-                            String time = Objects.requireNonNull(snapshot.child("userState").child("time").getValue()).toString();
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.child("userState").hasChild("state")) {
+                    String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
+                    String date = Objects.requireNonNull(snapshot.child("userState").child("date").getValue()).toString();
+                    String time = Objects.requireNonNull(snapshot.child("userState").child("time").getValue()).toString();
 
-                            if (state.equals("online")) {
-                                tvUserLastSeen.setText(R.string.online);
-                            } else if (state.equals("offline")) {
+                    if (state.equals("online")) {
+                        tvUserLastSeen.setText(R.string.online);
+                    } else if (state.equals("offline")) {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                        SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
-                                // TODO: Add a check if the user hasn't been online for more than 24 hours than show the date
-                                String lastSeen = getResources().getString(R.string.last_seen_at) + " " + time;
+                        try {
+                            Date lastSeenDate = dateFormat.parse(date);
+                            Date lastSeenTime = timeFormat.parse(time);
+                            Date currentDate = new Date();
+
+                            if (lastSeenDate != null && lastSeenTime != null) {
+                                long lastSeenTimestamp = lastSeenDate.getTime() + lastSeenTime.getTime();
+                                long currentTime = currentDate.getTime();
+
+                                // Calculate the difference in milliseconds
+                                long difference = currentTime - lastSeenTimestamp;
+
+                                // Convert the difference to hours
+                                long differenceInHours = TimeUnit.MILLISECONDS.toHours(difference);
+
+                                String lastSeen;
+
+                                if (differenceInHours >= 24) {
+                                    lastSeen = getResources().getString(R.string.last_seen_on) + " " + date;
+                                } else {
+                                    lastSeen = getResources().getString(R.string.last_seen_at) + " " + time;
+                                }
+
                                 tvUserLastSeen.setText(lastSeen);
                             }
 
-                        } else {
-                            tvUserLastSeen.setText(R.string.offline);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
+                } else {
+                    tvUserLastSeen.setText(R.string.offline);
+                }
+            }
 
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
 
 

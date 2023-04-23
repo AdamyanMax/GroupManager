@@ -111,6 +111,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
                 holder.cardSenderText.setVisibility(View.GONE);
             }
+        } else if (fromMessageType.equals("file")) {
+            if (fromUserID.equals(messageSenderID)) {
+                holder.cardSenderImage.setVisibility(View.VISIBLE);
+                holder.tvSenderImageTime.setText(messages.getTime());
+
+                Picasso.get().load(messages.getMessage()).into(holder.ivSenderImage);
+            } else {
+                holder.cardReceiverImage.setVisibility(View.VISIBLE);
+                holder.tvReceiverImageTime.setText(messages.getTime());
+
+                Picasso.get().load(messages.getMessage()).into(holder.ivReceiverImage);
+            }
         }
     }
 

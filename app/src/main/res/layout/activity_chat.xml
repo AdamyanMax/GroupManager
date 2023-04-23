@@ -42,8 +42,7 @@
             android:contentDescription="@string/attach_a_file"
             android:src="@drawable/ic_paperclip"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent" />
 
 
         <EditText
@@ -75,8 +74,7 @@
             android:contentDescription="@string/cd_send_message"
             android:src="@drawable/ic_send_message"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

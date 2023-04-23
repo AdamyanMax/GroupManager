@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -20,6 +20,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
+        android:visibility="invisible"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
@@ -43,20 +44,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
                 app:cardBackgroundColor="#8C000000"
                 app:cardCornerRadius="60dp"
-                app:strokeWidth="0dp"
-                android:layout_margin="8dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <TextView
                     android:id="@+id/tv_receiver_image_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textSize="12sp"
                     android:text="00:00 am"
                     android:textColor="#FFFFFF"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
             </com.google.android.material.card.MaterialCardView>
@@ -67,15 +68,13 @@
 
 
     <com.google.android.material.card.MaterialCardView
-        android:visibility="gone"
-
         android:id="@+id/card_sender_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="invisible"
         app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintEndt_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:strokeColor="@color/colorPrimaryLight"
         app:strokeWidth="1dp">
@@ -96,20 +95,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|end"
+                android:layout_margin="8dp"
                 app:cardBackgroundColor="#80878585"
                 app:cardCornerRadius="60dp"
-                app:strokeWidth="0dp"
-                android:layout_margin="8dp"
-                app:cardElevation="0dp">
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
 
                 <TextView
                     android:id="@+id/tv_sender_image_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="4dp"
-                    android:textSize="12sp"
                     android:text="00:00 am"
                     android:textColor="#FFFFFF"
+                    android:textSize="12sp"
                     tools:ignore="HardcodedText" />
 
             </com.google.android.material.card.MaterialCardView>
