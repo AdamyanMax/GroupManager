@@ -34,16 +34,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <ImageButton
-            android:id="@+id/ib_send_file"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="@string/attach_a_file"
-            android:src="@drawable/ic_paperclip"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
 
         <EditText
             android:id="@+id/et_input_private_message"
@@ -62,9 +52,19 @@
             android:paddingBottom="10dp"
             app:flow_verticalBias="0.0"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ib_send_private_message"
-            app:layout_constraintStart_toEndOf="@+id/ib_send_file"
+            app:layout_constraintEnd_toStartOf="@+id/ib_send_file"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/ib_send_file"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
+            android:contentDescription="@string/attach_a_file"
+            android:src="@drawable/ic_paperclip"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/ib_send_private_message" />
 
         <ImageButton
             android:id="@+id/ib_send_private_message"
@@ -73,6 +73,7 @@
             android:background="@android:color/transparent"
             android:contentDescription="@string/cd_send_message"
             android:src="@drawable/ic_send_message"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
