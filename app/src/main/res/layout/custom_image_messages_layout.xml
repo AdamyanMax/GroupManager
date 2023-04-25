@@ -26,7 +26,7 @@
         app:layout_constraintStart_toEndOf="@+id/civ_receiver_profile_image"
         app:layout_constraintTop_toTopOf="@+id/civ_receiver_profile_image"
         app:strokeColor="@color/colorPrimaryLight"
-        app:strokeWidth="1dp">
+        app:strokeWidth="2dp">
 
         <FrameLayout
             android:layout_width="wrap_content"

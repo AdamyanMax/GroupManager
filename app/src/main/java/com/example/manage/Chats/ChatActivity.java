@@ -244,11 +244,12 @@ public class ChatActivity extends AppCompatActivity {
                     if (state.equals("online")) {
                         tvUserLastSeen.setText(R.string.online);
                     } else if (state.equals("offline")) {
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+                        SimpleDateFormat inputDateFormat = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
+                        SimpleDateFormat outputDateFormat = new SimpleDateFormat("MMMM dd", Locale.getDefault());
                         SimpleDateFormat timeFormat = new SimpleDateFormat("hh:mm a", Locale.getDefault());
 
                         try {
-                            Date lastSeenDate = dateFormat.parse(date);
+                            Date lastSeenDate = inputDateFormat.parse(date);
                             Date lastSeenTime = timeFormat.parse(time);
                             Date currentDate = new Date();
 
@@ -259,13 +260,15 @@ public class ChatActivity extends AppCompatActivity {
                                 // Calculate the difference in milliseconds
                                 long difference = currentTime - lastSeenTimestamp;
 
-                                // Convert the difference to hours
-                                long differenceInHours = TimeUnit.MILLISECONDS.toHours(difference);
+                                // Convert the difference to days
+                                long differenceInDays = TimeUnit.MILLISECONDS.toDays(difference);
 
                                 String lastSeen;
 
-                                if (differenceInHours >= 24) {
-                                    lastSeen = getResources().getString(R.string.last_seen_on) + " " + date;
+                                if (differenceInDays == 1) {
+                                    lastSeen = getResources().getString(R.string.last_seen_yesterday);
+                                } else if (differenceInDays > 1) {
+                                    lastSeen = getResources().getString(R.string.last_seen_on) + " " + outputDateFormat.format(lastSeenDate);
                                 } else {
                                     lastSeen = getResources().getString(R.string.last_seen_at) + " " + time;
                                 }
@@ -307,7 +310,6 @@ public class ChatActivity extends AppCompatActivity {
             }
 
 
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
@@ -347,6 +349,7 @@ public class ChatActivity extends AppCompatActivity {
         galleryIntent.setType("image/*");
         startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
