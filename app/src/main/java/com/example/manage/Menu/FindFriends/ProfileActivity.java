@@ -1,6 +1,5 @@
 package com.example.manage.Menu.FindFriends;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -46,6 +46,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
 
+    private ProgressBarManager progressBarManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,7 @@ public class ProfileActivity extends AppCompatActivity {
         ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
         NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
 
+        progressBarManager = new ProgressBarManager(this);
 
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
         currentState = CURRENT_STATE_NEW;
@@ -218,21 +221,18 @@ public class ProfileActivity extends AppCompatActivity {
         });
         tasks.add(task4);
 
-        ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Accepting request...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        progressBarManager.show("Accepting request...");
 
         Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 // All tasks were successful, hide the loading bar
-                progressDialog.dismiss();
+                progressBarManager.hide();
 
                 // Update UI
                 onAcceptSuccess();
             } else {
                 // At least one task failed, hide the loading bar and show an error message
-                progressDialog.dismiss();
+                progressBarManager.hide();
                 Log.e(TAG, "Error accepting chat request: ", task.getException());
             }
         });
@@ -257,7 +257,6 @@ public class ProfileActivity extends AppCompatActivity {
                         currentState = CURRENT_STATE_NEW;
                         btnSendMessageRequest.setText(R.string.send_message);
                         btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
-                        //
 
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);

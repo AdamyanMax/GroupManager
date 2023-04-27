@@ -22,7 +22,7 @@ import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private Button btnCreateAccount, btnGoogleRegister, btnPhoneRegister;
+    private Button btnCreateAccount;
     private EditText etUserEmail, etUserPassword;
     private TextView tvAlreadyHasAccountLink;
 

@@ -55,6 +55,7 @@
             android:layout_height="wrap_content"
             android:maxWidth="280dp"
             android:maxLines="2"
+            android:textColor="@color/grey"
             android:ellipsize="end"
             android:text="Status"
             android:textSize="15sp"

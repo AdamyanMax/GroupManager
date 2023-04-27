@@ -94,36 +94,58 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             }
         });
 
-        if (fromMessageType.equals("text")) {
+        switch (fromMessageType) {
+            case "text":
 
-            if (fromUserID.equals(messageSenderID)) {
-                holder.cardSenderText.setVisibility(View.VISIBLE);
-                holder.tvSenderMessageText.setText(messages.getMessage());
-                holder.tvSenderTextTime.setText(messages.getTime());
+                if (fromUserID.equals(messageSenderID)) {
+                    holder.cardSenderText.setVisibility(View.VISIBLE);
+                    holder.tvSenderMessageText.setText(messages.getMessage());
+                    holder.tvSenderTextTime.setText(messages.getTime());
 
-                holder.cardReceiverText.setVisibility(View.GONE);
-                holder.civReceiverProfileImage.setVisibility(View.GONE);
-            } else {
-                holder.cardReceiverText.setVisibility(View.VISIBLE);
-                holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
-                holder.tvReceiverMessageText.setText(messages.getMessage());
-                holder.tvReceiverTextTime.setText(messages.getTime());
+                    holder.cardReceiverText.setVisibility(View.GONE);
+                    holder.civReceiverProfileImage.setVisibility(View.GONE);
+                } else {
+                    holder.cardReceiverText.setVisibility(View.VISIBLE);
+                    holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
+                    holder.tvReceiverMessageText.setText(messages.getMessage());
+                    holder.tvReceiverTextTime.setText(messages.getTime());
 
-                holder.cardSenderText.setVisibility(View.GONE);
-            }
-        } else if (fromMessageType.equals("image")) {
-            if (fromUserID.equals(messageSenderID)) {
-                holder.cardSenderImage.setVisibility(View.VISIBLE);
-                holder.tvSenderImageTime.setText(messages.getTime());
-                holder.civReceiverProfileImage.setVisibility(View.GONE);
+                    holder.cardSenderText.setVisibility(View.GONE);
+                }
+                break;
+            case "image":
+                if (fromUserID.equals(messageSenderID)) {
+                    holder.cardSenderImage.setVisibility(View.VISIBLE);
+                    holder.tvSenderImageTime.setText(messages.getTime());
+                    holder.civReceiverProfileImage.setVisibility(View.GONE);
 
-                Picasso.get().load(messages.getMessage()).into(holder.ivSenderImage);
-            } else {
-                holder.cardReceiverImage.setVisibility(View.VISIBLE);
-                holder.tvReceiverImageTime.setText(messages.getTime());
+                    Picasso.get().load(messages.getMessage()).into(holder.ivSenderImage);
+                } else {
+                    holder.cardReceiverImage.setVisibility(View.VISIBLE);
+                    holder.tvReceiverImageTime.setText(messages.getTime());
 
-                Picasso.get().load(messages.getMessage()).placeholder(R.drawable.ic_image).into(holder.ivReceiverImage);
-            }
+                    Picasso.get().load(messages.getMessage()).placeholder(R.drawable.ic_image).into(holder.ivReceiverImage);
+                }
+                break;
+            case "file":
+                if (fromUserID.equals(messageSenderID)) {
+                    holder.cardSenderFile.setVisibility(View.VISIBLE);
+
+                    holder.civReceiverProfileImage.setVisibility(View.GONE);
+                    holder.cardReceiverFile.setVisibility(View.GONE);
+
+                    holder.tvSenderFileName.setText(messages.getFileName());
+                    holder.tvSenderFileSize.setText(messages.getFileSize());
+                    holder.tvSenderFileTime.setText(messages.getTime());
+                } else {
+                    holder.cardReceiverFile.setVisibility(View.VISIBLE);
+                    holder.cardSenderFile.setVisibility(View.GONE);
+
+                    holder.tvReceiverFileName.setText(messages.getFileName());
+                    holder.tvReceiverFileSize.setText(messages.getFileSize());
+                    holder.tvReceiverFileTime.setText(messages.getTime());
+                }
+                break;
         }
 
     }
@@ -145,25 +167,49 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         public TextView tvSenderImageTime, tvReceiverImageTime;
         public androidx.cardview.widget.CardView cardSenderImage, cardReceiverImage;
 
+        // File
+        public TextView tvSenderFileName, tvSenderFileSize, tvReceiverFileName, tvReceiverFileSize;
+        public TextView tvSenderFileTime, tvReceiverFileTime;
+        public androidx.cardview.widget.CardView cardSenderFile, cardReceiverFile;
+
 
         public MessageViewHolder(@NonNull View itemView) {
             super(itemView);
             // Universal
             civReceiverProfileImage = itemView.findViewById(R.id.civ_receiver_profile_image);
+
             // Text
             tvSenderMessageText = itemView.findViewById(R.id.tv_sender_message);
             tvReceiverMessageText = itemView.findViewById(R.id.tv_receiver_message);
+
             tvReceiverTextTime = itemView.findViewById(R.id.tv_receiver_message_time);
             tvSenderTextTime = itemView.findViewById(R.id.tv_sender_message_time);
+
             cardSenderText = itemView.findViewById(R.id.card_sender_text);
             cardReceiverText = itemView.findViewById(R.id.card_receiver_text);
+
             // Image
             ivSenderImage = itemView.findViewById(R.id.iv_sender_image);
             ivReceiverImage = itemView.findViewById(R.id.iv_receiver_image);
+
             tvSenderImageTime = itemView.findViewById(R.id.tv_sender_image_time);
             tvReceiverImageTime = itemView.findViewById(R.id.tv_receiver_image_time);
+
             cardSenderImage = itemView.findViewById(R.id.card_sender_image);
             cardReceiverImage = itemView.findViewById(R.id.card_receiver_image);
+
+            // File
+            tvSenderFileName = itemView.findViewById(R.id.tv_sender_file_name);
+            tvSenderFileSize = itemView.findViewById(R.id.tv_sender_file_size);
+
+            tvReceiverFileName = itemView.findViewById(R.id.tv_receiver_file_name);
+            tvReceiverFileSize = itemView.findViewById(R.id.tv_receiver_file_size);
+
+            tvSenderFileTime = itemView.findViewById(R.id.tv_sender_file_time);
+            tvReceiverFileTime = itemView.findViewById(R.id.tv_receiver_file_time);
+
+            cardSenderFile = itemView.findViewById(R.id.card_sender_file);
+            cardReceiverFile = itemView.findViewById(R.id.card_receiver_file);
         }
     }
 

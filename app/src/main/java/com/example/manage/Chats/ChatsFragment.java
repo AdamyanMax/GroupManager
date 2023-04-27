@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +18,7 @@ import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,9 +29,11 @@ import com.squareup.picasso.Picasso;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 public class ChatsFragment extends Fragment {
     private RecyclerView rvChatList;
     private DatabaseReference ChatsRef, UsersRef;
+    private FirebaseAuth mAuth;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -43,7 +47,7 @@ public class ChatsFragment extends Fragment {
         rvChatList = vPrivateChats.findViewById(R.id.rv_private_chats);
         rvChatList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
         ChatsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
@@ -91,8 +95,9 @@ public class ChatsFragment extends Fragment {
                                     final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
 
                                     holder.tvUsername.setText(name);
-                                    // TODO: Replace with the last message
-                                    holder.tvUserStatus.setText(R.string.last_seen_at);
+
+                                    getLastMessage(userIDs, holder.tvUserLastMessage);
+
 
                                     holder.itemView.setOnClickListener(v -> {
                                         Intent chatIntent = new Intent(getContext(), ChatActivity.class);
@@ -123,16 +128,56 @@ public class ChatsFragment extends Fragment {
         adapter.startListening();
     }
 
+    private void getLastMessage(String userId, TextView tvUserLastStatus) {
+        DatabaseReference MessagesRef = FirebaseDatabase.getInstance().getReference().child("Messages");
+        FirebaseUser currentUser = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser() : null;
+        String currentUserID = currentUser.getUid();
+
+        MessagesRef.child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (isAdded()) {
+                    if (dataSnapshot.exists()) {
+                        for (DataSnapshot messageSnapshot : dataSnapshot.getChildren()) {
+                            String messageType = Objects.requireNonNull(messageSnapshot.child("type").getValue()).toString();
+                            String lastMessage;
+
+                            if (messageType.equals("text")) {
+                                lastMessage = Objects.requireNonNull(messageSnapshot.child("message").getValue()).toString();
+                            } else if (messageType.equals("image")) {
+                                lastMessage = getResources().getString(R.string.photo);
+                                tvUserLastStatus.setTextColor(ContextCompat.getColor(tvUserLastStatus.getContext(), R.color.colorPrimaryDark));
+                            } else {
+                                lastMessage = getResources().getString(R.string.file);
+                                tvUserLastStatus.setTextColor(ContextCompat.getColor(tvUserLastStatus.getContext(), R.color.colorPrimaryDark));
+                            }
+
+                            tvUserLastStatus.setText(lastMessage);
+                        }
+                    } else {
+                        tvUserLastStatus.setText(R.string.no_messages_yet);
+                        tvUserLastStatus.setTextColor(ContextCompat.getColor(tvUserLastStatus.getContext(), R.color.grey));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+            }
+        });
+    }
+
+
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         CircleImageView civProfileImage, civOnlineIcon;
-        TextView tvUserStatus, tvUsername;
+        TextView tvUserLastMessage, tvUsername;
 
         public ChatsViewHolder(@NonNull View itemView) {
             super(itemView);
 
             civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
             tvUsername = itemView.findViewById(R.id.tv_display_username);
-            tvUserStatus = itemView.findViewById(R.id.tv_display_user_status);
+            tvUserLastMessage = itemView.findViewById(R.id.tv_display_user_status);
             civOnlineIcon = itemView.findViewById(R.id.civ_display_online);
         }
     }

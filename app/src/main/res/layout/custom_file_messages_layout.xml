@@ -18,6 +18,7 @@
         android:id="@+id/card_receiver_file"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:background="@drawable/bg_receiver_messages_layout"
         app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
@@ -34,7 +35,7 @@
             <com.google.android.material.imageview.ShapeableImageView
                 android:layout_width="36dp"
                 android:layout_height="36dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="8dp"
                 android:background="@color/colorPrimary"
                 android:src="@drawable/ic_file"
                 app:contentPadding="4dp"
@@ -46,7 +47,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_receiver_file"
+                    android:id="@+id/tv_receiver_file_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="middle"
@@ -116,7 +117,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_sender_file"
+                    android:id="@+id/tv_sender_file_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ellipsize="middle"

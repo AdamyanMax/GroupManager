@@ -1,6 +1,5 @@
 package com.example.manage.Menu;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.MainActivity;
 import com.example.manage.Menu.ImageCropper.CropperActivity;
 import com.example.manage.R;
@@ -47,7 +47,7 @@ public class SettingsActivity extends AppCompatActivity {
     private DatabaseReference RootRef;
 
     private StorageReference UserProfileImageRef;
-    private ProgressDialog loadingBar;
+    private ProgressBarManager progressBarManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.et_set_user_name);
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
-        loadingBar = new ProgressDialog(this);
+        progressBarManager = new ProgressBarManager(this);
         Toolbar settingsToolbar = findViewById(R.id.settings_toolbar);
         setSupportActionBar(settingsToolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
@@ -95,11 +95,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1 && requestCode == REQUEST_CODE_IMAGE_PICKER) {
-            loadingBar.setTitle("Setting profile image");
-            loadingBar.setMessage("Updating the profile image...");
-            loadingBar.setCanceledOnTouchOutside(false);
-            loadingBar.show();
-
+            progressBarManager.show("Updating the profile image...");
 
             assert data != null;
             String result = data.getStringExtra("RESULT");
@@ -117,21 +113,21 @@ public class SettingsActivity extends AppCompatActivity {
                             RootRef.child("Users").child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     Toast.makeText(SettingsActivity.this, "Image saved", Toast.LENGTH_SHORT).show();
-                                    loadingBar.dismiss();
+                                    progressBarManager.hide();
                                 } else {
                                     Toast.makeText(SettingsActivity.this, "Error: " + Objects.requireNonNull(task1.getException()), Toast.LENGTH_SHORT).show();
-                                    loadingBar.dismiss();
+                                    progressBarManager.hide();
                                 }
                             });
                         }).addOnFailureListener(e -> {
                             String message = e.getMessage();
                             Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                            loadingBar.dismiss();
+                            progressBarManager.hide();
                         });
                     } else {
                         String message = Objects.requireNonNull(task.getException()).toString();
                         Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                        loadingBar.dismiss();
+                        progressBarManager.hide();
                     }
                 });
             } else {
@@ -190,7 +186,6 @@ public class SettingsActivity extends AppCompatActivity {
                     Picasso.get().load(retrieveProfileImage).placeholder(R.drawable.user_default_profile_pic).into(civUserProfileImage);
 
                 } else if ((snapshot.exists()) && (snapshot.hasChild("name"))) {
-                    // TODO: Add the profile image
                     String retrieveUsername = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
                     String retrieveStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
 

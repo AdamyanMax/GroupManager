@@ -40,7 +40,6 @@ import java.util.Objects;
 
 // TODOs for the whole project
 // TODO: Replace Activities with Fragments
-// TODO: Replace ProgressDialog with ProgressBar
 // TODO: Clicking on the user in the FindFriends tab for the first time will cause for the 1st person in the list profile to be opened
 // TODO: When in gallery clicking the back button causes the app to crash.
 // TODO: Concatenate all 4 RVs into a single Adapter

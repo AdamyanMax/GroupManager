@@ -74,5 +74,7 @@
     <string name="file">File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+    <string name="photo">Photo</string>
+    <string name="no_messages_yet">No messages yet</string>
 
 </resources>
