@@ -1,4 +1,4 @@
-package com.example.manage.Contacts;
+package com.example.manage.Data;
 
 public class Contacts {
     public String name, status, image;

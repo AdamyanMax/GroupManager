@@ -70,11 +70,19 @@
     <string name="attach_a_file">Attach a file</string>
     <string name="receiver_image">Receiver image</string>
     <string name="last_seen_on">Last seen on</string>
-    <string name="last_seen_yesterday">Last seen yesterday</string>
+    <string name="last_seen_yesterday_at">Last seen yesterday at</string>
     <string name="file">File</string>
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
     <string name="photo">Photo</string>
     <string name="no_messages_yet">No messages yet</string>
+    <string name="delete">Delete</string>
+    <string name="delete_message">Delete message?</string>
+    <string name="delete_for_everyone">Delete for everyone</string>
+    <string name="delete_for_me">Delete for me</string>
+    <string name="back_button">Back button</string>
+    <string name="image">Image</string>
+    <string name="go_back">Go back</string>
+    <string name="download_the_image">Download the image</string>
 
 </resources>

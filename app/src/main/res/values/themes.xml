@@ -54,7 +54,7 @@
     </style>
 
     <style name="TabText" parent="@style/Widget.AppCompat.TextView">
-<!--        TODO: Make this attribute responsive-->
+        <!--        TODO: Make this attribute responsive-->
         <item name="android:textSize">15sp</item>
     </style>
 
@@ -62,5 +62,4 @@
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
-
-</resources>
+    </resources>

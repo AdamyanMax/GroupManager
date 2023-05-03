@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.FindFriendsAdapter;
-import com.example.manage.Contacts.Contacts;
+import com.example.manage.Data.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DatabaseReference;

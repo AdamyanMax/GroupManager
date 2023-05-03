@@ -1,11 +1,11 @@
-package com.example.manage.Chats;
+package com.example.manage.Data;
 
 public class Messages {
     private String from;
     private String message;
     private String type;
     private String to;
-    private String messageID;
+    private String message_id;
     private String time;
     private String date;
     private String name;
@@ -21,7 +21,7 @@ public class Messages {
         this.message = message;
         this.type = type;
         this.to = to;
-        this.messageID = messageID;
+        this.message_id = messageID;
         this.time = time;
         this.date = date;
         this.name = name;
@@ -32,7 +32,7 @@ public class Messages {
         this.type = type;
         this.from = from;
         this.to = to;
-        this.messageID = messageId;
+        this.message_id = messageId;
         this.time = time;
         this.date = date;
         this.fileName = fileName;
@@ -71,12 +71,12 @@ public class Messages {
         this.to = to;
     }
 
-    public String getMessageID() {
-        return messageID;
+    public String getMessage_id() {
+        return message_id;
     }
 
-    public void setMessageID(String messageID) {
-        this.messageID = messageID;
+    public void setMessage_id(String message_id) {
+        this.message_id = message_id;
     }
 
     public String getTime() {

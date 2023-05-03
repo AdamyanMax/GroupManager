@@ -36,6 +36,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Data.Messages;
 import com.example.manage.R;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -116,13 +117,20 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Messages messages = snapshot.getValue(Messages.class);
 
-                messagesList.add(messages);
+                if (messages != null) {
+                    messages.setMessage_id(snapshot.getKey());
 
-                // Notify the adapter about the data set change.
-                messagesAdapter.notifyDataSetChanged();
+//                    Log.e("AddingMessage", "MessageID: " + messages.getMessage_id());
 
-                rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
+                    messagesList.add(messages);
+
+                    // Notify the adapter about the data set change.
+                    messagesAdapter.notifyDataSetChanged();
+
+                    rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
+                }
             }
+
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -324,7 +332,7 @@ public class ChatActivity extends AppCompatActivity {
                                 String lastSeen;
 
                                 if (differenceInDays == 1) {
-                                    lastSeen = getResources().getString(R.string.last_seen_yesterday);
+                                    lastSeen = getResources().getString(R.string.last_seen_yesterday_at) + " " + time;
                                 } else if (differenceInDays > 1) {
                                     lastSeen = getResources().getString(R.string.last_seen_on) + " " + outputDateFormat.format(lastSeenDate);
                                 } else {
@@ -335,7 +343,7 @@ public class ChatActivity extends AppCompatActivity {
                             }
 
                         } catch (ParseException e) {
-                            e.printStackTrace();
+                            Log.e("displayLastSeen", "onDataChange: " + e);
                         }
                     }
 

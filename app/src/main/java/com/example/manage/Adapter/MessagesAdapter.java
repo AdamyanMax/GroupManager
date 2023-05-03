@@ -1,5 +1,6 @@
 package com.example.manage.Adapter;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,10 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Chats.Messages;
+import com.example.manage.Data.Messages;
 import com.example.manage.R;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,6 +35,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     private final List<Messages> userMessagesList;
     private FirebaseAuth mAuth;
+    private DatabaseReference rootRef;
+
 
     public MessagesAdapter(List<Messages> userMessagesList) {
         this.userMessagesList = userMessagesList;
@@ -71,8 +77,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     @Override
     public void onBindViewHolder(@NonNull MessageViewHolder holder, int position) {
+
         String messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         Messages messages = userMessagesList.get(position);
+//        Log.e("BindingMessage", "Position: " + position + ", From: " + userMessagesList.get(position).getFrom() + ", To: " + userMessagesList.get(position).getTo() + ", MessageID: " + userMessagesList.get(position).getMessage_id());
 
         String fromUserID = messages.getFrom();
         String fromMessageType = messages.getType();
@@ -94,61 +102,193 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             }
         });
 
+        boolean isSender = fromUserID.equals(messageSenderID);
+
         switch (fromMessageType) {
             case "text":
-
-                if (fromUserID.equals(messageSenderID)) {
-                    holder.cardSenderText.setVisibility(View.VISIBLE);
-                    holder.tvSenderMessageText.setText(messages.getMessage());
-                    holder.tvSenderTextTime.setText(messages.getTime());
-
-                    holder.cardReceiverText.setVisibility(View.GONE);
-                    holder.civReceiverProfileImage.setVisibility(View.GONE);
-                } else {
-                    holder.cardReceiverText.setVisibility(View.VISIBLE);
-                    holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
-                    holder.tvReceiverMessageText.setText(messages.getMessage());
-                    holder.tvReceiverTextTime.setText(messages.getTime());
-
-                    holder.cardSenderText.setVisibility(View.GONE);
-                }
+                handleTextMessages(holder, messages, fromUserID.equals(messageSenderID), position);
                 break;
             case "image":
-                if (fromUserID.equals(messageSenderID)) {
-                    holder.cardSenderImage.setVisibility(View.VISIBLE);
-                    holder.tvSenderImageTime.setText(messages.getTime());
-                    holder.civReceiverProfileImage.setVisibility(View.GONE);
-
-                    Picasso.get().load(messages.getMessage()).into(holder.ivSenderImage);
-                } else {
-                    holder.cardReceiverImage.setVisibility(View.VISIBLE);
-                    holder.tvReceiverImageTime.setText(messages.getTime());
-
-                    Picasso.get().load(messages.getMessage()).placeholder(R.drawable.ic_image).into(holder.ivReceiverImage);
-                }
+                handleImageMessages(holder, messages, isSender, position);
                 break;
             case "file":
-                if (fromUserID.equals(messageSenderID)) {
-                    holder.cardSenderFile.setVisibility(View.VISIBLE);
-
-                    holder.civReceiverProfileImage.setVisibility(View.GONE);
-                    holder.cardReceiverFile.setVisibility(View.GONE);
-
-                    holder.tvSenderFileName.setText(messages.getFileName());
-                    holder.tvSenderFileSize.setText(messages.getFileSize());
-                    holder.tvSenderFileTime.setText(messages.getTime());
-                } else {
-                    holder.cardReceiverFile.setVisibility(View.VISIBLE);
-                    holder.cardSenderFile.setVisibility(View.GONE);
-
-                    holder.tvReceiverFileName.setText(messages.getFileName());
-                    holder.tvReceiverFileSize.setText(messages.getFileSize());
-                    holder.tvReceiverFileTime.setText(messages.getTime());
-                }
+                handleFileMessages(holder, messages, isSender, position);
                 break;
         }
-
     }
+
+    private void handleTextMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
+        holder.cardSenderText.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+        holder.cardReceiverText.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+
+        if (isSender) {
+            holder.cardSenderText.setVisibility(View.VISIBLE);
+            holder.tvSenderMessageText.setText(messages.getMessage());
+            holder.tvSenderTextTime.setText(messages.getTime());
+
+            holder.cardReceiverText.setVisibility(View.GONE);
+            holder.civReceiverProfileImage.setVisibility(View.GONE);
+        } else {
+            holder.cardReceiverText.setVisibility(View.VISIBLE);
+            holder.civReceiverProfileImage.setVisibility(View.VISIBLE);
+            holder.tvReceiverMessageText.setText(messages.getMessage());
+            holder.tvReceiverTextTime.setText(messages.getTime());
+
+            holder.cardSenderText.setVisibility(View.GONE);
+        }
+    }
+
+    private void handleImageMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
+        holder.cardSenderImage.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+        holder.cardReceiverImage.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+
+        if (isSender) {
+            holder.cardSenderImage.setVisibility(View.VISIBLE);
+            holder.tvSenderImageTime.setText(messages.getTime());
+            holder.civReceiverProfileImage.setVisibility(View.GONE);
+
+            Picasso.get().load(messages.getMessage()).into(holder.ivSenderImage);
+        } else {
+            holder.cardReceiverImage.setVisibility(View.VISIBLE);
+            holder.tvReceiverImageTime.setText(messages.getTime());
+
+            Picasso.get().load(messages.getMessage()).placeholder(R.drawable.ic_image).into(holder.ivReceiverImage);
+        }
+    }
+
+    private void handleFileMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
+        holder.cardSenderFile.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+        holder.cardReceiverFile.setOnLongClickListener(view -> {
+            showPopupMenu(view, isSender, position);
+            return true;
+        });
+
+        if (isSender) {
+            holder.cardSenderFile.setVisibility(View.VISIBLE);
+
+            holder.civReceiverProfileImage.setVisibility(View.GONE);
+            holder.cardReceiverFile.setVisibility(View.GONE);
+
+            holder.tvSenderFileName.setText(messages.getFileName());
+            holder.tvSenderFileSize.setText(messages.getFileSize());
+            holder.tvSenderFileTime.setText(messages.getTime());
+        } else {
+            holder.cardReceiverFile.setVisibility(View.VISIBLE);
+            holder.cardSenderFile.setVisibility(View.GONE);
+
+            holder.tvReceiverFileName.setText(messages.getFileName());
+            holder.tvReceiverFileSize.setText(messages.getFileSize());
+            holder.tvReceiverFileTime.setText(messages.getTime());
+        }
+    }
+
+
+    private void showDeleteDialog(Context context, boolean isSender, int position) {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+        builder.setTitle(R.string.delete_message);
+
+        String[] options;
+        if (isSender) {
+            options = new String[]{
+                    context.getString(R.string.delete_for_everyone),
+                    context.getString(R.string.delete_for_me),
+                    context.getString(R.string.cancel)};
+        } else {
+            options = new String[]{
+                    context.getString(R.string.delete_for_me),
+                    context.getString(R.string.cancel)};
+        }
+
+        builder.setItems(options, (dialog, which) -> {
+            if (isSender) {
+                switch (which) {
+                    case 0: // Delete for everyone
+                        deleteForEveryone(position);
+                        break;
+                    case 1: // Delete for me
+                        deleteForMeSender(position);
+                        break;
+
+                }
+            } else {
+                if (which == 0) {
+                    // Delete for me (when not sender)
+                    deleteForMeReceiver(position);
+                }
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void deleteForMeReceiver(final int position) {
+//        Log.e("deleteForMeReceiver", "Position: " + position);
+
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Messages")
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
+    }
+
+    private void deleteForEveryone(final int position) {
+//        Log.e("deleteForEveryone", "Position: " + position);
+
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Messages")
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
+
+        rootRef.child("Messages")
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
+    }
+
+
+    private void deleteForMeSender(final int position) {
+        rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("Messages")
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
+    }
+
+
+    private void showPopupMenu(View view, boolean isSender, int position) {
+        PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
+        popupMenu.inflate(R.menu.message_popup_menu);
+        popupMenu.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.delete_message) {
+                showDeleteDialog(view.getContext(), isSender, position);
+                return true;
+            }
+            return false;
+        });
+        popupMenu.show();
+    }
+
 
     @Override
     public int getItemCount() {
