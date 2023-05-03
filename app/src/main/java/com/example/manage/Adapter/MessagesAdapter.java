@@ -2,6 +2,7 @@ package com.example.manage.Adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -177,6 +178,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     private void viewImageFullscreen(@NonNull MessageViewHolder holder, int position) {
         Intent viewImageIntent = new Intent(holder.itemView.getContext(), FullScreenImageActivity.class);
         viewImageIntent.putExtra("url", userMessagesList.get(position).getMessage());
+        viewImageIntent.putExtra("uid", userMessagesList.get(position).getFrom());
+        viewImageIntent.putExtra("time", userMessagesList.get(position).getTime());
+        viewImageIntent.putExtra("date", userMessagesList.get(position).getDate());
         holder.itemView.getContext().startActivity(viewImageIntent);
     }
 
@@ -189,6 +193,10 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             showPopupMenu(view, isSender, position);
             return true;
         });
+
+        holder.cardSenderFile.setOnClickListener(v -> downloadFile(holder, position));
+
+        holder.cardReceiverFile.setOnClickListener(v -> downloadFile(holder, position));
 
         if (isSender) {
             holder.cardSenderFile.setVisibility(View.VISIBLE);
@@ -209,6 +217,11 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         }
     }
 
+    private void downloadFile(@NonNull MessageViewHolder holder, int position) {
+        Intent downloadIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(userMessagesList.get(position).getMessage()));
+        holder.itemView.getContext().startActivity(downloadIntent);
+    }
+
 
     private void showDeleteDialog(Context context, boolean isSender, int position) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
@@ -216,14 +229,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         String[] options;
         if (isSender) {
-            options = new String[]{
-                    context.getString(R.string.delete_for_everyone),
-                    context.getString(R.string.delete_for_me),
-                    context.getString(R.string.cancel)};
+            options = new String[]{context.getString(R.string.delete_for_everyone), context.getString(R.string.delete_for_me), context.getString(R.string.cancel)};
         } else {
-            options = new String[]{
-                    context.getString(R.string.delete_for_me),
-                    context.getString(R.string.cancel)};
+            options = new String[]{context.getString(R.string.delete_for_me), context.getString(R.string.cancel)};
         }
 
         builder.setItems(options, (dialog, which) -> {
@@ -252,37 +260,21 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     private void deleteForMeReceiver(final int position) {
 
         rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages")
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+        rootRef.child("Messages").child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
     private void deleteForEveryone(final int position) {
 
         rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages")
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+        rootRef.child("Messages").child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
 
-        rootRef.child("Messages")
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+        rootRef.child("Messages").child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
 
     private void deleteForMeSender(final int position) {
         rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages")
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+        rootRef.child("Messages").child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
 

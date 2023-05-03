@@ -120,7 +120,6 @@ public class ChatActivity extends AppCompatActivity {
                 if (messages != null) {
                     messages.setMessage_id(snapshot.getKey());
 
-//                    Log.e("AddingMessage", "MessageID: " + messages.getMessage_id());
 
                     messagesList.add(messages);
 

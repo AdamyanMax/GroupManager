@@ -84,5 +84,6 @@
     <string name="image">Image</string>
     <string name="go_back">Go back</string>
     <string name="download_the_image">Download the image</string>
+    <string name="at">at</string>
 
 </resources>

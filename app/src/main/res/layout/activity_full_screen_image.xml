@@ -46,6 +46,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_full_screen_image_username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Username"
@@ -55,9 +56,11 @@
                 tools:ignore="HardcodedText" />
 
             <TextView
+                android:id="@+id/tv_full_screen_image_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Jan 3 at 00:00"
+                android:textSize="14sp"
                 android:textColor="@android:color/background_light"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
@@ -81,14 +84,14 @@
     <com.github.chrisbanes.photoview.PhotoView
         android:id="@+id/full_screen_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:contentDescription="@string/image"
         android:scaleType="fitCenter"
-
+        android:src="@drawable/picture_placeholder"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/full_image_view_fullscreen_toolbar" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
