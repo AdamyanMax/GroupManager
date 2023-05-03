@@ -12,7 +12,7 @@
 
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@color/colorPrimary</item>
         <!--That cursor thingy-->
         <item name="android:colorControlActivated">@color/colorPrimaryDark</item>
 

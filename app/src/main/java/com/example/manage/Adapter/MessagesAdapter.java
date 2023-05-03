@@ -1,6 +1,7 @@
 package com.example.manage.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.manage.Chats.FullScreenImageActivity;
 import com.example.manage.Data.Messages;
 import com.example.manage.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -145,14 +147,18 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void handleImageMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
-        holder.cardSenderImage.setOnLongClickListener(view -> {
-            showPopupMenu(view, isSender, position);
+        holder.cardSenderImage.setOnLongClickListener(v -> {
+            showPopupMenu(v, isSender, position);
             return true;
         });
-        holder.cardReceiverImage.setOnLongClickListener(view -> {
-            showPopupMenu(view, isSender, position);
+        holder.cardReceiverImage.setOnLongClickListener(v -> {
+            showPopupMenu(v, isSender, position);
             return true;
         });
+        holder.ivSenderImage.setOnClickListener(v -> viewImageFullscreen(holder, position));
+
+        holder.ivReceiverImage.setOnClickListener(v -> viewImageFullscreen(holder, position));
+
 
         if (isSender) {
             holder.cardSenderImage.setVisibility(View.VISIBLE);
@@ -166,6 +172,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             Picasso.get().load(messages.getMessage()).placeholder(R.drawable.ic_image).into(holder.ivReceiverImage);
         }
+    }
+
+    private void viewImageFullscreen(@NonNull MessageViewHolder holder, int position) {
+        Intent viewImageIntent = new Intent(holder.itemView.getContext(), FullScreenImageActivity.class);
+        viewImageIntent.putExtra("url", userMessagesList.get(position).getMessage());
+        holder.itemView.getContext().startActivity(viewImageIntent);
     }
 
     private void handleFileMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
@@ -238,7 +250,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void deleteForMeReceiver(final int position) {
-//        Log.e("deleteForMeReceiver", "Position: " + position);
 
         rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("Messages")
@@ -249,7 +260,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void deleteForEveryone(final int position) {
-//        Log.e("deleteForEveryone", "Position: " + position);
 
         rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("Messages")
