@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Data.Contacts;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -22,7 +23,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -31,8 +31,9 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsFragment extends Fragment {
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private RecyclerView rvChatList;
-    private DatabaseReference ChatsRef, UsersRef;
+    private DatabaseReference ChatsUserIdRef;
     private FirebaseAuth mAuth;
 
     public ChatsFragment() {
@@ -50,8 +51,7 @@ public class ChatsFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        ChatsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        ChatsUserIdRef = firebaseUtil.getMessagesRef().child(currentUserID);
 
         return vPrivateChats;
     }
@@ -60,7 +60,7 @@ public class ChatsFragment extends Fragment {
     public void onStart() {
         super.onStart();
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
-                .setQuery(ChatsRef, Contacts.class)
+                .setQuery(ChatsUserIdRef, Contacts.class)
                 .build();
         FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Contacts, ChatsViewHolder>(options) {
@@ -70,7 +70,7 @@ public class ChatsFragment extends Fragment {
                         final String[] profileImage = {"default_image"};
 
                         assert userIDs != null;
-                        UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                        firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 if (snapshot.exists()) {
@@ -129,11 +129,10 @@ public class ChatsFragment extends Fragment {
     }
 
     private void getLastMessage(String userId, TextView tvUserLastStatus) {
-        DatabaseReference MessagesRef = FirebaseDatabase.getInstance().getReference().child("Messages");
         FirebaseUser currentUser = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser() : null;
         String currentUserID = currentUser.getUid();
 
-        MessagesRef.child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getMessagesRef().child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (isAdded()) {

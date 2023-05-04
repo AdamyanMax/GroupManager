@@ -1,6 +1,5 @@
 package com.example.manage.Authentication;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -11,24 +10,23 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.MainActivity;
 import com.example.manage.R;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private Button btnCreateAccount;
     private EditText etUserEmail, etUserPassword;
     private TextView tvAlreadyHasAccountLink;
-
     private FirebaseAuth mAuth;
-    private DatabaseReference RootRef;
-    private ProgressDialog loadingBar;
+    private ProgressBarManager progressBarManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         mAuth = FirebaseAuth.getInstance();
-        RootRef = FirebaseDatabase.getInstance().getReference();
         InitializeFields();
 
         tvAlreadyHasAccountLink.setOnClickListener(v -> sendToLoginActivity());
@@ -53,27 +50,25 @@ public class RegisterActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter a password", Toast.LENGTH_SHORT).show();
         } else {
-            loadingBar.setTitle("Creating a new account");
-            loadingBar.setMessage("Please wait");
-            loadingBar.setCanceledOnTouchOutside(true);
-            loadingBar.show();
+            progressBarManager.show("Creating a new account");
+
 
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     String deviceToken = String.valueOf(FirebaseMessaging.getInstance().getToken());
 
                     String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-                    RootRef.child("Users").child(currentUserID).setValue("");
+                    firebaseUtil.getUsersRef().child(currentUserID).setValue("");
 
-                    RootRef.child("Users").child(currentUserID).child("device_token").setValue(deviceToken);
+                    firebaseUtil.getUsersRef().child(currentUserID).child("device_token").setValue(deviceToken);
 
                     sendToMainActivity();
                     Toast.makeText(RegisterActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
-                    loadingBar.dismiss();
+                    progressBarManager.hide();
                 } else {
                     String message = Objects.requireNonNull(task.getException()).toString();
                     Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                    loadingBar.dismiss();
+                    progressBarManager.hide();
                 }
             });
         }
@@ -99,6 +94,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         tvAlreadyHasAccountLink = findViewById(R.id.tv_register_need_account_link);
 
-        loadingBar = new ProgressDialog(this);
+        progressBarManager = new ProgressBarManager(this);
     }
 }

@@ -9,6 +9,8 @@
     tools:context=".Authentication.RegisterActivity">
 
 
+
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -103,5 +105,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
     </LinearLayout>
+    <include layout="@layout/progress_bar_layout"/>
 
 </LinearLayout>

@@ -39,9 +39,6 @@
             android:name=".Menu.ImageCropper.CropperActivity"
             android:exported="false" />
         <activity
-            android:name=".Authentication.PhoneLoginActivity"
-            android:exported="false" />
-        <activity
             android:name=".Groups.GroupChatActivity"
             android:exported="false" />
         <activity

@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
@@ -17,8 +18,6 @@ import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -37,15 +36,11 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String CURRENT_STATE_FRIENDS = "friends";
     private static final String CURRENT_STATE_REQUEST_RECEIVED = "request_received";
     private static final String NODE_REQUEST_TYPE = "request_type";
-
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private String receiverUserID, currentState, senderUserID;
-
     private CircleImageView civProfileImage;
     private TextView tvUsername, tvUserStatus;
     private MaterialButton btnSendMessageRequest, btnDeclineRequest;
-
-    private DatabaseReference UserRef, ChatRequestRef, ContactsRef, NotificationRef;
-
     private ProgressBarManager progressBarManager;
 
 
@@ -54,11 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        ChatRequestRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
-        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
-        NotificationRef = FirebaseDatabase.getInstance().getReference().child("Notifications");
 
         progressBarManager = new ProgressBarManager(this);
 
@@ -76,7 +67,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void retrieveUserInfo() {
-        UserRef.child(receiverUserID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getUsersRef().child(receiverUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("image"))) {
@@ -110,7 +101,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void manageChatRequests() {
-        ChatRequestRef.child(senderUserID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getChatRequestsRef().child(senderUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(receiverUserID)) {
@@ -122,7 +113,6 @@ public class ProfileActivity extends AppCompatActivity {
                     } else if (request_type.equals("received")) {
                         currentState = CURRENT_STATE_REQUEST_RECEIVED;
                         btnSendMessageRequest.setText(R.string.accept_chat_request);
-//                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons);
                         btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_check));
 
                         btnDeclineRequest.setVisibility(View.VISIBLE);
@@ -131,7 +121,7 @@ public class ProfileActivity extends AppCompatActivity {
                         btnDeclineRequest.setOnClickListener(v -> cancelChatRequest());
                     }
                 } else {
-                    ContactsRef.child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    firebaseUtil.getContactsRef().child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.hasChild(receiverUserID)) {
@@ -179,9 +169,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void removeSpecificContact() {
-        ContactsRef.child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
+        firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                ContactsRef.child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
+                firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         btnSendMessageRequest.setEnabled(true);
                         currentState = CURRENT_STATE_NEW;
@@ -201,22 +191,22 @@ public class ProfileActivity extends AppCompatActivity {
     private void acceptChatRequest() {
         List<Task<Void>> tasks = new ArrayList<>();
 
-        Task<Void> task1 = ContactsRef.child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
+        Task<Void> task1 = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
             // Handle error
         });
         tasks.add(task1);
 
-        Task<Void> task2 = ContactsRef.child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
+        Task<Void> task2 = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
             // Handle error
         });
         tasks.add(task2);
 
-        Task<Void> task3 = ChatRequestRef.child(senderUserID).child(receiverUserID).removeValue().addOnFailureListener(e -> {
+        Task<Void> task3 = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue().addOnFailureListener(e -> {
             // Handle error
         });
         tasks.add(task3);
 
-        Task<Void> task4 = ChatRequestRef.child(receiverUserID).child(senderUserID).removeValue().addOnFailureListener(e -> {
+        Task<Void> task4 = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue().addOnFailureListener(e -> {
             // Handle error
         });
         tasks.add(task4);
@@ -249,9 +239,9 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cancelChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
+        firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                ChatRequestRef.child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
+                firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         btnSendMessageRequest.setEnabled(true);
                         currentState = CURRENT_STATE_NEW;
@@ -268,15 +258,15 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void sendChatRequest() {
-        ChatRequestRef.child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent").addOnCompleteListener(task -> {
+        firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                ChatRequestRef.child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received").addOnCompleteListener(task1 -> {
+                firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received").addOnCompleteListener(task1 -> {
                     if (task1.isSuccessful()) {
                         HashMap<String, String> chatNotificationMap = new HashMap<>();
                         chatNotificationMap.put("from", senderUserID);
                         chatNotificationMap.put("type", "request");
 
-                        NotificationRef.child(receiverUserID).push().setValue(chatNotificationMap).addOnCompleteListener(task2 -> {
+                        firebaseUtil.getNotificationsRef().child(receiverUserID).push().setValue(chatNotificationMap).addOnCompleteListener(task2 -> {
                             if (task2.isSuccessful()) {
                                 btnSendMessageRequest.setEnabled(true);
                                 currentState = CURRENT_STATE_REQUEST_SENT;

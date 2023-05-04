@@ -16,13 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Chats.FullScreenImageActivity;
 import com.example.manage.Data.Messages;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -38,7 +38,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     private final List<Messages> userMessagesList;
     private FirebaseAuth mAuth;
-    private DatabaseReference rootRef;
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
 
 
     public MessagesAdapter(List<Messages> userMessagesList) {
@@ -83,14 +83,13 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
         String messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
         Messages messages = userMessagesList.get(position);
-//        Log.e("BindingMessage", "Position: " + position + ", From: " + userMessagesList.get(position).getFrom() + ", To: " + userMessagesList.get(position).getTo() + ", MessageID: " + userMessagesList.get(position).getMessage_id());
 
         String fromUserID = messages.getFrom();
         String fromMessageType = messages.getType();
 
-        DatabaseReference usersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(fromUserID);
+        DatabaseReference senderUserId = firebaseUtil.getUsersRef().child(fromUserID);
 
-        usersRef.addValueEventListener(new ValueEventListener() {
+        senderUserId.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild("image")) {
@@ -259,22 +258,19 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
     private void deleteForMeReceiver(final int position) {
 
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages").child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
     private void deleteForEveryone(final int position) {
 
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages").child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
 
-        rootRef.child("Messages").child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
 
     private void deleteForMeSender(final int position) {
-        rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("Messages").child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
     }
 
 

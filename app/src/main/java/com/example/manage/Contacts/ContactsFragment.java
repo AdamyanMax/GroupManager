@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Data.Contacts;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -30,7 +31,8 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class ContactsFragment extends Fragment {
     private RecyclerView rvContactList;
 
-    private DatabaseReference ContactsRef, UsersRef;
+    private DatabaseReference ContactsUserIdRef;
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
 
     public ContactsFragment() {
         // Required empty public constructor
@@ -54,8 +56,7 @@ public class ContactsFragment extends Fragment {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
+        ContactsUserIdRef = FirebaseDatabase.getInstance().getReference().child("Contacts").child(currentUserID);
 
         return contactView;
     }
@@ -66,7 +67,7 @@ public class ContactsFragment extends Fragment {
 
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                        .setQuery(ContactsRef, Contacts.class)
+                        .setQuery(ContactsUserIdRef, Contacts.class)
                         .build();
         final FirebaseRecyclerAdapter<Contacts, ContactsViewHolder> adapter =
                 new FirebaseRecyclerAdapter<Contacts, ContactsViewHolder>(options) {
@@ -75,7 +76,7 @@ public class ContactsFragment extends Fragment {
                         String userIDs = getRef(position).getKey();
 
                         assert userIDs != null;
-                        UsersRef.child(userIDs).addValueEventListener(new ValueEventListener() {
+                        firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

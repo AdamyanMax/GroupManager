@@ -20,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.manage.Adapter.TabAccessorAdapter;
 import com.example.manage.Authentication.LoginActivity;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Menu.FindFriends.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
 import com.google.android.material.tabs.TabLayout;
@@ -28,8 +29,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
@@ -47,17 +46,15 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
-
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private FirebaseAuth mAuth;
-    private DatabaseReference RootRef;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
-        RootRef = FirebaseDatabase.getInstance().getReference();
-
 
         ViewPager2 mViewPager2 = findViewById(R.id.main_tabs_pager);
         TabAccessorAdapter mTabAccessorAdapter = new TabAccessorAdapter(this);
@@ -104,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyUserExistence() {
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!(snapshot.child("name").exists())) {
@@ -191,7 +188,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void createNewGroup(String groupName) {
-        RootRef.child("Groups").child(groupName).setValue("").addOnCompleteListener(task -> {
+        firebaseUtil.getGroupsRef().child(groupName).setValue("").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Toast.makeText(MainActivity.this, groupName + " " + getString(R.string.group_is_created), Toast.LENGTH_SHORT).show();
             }
@@ -233,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
 
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        RootRef.child("Users").child(currentUserID).child("userState")
+        firebaseUtil.getUsersRef().child(currentUserID).child("userState")
                 .updateChildren(onlineStateMap);
 
     }

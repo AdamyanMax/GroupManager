@@ -17,25 +17,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.FindFriendsAdapter;
 import com.example.manage.Data.Contacts;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Objects;
 
 public class FindFriendsActivity extends AppCompatActivity {
 
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private RecyclerView rvFindFriends;
-    private DatabaseReference UsersReference;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_firends);
-
-        UsersReference = FirebaseDatabase.getInstance().getReference().child("Users");
 
         rvFindFriends = findViewById(R.id.rv_find_friends);
         rvFindFriends.setLayoutManager(new LinearLayoutManager(this));
@@ -96,9 +92,9 @@ public class FindFriendsActivity extends AppCompatActivity {
                 FirebaseRecyclerOptions<Contacts> options;
 
                 if (newText.isEmpty()) {
-                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(UsersReference, Contacts.class).build();
+                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef(), Contacts.class).build();
                 } else {
-                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(UsersReference.orderByChild("name")
+                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef().orderByChild("name")
                             .startAt(newText).endAt(newText + "\uf8ff"), Contacts.class).build();
                 }
 
@@ -118,7 +114,7 @@ public class FindFriendsActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(UsersReference, Contacts.class).build();
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef(), Contacts.class).build();
 
         FindFriendsAdapter adapter = new FindFriendsAdapter(options);
 

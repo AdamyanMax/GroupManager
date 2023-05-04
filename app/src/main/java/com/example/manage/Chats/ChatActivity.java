@@ -35,6 +35,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.MessagesAdapter;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.Data.Messages;
 import com.example.manage.R;
@@ -76,10 +77,12 @@ public class ChatActivity extends AppCompatActivity {
     private CircleImageView civProfileImage;
     private ImageButton ibSendMessage, ibSendFile;
     private EditText etMessageInput;
-    private DatabaseReference RootRef;
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
     private String saveCurrentTime, saveCurrentDate;
+
+    private DatabaseReference userMessageKeyRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +90,6 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         messageSenderID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
 
         messageReceiverID = getIntent().getExtras().get("visit_user_id").toString();
         String messageReceiverName = getIntent().getExtras().get("visit_username").toString();
@@ -112,14 +114,13 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        RootRef.child("Messages").child(messageSenderID).child(messageReceiverID).addChildEventListener(new ChildEventListener() {
+        firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Messages messages = snapshot.getValue(Messages.class);
 
                 if (messages != null) {
                     messages.setMessage_id(snapshot.getKey());
-
 
                     messagesList.add(messages);
 
@@ -189,6 +190,7 @@ public class ChatActivity extends AppCompatActivity {
         etMessageInput = findViewById(R.id.et_input_private_message);
 
         progressBarManager = new ProgressBarManager(this);
+        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
 
         messagesAdapter = new MessagesAdapter(messagesList);
         rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
@@ -297,7 +299,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void displayLastSeen() {
-        RootRef.child("Users").child(messageReceiverID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getMessagesRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -454,7 +456,7 @@ public class ChatActivity extends AppCompatActivity {
         messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageBody);
         messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageBody);
 
-        RootRef.updateChildren(messageBodyDetails).addOnCompleteListener(task -> {
+        firebaseUtil.getRootRef().updateChildren(messageBodyDetails).addOnCompleteListener(task -> {
             etMessageInput.setText("");
 
             if (!task.isSuccessful()) {
@@ -470,7 +472,6 @@ public class ChatActivity extends AppCompatActivity {
             String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
             String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
 
-            DatabaseReference userMessageKeyRef = RootRef.child("Messages").child(messageSenderID).child(messageSenderID).push();
             String messagePushID = userMessageKeyRef.getKey();
 
             Map<String, Object> messageTextBody = createMessageBody("text",
@@ -493,7 +494,7 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
         String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
 
-        DatabaseReference userMessageKeyRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderID).child(messageReceiverID).push();
+
         String messagePushID = userMessageKeyRef.getKey();
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images");
@@ -538,7 +539,7 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
         String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
 
-        DatabaseReference userMessageKeyRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderID).child(messageReceiverID).push();
+        userMessageKeyRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderID).child(messageReceiverID).push();
         String messagePushID = userMessageKeyRef.getKey();
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("files");

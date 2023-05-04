@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Data.Contacts;
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -21,7 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
@@ -30,8 +30,8 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RequestsFragment extends Fragment {
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private RecyclerView rvRequestsList;
-    private DatabaseReference ChatRequestsRef, UsersRef, ContactsRef;
     private String currentUserID;
     private FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter;
 
@@ -49,10 +49,6 @@ public class RequestsFragment extends Fragment {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        ChatRequestsRef = FirebaseDatabase.getInstance().getReference().child("Chat Requests");
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users");
-        ContactsRef = FirebaseDatabase.getInstance().getReference().child("Contacts");
-
         return requestsFragmentView;
     }
 
@@ -60,7 +56,7 @@ public class RequestsFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(ChatRequestsRef.child(currentUserID), Contacts.class).build();
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getChatRequestsRef().child(currentUserID), Contacts.class).build();
 
         adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
             @NonNull
@@ -85,7 +81,7 @@ public class RequestsFragment extends Fragment {
                             String type = Objects.requireNonNull(snapshot.getValue()).toString();
                             if (type.equals("received")) {
                                 assert list_user_id != null;
-                                UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                firebaseUtil.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.hasChild("image")) {
@@ -99,13 +95,13 @@ public class RequestsFragment extends Fragment {
                                         holder.tvUserName.setText(requestUsername);
                                         holder.tvUserStatus.setText(requestUserStatus);
 
-                                        holder.btnAccept.setOnClickListener(v -> ContactsRef.child(list_user_id).child(currentUserID).child("Contact").setValue("Saved").addOnCompleteListener(task -> {
+                                        holder.btnAccept.setOnClickListener(v -> firebaseUtil.getContactsRef().child(list_user_id).child(currentUserID).child("Contact").setValue("Saved").addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
-                                                ContactsRef.child(currentUserID).child(list_user_id).child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
+                                                firebaseUtil.getContactsRef().child(currentUserID).child(list_user_id).child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {
                                                     if (task1.isSuccessful()) {
-                                                        ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
+                                                        firebaseUtil.getChatRequestsRef().child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
                                                             if (task2.isSuccessful()) {
-                                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved + "", Toast.LENGTH_SHORT).show());
+                                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved + "", Toast.LENGTH_SHORT).show());
                                                             }
                                                         });
                                                     }
@@ -113,9 +109,9 @@ public class RequestsFragment extends Fragment {
                                             }
                                         }));
 
-                                        holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
+                                        holder.btnDecline.setOnClickListener(v -> firebaseUtil.getChatRequestsRef().child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
-                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined + "", Toast.LENGTH_SHORT).show());
+                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined + "", Toast.LENGTH_SHORT).show());
                                             }
                                         }));
                                     }
@@ -132,7 +128,7 @@ public class RequestsFragment extends Fragment {
                                 holder.itemView.findViewById(R.id.btn_request_accept).setVisibility(View.INVISIBLE);
 
                                 assert list_user_id != null;
-                                UsersRef.child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                firebaseUtil.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.hasChild("image")) {
@@ -146,9 +142,9 @@ public class RequestsFragment extends Fragment {
                                         holder.tvUserName.setText(requestUsername);
                                         holder.tvUserStatus.setText(requestUserStatus);
 
-                                        holder.btnDecline.setOnClickListener(v -> ChatRequestsRef.child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
+                                        holder.btnDecline.setOnClickListener(v -> firebaseUtil.getChatRequestsRef().child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
-                                                ChatRequestsRef.child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), "Chat request canceled", Toast.LENGTH_SHORT).show());
+                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), "Chat request canceled", Toast.LENGTH_SHORT).show());
                                             }
                                         }));
                                     }

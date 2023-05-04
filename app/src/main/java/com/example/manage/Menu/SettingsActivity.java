@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.MainActivity;
 import com.example.manage.Menu.ImageCropper.CropperActivity;
@@ -23,8 +24,6 @@ import com.example.manage.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -38,14 +37,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_IMAGE_PICKER = 101;
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     ActivityResultLauncher<String> mGetContent;
     private Button btnUpgradeAccountSettings;
     private EditText etUsername, etUserStatus;
     private CircleImageView civUserProfileImage;
-
     private String currentUserID;
-    private DatabaseReference RootRef;
-
     private StorageReference UserProfileImageRef;
     private ProgressBarManager progressBarManager;
 
@@ -61,7 +58,6 @@ public class SettingsActivity extends AppCompatActivity {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        RootRef = FirebaseDatabase.getInstance().getReference();
         UserProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
         btnUpgradeAccountSettings.setOnClickListener(v -> updateSettings());
@@ -110,7 +106,7 @@ public class SettingsActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         task.getResult().getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                             String downloadedUrl = uri.toString();
-                            RootRef.child("Users").child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
+                            firebaseUtil.getUsersRef().child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     Toast.makeText(SettingsActivity.this, "Image saved", Toast.LENGTH_SHORT).show();
                                     progressBarManager.hide();
@@ -151,7 +147,7 @@ public class SettingsActivity extends AppCompatActivity {
             profileMap.put("name", setUsername);
             profileMap.put("status", setStatus);
 
-            RootRef.child("Users").child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
+            firebaseUtil.getUsersRef().child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     sendToMainActivity();
                     Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
@@ -173,7 +169,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
     private void retrieveUserInfo() {
-        RootRef.child("Users").child(currentUserID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("name") && (snapshot.hasChild("image")))) {
