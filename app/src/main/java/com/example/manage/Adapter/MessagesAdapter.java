@@ -15,7 +15,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Chats.FullScreenImageActivity;
-import com.example.manage.Data.Messages;
+import com.example.manage.Module.Messages;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;

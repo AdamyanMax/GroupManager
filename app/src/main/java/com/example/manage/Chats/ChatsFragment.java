@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Data.Contacts;
+import com.example.manage.Module.Contacts;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;

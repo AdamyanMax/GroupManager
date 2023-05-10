@@ -62,4 +62,8 @@
         <item name="android:textColor">@color/colorPrimaryDark</item>
     </style>
 
-    </resources>
+    <style name="BottomSheetDialogTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <!-- Customize your theme here. For example, you can set the background color or other attributes -->
+    </style>
+
+</resources>

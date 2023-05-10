@@ -3,17 +3,11 @@ package com.example.manage;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
@@ -23,6 +17,7 @@ import com.example.manage.Authentication.LoginActivity;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Menu.FindFriends.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
+import com.example.manage.ui.MyBottomSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -161,39 +156,19 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void requestNewGroup() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.AlertDialog);
+        MyBottomSheetDialogFragment bottomSheetDialogFragment = new MyBottomSheetDialogFragment();
+        bottomSheetDialogFragment.show(getSupportFragmentManager(), "myBottomSheet");
 
-        // Inflate the custom view and set it as the dialog content
-        View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.alert_dialogue_new_group, null);
-        final EditText etGroupName = view.findViewById(R.id.et_group_name);
-        builder.setView(view);
-
-        builder.setTitle(R.string.enter_group_details);
-
-        builder.setPositiveButton(R.string.create, (dialog, which) -> {
-            String groupName = etGroupName.getText().toString();
-
-            if (TextUtils.isEmpty(groupName)) {
-                Toast.makeText(MainActivity.this, R.string.please_provide_a_name_for_the_group, Toast.LENGTH_SHORT).show();
-            } else {
-                createNewGroup(groupName);
-            }
-        });
-
-        builder.setNegativeButton(R.string.cancel, (dialog, which) -> dialog.cancel());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
     }
 
 
-    private void createNewGroup(String groupName) {
-        firebaseUtil.getGroupsRef().child(groupName).setValue("").addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(MainActivity.this, groupName + " " + getString(R.string.group_is_created), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
+//    private void createNewGroup(String groupName) {
+//        firebaseUtil.getGroupsRef().child(groupName).setValue("").addOnCompleteListener(task -> {
+//            if (task.isSuccessful()) {
+//                Toast.makeText(MainActivity.this, groupName + " " + getString(R.string.group_is_created), Toast.LENGTH_SHORT).show();
+//            }
+//        });
+//    }
 
     private void sendUserToLoginActivity() {
         Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);

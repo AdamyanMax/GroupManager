@@ -85,5 +85,8 @@
     <string name="go_back">Go back</string>
     <string name="download_the_image">Download the image</string>
     <string name="at">at</string>
+    <string name="enter_group_name">Enter group name</string>
+    <string name="create_a_new_group">Create a new group</string>
+    <string name="card_is_scrollable">Card is scrollable</string>
 
 </resources>

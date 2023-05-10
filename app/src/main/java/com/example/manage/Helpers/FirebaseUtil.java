@@ -4,7 +4,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class FirebaseUtil {
-    public DatabaseReference rootRef, usersRef, messagesRef, notificationsRef, chatRequestsRef, contactsRef, groupsRef;
+    private final DatabaseReference rootRef, usersRef, messagesRef, notificationsRef, chatRequestsRef, contactsRef, groupsRef;
 
     public FirebaseUtil() {
         rootRef = FirebaseDatabase.getInstance().getReference();

@@ -37,7 +37,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
-import com.example.manage.Data.Messages;
+import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;

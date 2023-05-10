@@ -1,4 +1,4 @@
-package com.example.manage.Data;
+package com.example.manage.Module;
 
 public class Messages {
     private String from;
@@ -59,17 +59,11 @@ public class Messages {
         return type;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
     public String getTo() {
         return to;
     }
 
-    public void setTo(String to) {
-        this.to = to;
-    }
 
     public String getMessage_id() {
         return message_id;
@@ -83,17 +77,11 @@ public class Messages {
         return time;
     }
 
-    public void setTime(String time) {
-        this.time = time;
-    }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
-        this.date = date;
-    }
 
     public String getName() {
         return name;
@@ -107,15 +95,9 @@ public class Messages {
         return fileName;
     }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
 
     public String getFileSize() {
         return fileSize;
     }
 
-    public void setFileSize(String fileSize) {
-        this.fileSize = fileSize;
-    }
 }

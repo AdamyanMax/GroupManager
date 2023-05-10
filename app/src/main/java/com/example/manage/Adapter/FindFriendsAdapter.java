@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Data.Contacts;
+import com.example.manage.Module.Contacts;
 import com.example.manage.Menu.FindFriends.ProfileActivity;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
