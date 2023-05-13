@@ -101,7 +101,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.full_image_view_fullscreen_toolbar);
         constraintLayout = findViewById(R.id.cl_full_screen_image);
         fullScreenImage = findViewById(R.id.full_screen_image);
-        ibBackButton = toolbar.findViewById(R.id.ib_back);
+        ibBackButton = toolbar.findViewById(R.id.ib_full_screen_image_back);
         ibDownloadImage = toolbar.findViewById(R.id.ib_download_image);
         tvUsername = toolbar.findViewById(R.id.tv_full_screen_image_username);
         tvTime = toolbar.findViewById(R.id.tv_full_screen_image_time);

@@ -12,7 +12,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +39,7 @@ import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -66,10 +67,17 @@ import java.util.concurrent.TimeUnit;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatActivity extends AppCompatActivity {
+    // TODO: Remember user's scroll position and save it
     private static final int GALLERY_REQUEST_CODE = 1001;
     private static final int FILE_REQUEST_CODE = 2;
+    private static final String MESSAGES = "Messages/";
+    private static final String DATE_FORMAT = "MMM dd, yyyy";
+    private static final String TIME_FORMAT = "HH:mm aa";
+    private static final int BYTES_IN_KB = 1024;
+
 
     private final List<Messages> messagesList = new ArrayList<>();
+    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private ProgressBarManager progressBarManager;
     private PopupWindow popupWindow;
     private String messageReceiverID, messageSenderID;
@@ -77,7 +85,6 @@ public class ChatActivity extends AppCompatActivity {
     private CircleImageView civProfileImage;
     private ImageButton ibSendMessage, ibSendFile;
     private EditText etMessageInput;
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
     private String saveCurrentTime, saveCurrentDate;
@@ -237,9 +244,7 @@ public class ChatActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View customView = inflater.inflate(R.layout.expandable_menu_layout, null);
 
-        int popupWidth = ViewGroup.LayoutParams.MATCH_PARENT;
-
-        popupWindow = new PopupWindow(customView, popupWidth, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+        PopupWindow popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
         popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         GridLayout menuLayout = customView.findViewById(R.id.expandable_menu_layout);
@@ -253,32 +258,10 @@ public class ChatActivity extends AppCompatActivity {
             openFilePicker();
         });
         createMenuItem(menuLayout, R.drawable.ic_cam, getString(R.string.camera), v -> {
-
+            // handle camera option here
         });
 
-        // Find the message_input_container view
-        View messageInputContainer = findViewById(R.id.message_input_container);
-
-        // Wait for the message_input_container view to be measured
-        messageInputContainer.post(() -> {
-            // Get the height of the message_input_container in pixels
-            int messageInputContainerHeight = messageInputContainer.getHeight();
-
-            // Convert the height to dp
-            float messageInputContainerHeightInDp = messageInputContainerHeight / getResources().getDisplayMetrics().density;
-
-            int extraSpacing = 36;
-            // Add a little extra spacing above the message_input_container
-            float offsetInDp = messageInputContainerHeightInDp + extraSpacing;
-
-            // Calculate the additional offset in pixels
-            int offsetInPx = (int) (offsetInDp * getResources().getDisplayMetrics().density);
-
-            int[] location = new int[2];
-            view.getLocationOnScreen(location);
-
-            popupWindow.showAtLocation(view, Gravity.NO_GRAVITY, location[0], location[1] - view.getHeight() - popupWindow.getHeight() - offsetInPx);
-        });
+        popupWindow.showAsDropDown(view, 0, -view.getHeight());
 
         Animation scaleTranslateAnimation = AnimationUtils.loadAnimation(this, R.anim.scale_translate);
         menuLayout.startAnimation(scaleTranslateAnimation);
@@ -360,6 +343,12 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This method retrieves the name of a file from a given Uri.
+     *
+     * @param uri the Uri from which the file name is to be retrieved.
+     * @return the name of the file as a String, or null if the name could not be retrieved.
+     */
     public String getFileName(@NonNull Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
@@ -401,8 +390,8 @@ public class ChatActivity extends AppCompatActivity {
 
         String[] units = new String[]{"B", "KB", "MB", "GB", "TB"};
         int unitIndex;
-        for (unitIndex = 0; unitIndex < units.length - 1 && size >= 1024; unitIndex++) {
-            size /= 1024;
+        for (unitIndex = 0; unitIndex < units.length - 1 && size >= BYTES_IN_KB; unitIndex++) {
+            size /= BYTES_IN_KB;
         }
 
         return size + " " + units[unitIndex];
@@ -419,6 +408,18 @@ public class ChatActivity extends AppCompatActivity {
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         startActivityForResult(Intent.createChooser(intent, "Select a File"), FILE_REQUEST_CODE);
+    }
+
+    @NonNull
+    private String getFormattedDate(String pattern, Date date) {
+        return new SimpleDateFormat(pattern, Locale.getDefault()).format(date);
+    }
+
+    @NonNull
+    private Pair<String, String> getMessageRefs(String senderId, String receiverId) {
+        String messageSenderRef = MESSAGES + senderId + "/" + receiverId;
+        String messageReceiverRef = MESSAGES + receiverId + "/" + senderId;
+        return new Pair<>(messageSenderRef, messageReceiverRef);
     }
 
     @Override
@@ -451,19 +452,15 @@ public class ChatActivity extends AppCompatActivity {
         return messageBody;
     }
 
-    private void updateFirebaseDatabase(String messageSenderRef, String messageReceiverRef, String messagePushID, Map<String, Object> messageBody) {
+    @NonNull
+    private Task<Void> updateFirebaseDatabase(String messageSenderRef, String messageReceiverRef, String messagePushID, Map<String, Object> messageBody) {
         Map<String, Object> messageBodyDetails = new HashMap<>();
         messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageBody);
         messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageBody);
 
-        firebaseUtil.getRootRef().updateChildren(messageBodyDetails).addOnCompleteListener(task -> {
-            etMessageInput.setText("");
-
-            if (!task.isSuccessful()) {
-                Toast.makeText(ChatActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
-            }
-        });
+        return firebaseUtil.getRootRef().updateChildren(messageBodyDetails);
     }
+
 
     private void uploadAndSendTextMessage() {
         String messageText = etMessageInput.getText().toString();
@@ -484,16 +481,19 @@ public class ChatActivity extends AppCompatActivity {
             updateFirebaseDatabase(messageSenderRef,
                     messageReceiverRef,
                     messagePushID,
-                    messageTextBody);
+                    messageTextBody
+            ).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
+                    .addOnFailureListener(e -> Log.e("uploadAndSendTextMessage", e + ""));
+
         }
     }
 
     private void uploadAndSendImageMessage(Uri imageUri) {
         progressBarManager.show("Sending the image...");
 
-        String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
-        String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
-
+        Pair<String, String> messageRefs = getMessageRefs(messageSenderID, messageReceiverID);
+        String messageSenderRef = messageRefs.first;
+        String messageReceiverRef = messageRefs.second;
 
         String messagePushID = userMessageKeyRef.getKey();
 
@@ -510,8 +510,8 @@ public class ChatActivity extends AppCompatActivity {
                 Uri downloadUrl = task.getResult();
                 assert downloadUrl != null;
 
-                String time = new SimpleDateFormat("HH:mm aa", Locale.getDefault()).format(new Date());
-                String date = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
+                String time = getFormattedDate(TIME_FORMAT, new Date());
+                String date = getFormattedDate(DATE_FORMAT, new Date());
                 Map<String, Object> messageImageBody = createMessageBody("image",
                         downloadUrl.toString(),
                         messageSenderID,
@@ -523,7 +523,8 @@ public class ChatActivity extends AppCompatActivity {
                 updateFirebaseDatabase(messageSenderRef,
                         messageReceiverRef,
                         messagePushID,
-                        messageImageBody);
+                        messageImageBody).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
+                        .addOnFailureListener(e -> Log.e("uploadAndSendImageMessage", e + ""));
 
                 progressBarManager.hide();
             } else {
@@ -536,8 +537,9 @@ public class ChatActivity extends AppCompatActivity {
     private void uploadAndSendFileMessage(Uri fileUri, String fileName, String fileSize) {
         progressBarManager.show("Sending the file...");
 
-        String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
-        String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
+        Pair<String, String> messageRefs = getMessageRefs(messageSenderID, messageReceiverID);
+        String messageSenderRef = messageRefs.first;
+        String messageReceiverRef = messageRefs.second;
 
         userMessageKeyRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderID).child(messageReceiverID).push();
         String messagePushID = userMessageKeyRef.getKey();
@@ -555,8 +557,8 @@ public class ChatActivity extends AppCompatActivity {
                 Uri downloadUrl = task.getResult();
                 assert downloadUrl != null;
 
-                String time = new SimpleDateFormat("HH:mm aa", Locale.getDefault()).format(new Date());
-                String date = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(new Date());
+                String time = getFormattedDate(TIME_FORMAT, new Date());
+                String date = getFormattedDate(DATE_FORMAT, new Date());
                 Map<String, Object> messageFileBody = createMessageBody("file",
                         downloadUrl.toString(),
                         messageSenderID,
@@ -571,7 +573,9 @@ public class ChatActivity extends AppCompatActivity {
                 updateFirebaseDatabase(messageSenderRef,
                         messageReceiverRef,
                         messagePushID,
-                        messageFileBody);
+                        messageFileBody).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
+                        .addOnFailureListener(e -> Log.e("uploadAndSendFileMessage", e + ""));
+
                 progressBarManager.hide();
             } else {
                 Toast.makeText(ChatActivity.this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();

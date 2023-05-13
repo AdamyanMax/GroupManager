@@ -53,13 +53,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void AllowUserToLogin() {
-        String email = etUserEmail.getText().toString();
-        String password = etUserPassword.getText().toString();
+        String email = etUserEmail.getText() != null ? etUserEmail.getText().toString() : "";
+        String password = etUserPassword.getText() != null ? etUserPassword.getText().toString() : "";
 
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(this, "Please enter an email", Toast.LENGTH_SHORT).show();
-        }
-        if (TextUtils.isEmpty(password)) {
+        } else if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter a password", Toast.LENGTH_SHORT).show();
         } else {
             progressBar.show("Signing in...");

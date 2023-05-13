@@ -90,7 +90,7 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             behavior.setExpandedOffset(0);
             behavior.setState(BottomSheetBehavior.STATE_HALF_EXPANDED);
 
-            // Set the maximum height of the bottom sheet when expanded to 100% of the screen height
+            // Add a bottom sheet callback to detect the state change
             behavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
                 @Override
                 public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -108,7 +108,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
             });
         }
     }
-
 
     @Override
     public void onStop() {

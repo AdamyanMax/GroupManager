@@ -1,37 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/llSettingActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     tools:context=".Menu.SettingsActivity">
 
-    <include
-        android:id="@+id/settings_toolbar"
-        layout="@layout/app_bar_layout" />
+    <ImageButton
+        android:id="@+id/ib_settings_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/go_back"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/colorPrimary" />
 
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/iv_set_profile_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
+        android:layout_marginTop="48dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="24dp"
         android:contentDescription="@string/cd_user_profile_image"
         android:src="@drawable/user_default_profile_pic"
         app:civ_border_color="@color/colorPrimary"
-        app:civ_border_width="3dp" />
+        app:civ_border_width="3dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/et_set_user_name"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="18dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="24dp"
         android:autofillHints="username"
         android:background="@drawable/bg_fully_rounded_corners_empty"
         android:drawableStart="@drawable/ic_user"
@@ -40,16 +50,17 @@
         android:padding="14dp"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/iv_set_profile_image"
+        app:layout_constraintStart_toStartOf="@+id/iv_set_profile_image"
+        app:layout_constraintTop_toBottomOf="@+id/iv_set_profile_image" />
 
     <EditText
         android:id="@+id/et_set_profile_status"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
         android:autofillHints="name"
         android:background="@drawable/bg_fully_rounded_corners_empty"
         android:drawableStart="@drawable/ic_edit_pen"
@@ -59,27 +70,35 @@
         android:padding="14dp"
         android:textAlignment="center"
         android:textColor="@color/colorPrimaryDark"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/iv_set_profile_image"
+        app:layout_constraintStart_toStartOf="@+id/iv_set_profile_image"
+        app:layout_constraintTop_toBottomOf="@+id/et_set_user_name" />
 
     <Button
         android:id="@+id/btn_update_settings"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginStart="15dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
+        android:layout_marginTop="8dp"
         android:padding="14dp"
         android:text="@string/update"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/white"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/iv_set_profile_image"
+        app:layout_constraintStart_toStartOf="@+id/iv_set_profile_image"
+        app:layout_constraintTop_toBottomOf="@+id/et_set_profile_status" />
 
     <ProgressBar
         android:id="@+id/pb"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:visibility="gone" />
-</LinearLayout>
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

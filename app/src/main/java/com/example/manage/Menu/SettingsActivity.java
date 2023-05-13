@@ -7,6 +7,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -14,7 +15,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
@@ -45,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
     private String currentUserID;
     private StorageReference UserProfileImageRef;
     private ProgressBarManager progressBarManager;
+    private ImageButton ibBack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,7 @@ public class SettingsActivity extends AppCompatActivity {
         UserProfileImageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
         btnUpgradeAccountSettings.setOnClickListener(v -> updateSettings());
+        ibBack.setOnClickListener(v -> onBackPressed());
 
         retrieveUserInfo();
 
@@ -80,11 +82,7 @@ public class SettingsActivity extends AppCompatActivity {
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
         progressBarManager = new ProgressBarManager(this);
-        Toolbar settingsToolbar = findViewById(R.id.settings_toolbar);
-        setSupportActionBar(settingsToolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
-        getSupportActionBar().setTitle("Settings");
+        ibBack = findViewById(R.id.ib_settings_back);
     }
 
     @Override
