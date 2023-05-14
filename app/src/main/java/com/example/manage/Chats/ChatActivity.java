@@ -244,9 +244,6 @@ public class ChatActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View customView = inflater.inflate(R.layout.expandable_menu_layout, null);
 
-        PopupWindow popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
-        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
         GridLayout menuLayout = customView.findViewById(R.id.expandable_menu_layout);
         createMenuItem(menuLayout, R.drawable.ic_image, getString(R.string.gallery), v -> {
             popupWindow.dismiss();
@@ -258,8 +255,15 @@ public class ChatActivity extends AppCompatActivity {
             openFilePicker();
         });
         createMenuItem(menuLayout, R.drawable.ic_cam, getString(R.string.camera), v -> {
-            // handle camera option here
+            // handle camera option
         });
+
+        // Measure the view fully.
+        customView.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+
+        popupWindow = new PopupWindow(customView, ViewGroup.LayoutParams.MATCH_PARENT, customView.getMeasuredHeight(), true);
+        popupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         popupWindow.showAsDropDown(view, 0, -view.getHeight());
 

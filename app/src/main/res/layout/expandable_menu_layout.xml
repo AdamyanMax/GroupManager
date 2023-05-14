@@ -13,7 +13,9 @@
         android:background="@drawable/bg_test"
         android:columnCount="3"
         android:orientation="horizontal"
-        android:rowCount="2"/>
+        android:rowCount="2">
+
+    </GridLayout>
 
 </LinearLayout>
 

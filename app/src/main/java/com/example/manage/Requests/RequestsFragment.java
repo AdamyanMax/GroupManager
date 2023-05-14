@@ -101,7 +101,7 @@ public class RequestsFragment extends Fragment {
                                                     if (task1.isSuccessful()) {
                                                         firebaseUtil.getChatRequestsRef().child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task2 -> {
                                                             if (task2.isSuccessful()) {
-                                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved + "", Toast.LENGTH_SHORT).show());
+                                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task3 -> Toast.makeText(getContext(), R.string.contact_saved, Toast.LENGTH_SHORT).show());
                                                             }
                                                         });
                                                     }
@@ -111,7 +111,7 @@ public class RequestsFragment extends Fragment {
 
                                         holder.btnDecline.setOnClickListener(v -> firebaseUtil.getChatRequestsRef().child(list_user_id).child(currentUserID).removeValue().addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
-                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined + "", Toast.LENGTH_SHORT).show());
+                                                firebaseUtil.getChatRequestsRef().child(currentUserID).child(list_user_id).removeValue().addOnCompleteListener(task1 -> Toast.makeText(getContext(), R.string.chat_request_declined, Toast.LENGTH_SHORT).show());
                                             }
                                         }));
                                     }
