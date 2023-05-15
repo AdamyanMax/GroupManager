@@ -1,11 +1,13 @@
 package com.example.manage.Adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,8 +17,8 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Chats.FullScreenImageActivity;
-import com.example.manage.Module.Messages;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -37,8 +39,8 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     private static final int VIEW_TYPE_IMAGE_MESSAGE = 3;
 
     private final List<Messages> userMessagesList;
-    private FirebaseAuth mAuth;
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private FirebaseAuth mAuth;
 
 
     public MessagesAdapter(List<Messages> userMessagesList) {
@@ -175,6 +177,9 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void viewImageFullscreen(@NonNull MessageViewHolder holder, int position) {
+        // Hide the keyboard
+        hideKeyboard((Activity) holder.itemView.getContext());
+
         Intent viewImageIntent = new Intent(holder.itemView.getContext(), FullScreenImageActivity.class);
         viewImageIntent.putExtra("url", userMessagesList.get(position).getMessage());
         viewImageIntent.putExtra("uid", userMessagesList.get(position).getFrom());
@@ -182,6 +187,34 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         viewImageIntent.putExtra("date", userMessagesList.get(position).getDate());
         holder.itemView.getContext().startActivity(viewImageIntent);
     }
+
+    /**
+     * Hides the on-screen keyboard.
+     * <p>
+     * This method is used to hide the keyboard before starting a new activity.
+     * <p>
+     * When an EditText is focused, the keyboard is opened. If a new activity is started
+     * without closing the keyboard, the EditText retains its focus and the keyboard
+     * remains open. Upon returning to the original activity, Android tries to restore
+     * the state of the EditText, including its focus. This can result in the keyboard
+     * reappearing and potentially causing UI issues.
+     * <p>
+     * To prevent this, we manually hide the keyboard, which removes the focus from the
+     * EditText and ensures the keyboard doesn't reappear when returning from the new activity.
+     *
+     * @param activity The activity in which to hide the keyboard.
+     */
+    public void hideKeyboard(@NonNull Activity activity) {
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        // Find the currently focused view, so we can grab the correct window token from it.
+        View view = activity.getCurrentFocus();
+        // If no view currently has focus, create a new one, just so we can grab a window token from it.
+        if (view == null) {
+            view = new View(activity);
+        }
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
 
     private void handleFileMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
         holder.cardSenderFile.setOnLongClickListener(view -> {

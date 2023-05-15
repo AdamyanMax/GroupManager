@@ -11,6 +11,7 @@ import android.provider.OpenableColumns;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -31,8 +32,10 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Helpers.FirebaseUtil;
@@ -88,8 +91,11 @@ public class ChatActivity extends AppCompatActivity {
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
     private String saveCurrentTime, saveCurrentDate;
-
     private DatabaseReference userMessageKeyRef;
+    private ConstraintLayout slidingPane;
+    private SlidingPaneLayout slidingPaneLayout;
+    private ChildEventListener childEventListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,12 +122,28 @@ public class ChatActivity extends AppCompatActivity {
         displayLastSeen();
 
         ibSendFile.setOnClickListener(this::showExpandableMenu);
+
+        configureSlidingPane();
+    }
+
+    private void configureSlidingPane() {
+        slidingPaneLayout.setSliderFadeColor(Color.TRANSPARENT);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int screenWidth = displayMetrics.widthPixels;
+        int slidingPaneWidth = (int) (screenWidth * 0.9);
+
+        ViewGroup.LayoutParams layoutParams = slidingPane.getLayoutParams();
+        layoutParams.width = slidingPaneWidth;
+        slidingPane.setLayoutParams(layoutParams);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(new ChildEventListener() {
+        messagesList.clear();
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Messages messages = snapshot.getValue(Messages.class);
@@ -137,28 +159,26 @@ public class ChatActivity extends AppCompatActivity {
                     rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
                 }
             }
-
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
-
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        });
+        };
+
+
+        firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(childEventListener);
     }
 
     @Override
@@ -170,8 +190,17 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        messagesList.clear();
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (childEventListener != null) {
+            firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).removeEventListener(childEventListener);
+            childEventListener = null;
+        }
+    }
+
 
     private void initializeControllers() {
         Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
@@ -213,6 +242,8 @@ public class ChatActivity extends AppCompatActivity {
         SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault());
         saveCurrentTime = currentTime.format(calendar.getTime());
 
+        slidingPaneLayout = findViewById(R.id.sliding_pane_layout);
+        slidingPane = findViewById(R.id.sliding_pane);
     }
 
     private void toggleButtonsBasedOnEditTextContent(@NonNull EditText etMessageInput, ImageButton ibSendFile, ImageButton ibSendMessage) {
@@ -334,8 +365,8 @@ public class ChatActivity extends AppCompatActivity {
                             Log.e("displayLastSeen", "onDataChange: " + e);
                         }
                     }
-
-                } else {
+                }
+                else {
                     tvUserLastSeen.setText(R.string.offline);
                 }
             }
