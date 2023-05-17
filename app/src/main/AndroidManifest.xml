@@ -21,7 +21,7 @@
 
         >
         <activity
-            android:name=".Chats.FullScreenImageActivity"
+            android:name=".Chats.Image.FullScreenImageActivity"
             android:parentActivityName=".Chats.ChatActivity"
             android:exported="false" />
         <activity

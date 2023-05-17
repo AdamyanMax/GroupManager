@@ -16,7 +16,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Chats.FullScreenImageActivity;
+import com.example.manage.Chats.Image.FullScreenImageActivity;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
@@ -149,6 +149,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void handleImageMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
+        // TODO: Long clicking doesn't show the popup menu
         holder.cardSenderImage.setOnLongClickListener(v -> {
             showPopupMenu(v, isSender, position);
             return true;
@@ -215,7 +216,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-
     private void handleFileMessages(@NonNull MessageViewHolder holder, Messages messages, boolean isSender, int position) {
         holder.cardSenderFile.setOnLongClickListener(view -> {
             showPopupMenu(view, isSender, position);
@@ -254,7 +254,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         holder.itemView.getContext().startActivity(downloadIntent);
     }
 
-
     private void showDeleteDialog(Context context, boolean isSender, int position) {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
         builder.setTitle(R.string.delete_message);
@@ -290,22 +289,38 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void deleteForMeReceiver(final int position) {
-
-        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil
+                .getMessagesRef()
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
     }
 
     private void deleteForEveryone(final int position) {
+        firebaseUtil
+                .getMessagesRef()
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
 
-        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getMessage_id()).removeValue();
-
-        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil
+                .getMessagesRef()
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
     }
-
 
     private void deleteForMeSender(final int position) {
-        firebaseUtil.getMessagesRef().child(userMessagesList.get(position).getFrom()).child(userMessagesList.get(position).getTo()).child(userMessagesList.get(position).getMessage_id()).removeValue();
+        firebaseUtil
+                .getMessagesRef()
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue();
     }
-
 
     private void showPopupMenu(View view, boolean isSender, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);
@@ -319,7 +334,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         });
         popupMenu.show();
     }
-
 
     @Override
     public int getItemCount() {
@@ -383,6 +397,4 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             cardReceiverFile = itemView.findViewById(R.id.card_receiver_file);
         }
     }
-
-
 }

@@ -93,6 +93,7 @@ public class ChatsFragment extends Fragment {
                                         Picasso.get().load(profileImage[0]).into(holder.civProfileImage);
                                     }
                                     final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                                    final String status = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
 
                                     holder.tvUsername.setText(name);
 
@@ -104,6 +105,7 @@ public class ChatsFragment extends Fragment {
                                         chatIntent.putExtra("visit_user_id", userIDs);
                                         chatIntent.putExtra("visit_username", name);
                                         chatIntent.putExtra("visit_image", profileImage[0]);
+                                        chatIntent.putExtra("visit_user_status", status);
                                         startActivity(chatIntent);
                                     });
                                 }

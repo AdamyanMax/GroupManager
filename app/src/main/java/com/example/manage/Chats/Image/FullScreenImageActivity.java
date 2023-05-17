@@ -1,4 +1,4 @@
-package com.example.manage.Chats;
+package com.example.manage.Chats.Image;
 
 import android.Manifest;
 import android.content.ContentResolver;

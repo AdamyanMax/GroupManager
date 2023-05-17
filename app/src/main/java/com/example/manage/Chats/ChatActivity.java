@@ -33,17 +33,24 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.manage.Adapter.MessagesAdapter;
+import com.example.manage.Chats.Profile.FilesFragment;
+import com.example.manage.Chats.Profile.ImagesFragment;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -83,14 +90,13 @@ public class ChatActivity extends AppCompatActivity {
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private ProgressBarManager progressBarManager;
     private PopupWindow popupWindow;
-    private String messageReceiverID, messageSenderID;
-    private TextView tvUsername, tvUserLastSeen;
-    private CircleImageView civProfileImage;
+    private String messageReceiverID, messageSenderID, saveCurrentTime, saveCurrentDate;
+    private TextView tvUsername, tvUserLastSeen, tvChatProfileUsername, tvChatProfileUserStatus;
+    private CircleImageView civProfileImage, civChatProfileUserImage;
     private ImageButton ibSendMessage, ibSendFile;
     private EditText etMessageInput;
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
-    private String saveCurrentTime, saveCurrentDate;
     private DatabaseReference userMessageKeyRef;
     private ConstraintLayout slidingPane;
     private SlidingPaneLayout slidingPaneLayout;
@@ -106,16 +112,19 @@ public class ChatActivity extends AppCompatActivity {
 
         messageReceiverID = getIntent().getExtras().get("visit_user_id").toString();
         String messageReceiverName = getIntent().getExtras().get("visit_username").toString();
+        String messageReceiverStatus = getIntent().getExtras().get("visit_user_status").toString();
         String messageReceiverImage = getIntent().getExtras().get("visit_image").toString();
-
 
         initializeControllers();
 
         tvUsername.setText(messageReceiverName);
         Picasso.get().load(messageReceiverImage).placeholder(R.drawable.user_default_profile_pic).into(civProfileImage);
 
-        toggleButtonsBasedOnEditTextContent(etMessageInput, ibSendFile, ibSendMessage);
+        tvChatProfileUsername.setText(messageReceiverName);
+        tvChatProfileUserStatus.setText(messageReceiverStatus);
+        Picasso.get().load(messageReceiverImage).placeholder(R.drawable.user_default_profile_pic).into(civChatProfileUserImage);
 
+        toggleButtonsBasedOnEditTextContent(etMessageInput, ibSendFile, ibSendMessage);
 
         ibSendMessage.setOnClickListener(v -> uploadAndSendTextMessage());
 
@@ -123,7 +132,101 @@ public class ChatActivity extends AppCompatActivity {
 
         ibSendFile.setOnClickListener(this::showExpandableMenu);
 
+        civProfileImage.setOnClickListener(v -> {
+            if (!slidingPaneLayout.isOpen()) {
+                slidingPaneLayout.openPane();
+            }
+        });
+
         configureSlidingPane();
+
+        ViewPager2 viewPager = findViewById(R.id.view_pager);
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+
+        setupTabLayoutForProfile(viewPager, tabLayout);
+    }
+
+    private void initializeControllers() {
+        Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
+        setSupportActionBar(chatToolBar);
+
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowCustomEnabled(true);
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        // Initialize the toolbar at the top
+        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View actionBarView = layoutInflater.inflate(R.layout.custom_chat_bar, null);
+        actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+
+        tvUsername = findViewById(R.id.tv_custom_username);
+        tvUserLastSeen = findViewById(R.id.tv_custom_last_seen);
+        civProfileImage = findViewById(R.id.civ_custom_profile);
+
+        civChatProfileUserImage = findViewById(R.id.civ_chat_profile_user_image);
+        tvChatProfileUsername = findViewById(R.id.tv_chat_profile_username);
+        tvChatProfileUserStatus = findViewById(R.id.tv_chat_profile_user_status);
+
+        ibSendMessage = findViewById(R.id.ib_send_private_message);
+        ibSendFile = findViewById(R.id.ib_send_file);
+
+        etMessageInput = findViewById(R.id.et_input_private_message);
+
+        progressBarManager = new ProgressBarManager(this);
+        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
+
+        messagesAdapter = new MessagesAdapter(messagesList);
+        rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvUserMessagesList.setLayoutManager(linearLayoutManager);
+        rvUserMessagesList.setAdapter(messagesAdapter);
+
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault());
+        saveCurrentTime = currentTime.format(calendar.getTime());
+
+        slidingPaneLayout = findViewById(R.id.sliding_pane_layout);
+        slidingPane = findViewById(R.id.sliding_pane);
+    }
+
+    private void setupTabLayoutForProfile(@NonNull ViewPager2 viewPager, TabLayout tabLayout) {
+        FragmentStateAdapter adapter = new FragmentStateAdapter(getSupportFragmentManager(), getLifecycle()) {
+            @NonNull
+            @Override
+            public Fragment createFragment(int position) {
+                switch (position) {
+                    case 0:
+                        return new ImagesFragment();
+                    case 1:
+                        return new FilesFragment();
+                    default:
+                        return null;
+                }
+            }
+
+            @Override
+            public int getItemCount() {
+                return 2;
+            }
+        };
+        viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            switch (position) {
+                case 0:
+                    tab.setText("Images");
+                    break;
+                case 1:
+                    tab.setText("Files");
+                    break;
+            }
+        }).attach();
     }
 
     private void configureSlidingPane() {
@@ -132,7 +235,7 @@ public class ChatActivity extends AppCompatActivity {
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
         int screenWidth = displayMetrics.widthPixels;
-        int slidingPaneWidth = (int) (screenWidth * 0.9);
+        int slidingPaneWidth = (int) (screenWidth * 0.875);
 
         ViewGroup.LayoutParams layoutParams = slidingPane.getLayoutParams();
         layoutParams.width = slidingPaneWidth;
@@ -159,24 +262,27 @@ public class ChatActivity extends AppCompatActivity {
                     rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
                 }
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
+
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
 
             }
+
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
 
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
         };
-
 
         firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(childEventListener);
     }
@@ -188,62 +294,12 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override
     protected void onStop() {
         super.onStop();
         if (childEventListener != null) {
             firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).removeEventListener(childEventListener);
             childEventListener = null;
         }
-    }
-
-
-    private void initializeControllers() {
-        Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
-        setSupportActionBar(chatToolBar);
-
-        ActionBar actionBar = getSupportActionBar();
-        assert actionBar != null;
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.setDisplayShowCustomEnabled(true);
-        actionBar.setDisplayShowTitleEnabled(false);
-
-        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View actionBarView = layoutInflater.inflate(R.layout.custom_chat_bar, null);
-        actionBar.setCustomView(actionBarView, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-        tvUsername = findViewById(R.id.tv_custom_username);
-        tvUserLastSeen = findViewById(R.id.tv_custom_last_seen);
-        civProfileImage = findViewById(R.id.civ_custom_profile);
-
-        ibSendMessage = findViewById(R.id.ib_send_private_message);
-        ibSendFile = findViewById(R.id.ib_send_file);
-
-        etMessageInput = findViewById(R.id.et_input_private_message);
-
-        progressBarManager = new ProgressBarManager(this);
-        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
-
-        messagesAdapter = new MessagesAdapter(messagesList);
-        rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
-        rvUserMessagesList.setLayoutManager(linearLayoutManager);
-        rvUserMessagesList.setAdapter(messagesAdapter);
-
-        Calendar calendar = Calendar.getInstance();
-
-        SimpleDateFormat currentDate = new SimpleDateFormat("MM dd yyyy", Locale.getDefault());
-        saveCurrentDate = currentDate.format(calendar.getTime());
-
-        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault());
-        saveCurrentTime = currentTime.format(calendar.getTime());
-
-        slidingPaneLayout = findViewById(R.id.sliding_pane_layout);
-        slidingPane = findViewById(R.id.sliding_pane);
     }
 
     private void toggleButtonsBasedOnEditTextContent(@NonNull EditText etMessageInput, ImageButton ibSendFile, ImageButton ibSendMessage) {
@@ -365,8 +421,7 @@ public class ChatActivity extends AppCompatActivity {
                             Log.e("displayLastSeen", "onDataChange: " + e);
                         }
                     }
-                }
-                else {
+                } else {
                     tvUserLastSeen.setText(R.string.offline);
                 }
             }
@@ -496,13 +551,13 @@ public class ChatActivity extends AppCompatActivity {
         return firebaseUtil.getRootRef().updateChildren(messageBodyDetails);
     }
 
-
     private void uploadAndSendTextMessage() {
         String messageText = etMessageInput.getText().toString();
 
         if (!TextUtils.isEmpty(messageText)) {
-            String messageSenderRef = "Messages/" + messageSenderID + "/" + messageReceiverID;
-            String messageReceiverRef = "Messages/" + messageReceiverID + "/" + messageSenderID;
+            Pair<String, String> messageRefs = getMessageRefs(messageSenderID, messageReceiverID);
+            String messageSenderRef = messageRefs.first;
+            String messageReceiverRef = messageRefs.second;
 
             String messagePushID = userMessageKeyRef.getKey();
 
