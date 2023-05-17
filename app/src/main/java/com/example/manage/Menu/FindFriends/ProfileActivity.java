@@ -178,10 +178,8 @@ public class ProfileActivity extends AppCompatActivity {
                         btnSendMessageRequest.setText(R.string.send_message);
                         btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
 //                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
-
                         btnDeclineRequest.setVisibility(View.INVISIBLE);
                         btnDeclineRequest.setEnabled(false);
-
                     }
                 });
             }

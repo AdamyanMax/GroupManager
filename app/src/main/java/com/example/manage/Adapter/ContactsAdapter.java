@@ -38,8 +38,6 @@ public class ContactsAdapter extends FirebaseRecyclerAdapter<Contacts, ContactsA
         firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-
-
                 if (snapshot.exists()) {
                     if (snapshot.child("userState").hasChild("state")) {
                         String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();

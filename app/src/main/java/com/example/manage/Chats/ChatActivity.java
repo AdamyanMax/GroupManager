@@ -45,9 +45,11 @@ import com.example.manage.Chats.Profile.FilesFragment;
 import com.example.manage.Chats.Profile.ImagesFragment;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.MainActivity;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -56,7 +58,6 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -93,7 +94,7 @@ public class ChatActivity extends AppCompatActivity {
     private String messageReceiverID, messageSenderID, saveCurrentTime, saveCurrentDate;
     private TextView tvUsername, tvUserLastSeen, tvChatProfileUsername, tvChatProfileUserStatus;
     private CircleImageView civProfileImage, civChatProfileUserImage;
-    private ImageButton ibSendMessage, ibSendFile;
+    private ImageButton ibSendMessage, ibSendFile, ibDeleteUser;
     private EditText etMessageInput;
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
@@ -126,11 +127,24 @@ public class ChatActivity extends AppCompatActivity {
 
         toggleButtonsBasedOnEditTextContent(etMessageInput, ibSendFile, ibSendMessage);
 
-        ibSendMessage.setOnClickListener(v -> uploadAndSendTextMessage());
-
         displayLastSeen();
 
+        ibDeleteUser.setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
+                .setTitle(R.string.delete_contact)
+                .setMessage(getString(R.string.are_you_sure_you_want_to_delete) + messageReceiverName + getString(R.string.from_the_chat_list))
+                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                    // Dismiss the dialog
+                    dialogInterface.dismiss();
+                })
+                .setPositiveButton(R.string.delete, (dialogInterface, i) -> {
+                    sendUserToMainActivity();
+                    // Remove the contact
+                    removeSpecificContact();
+                })
+                .show());
+
         ibSendFile.setOnClickListener(this::showExpandableMenu);
+        ibSendMessage.setOnClickListener(v -> uploadAndSendTextMessage());
 
         civProfileImage.setOnClickListener(v -> {
             if (!slidingPaneLayout.isOpen()) {
@@ -145,6 +159,14 @@ public class ChatActivity extends AppCompatActivity {
 
         setupTabLayoutForProfile(viewPager, tabLayout);
     }
+
+    private void sendUserToMainActivity() {
+        Intent mainIntent = new Intent(ChatActivity.this, MainActivity.class);
+        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(mainIntent);
+        finish();
+    }
+
 
     private void initializeControllers() {
         Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
@@ -171,6 +193,7 @@ public class ChatActivity extends AppCompatActivity {
 
         ibSendMessage = findViewById(R.id.ib_send_private_message);
         ibSendFile = findViewById(R.id.ib_send_file);
+        ibDeleteUser = findViewById(R.id.ib_custom_delete_user);
 
         etMessageInput = findViewById(R.id.et_input_private_message);
 
@@ -300,6 +323,14 @@ public class ChatActivity extends AppCompatActivity {
             firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).removeEventListener(childEventListener);
             childEventListener = null;
         }
+    }
+
+    private void removeSpecificContact() {
+        firebaseUtil.getContactsRef().child(messageSenderID).child(messageReceiverID).removeValue().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                firebaseUtil.getContactsRef().child(messageReceiverID).child(messageSenderID).removeValue();
+            }
+        });
     }
 
     private void toggleButtonsBasedOnEditTextContent(@NonNull EditText etMessageInput, ImageButton ibSendFile, ImageButton ibSendMessage) {
@@ -631,7 +662,7 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = messageRefs.first;
         String messageReceiverRef = messageRefs.second;
 
-        userMessageKeyRef = FirebaseDatabase.getInstance().getReference().child("Messages").child(messageSenderID).child(messageReceiverID).push();
+        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
         String messagePushID = userMessageKeyRef.getKey();
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("files");

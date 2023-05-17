@@ -17,7 +17,7 @@ import com.example.manage.Authentication.LoginActivity;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Menu.FindFriends.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
-import com.example.manage.ui.MyBottomSheetDialogFragment;
+import com.example.manage.ui.CreateGroupSheetDialogFragment;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void requestNewGroup() {
-        MyBottomSheetDialogFragment bottomSheetDialogFragment = new MyBottomSheetDialogFragment();
+        CreateGroupSheetDialogFragment bottomSheetDialogFragment = new CreateGroupSheetDialogFragment();
         bottomSheetDialogFragment.show(getSupportFragmentManager(), "myBottomSheet");
 
     }

@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Module.Contacts;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -94,7 +94,7 @@ public class RequestsFragment extends Fragment {
 
                                         holder.tvUserName.setText(requestUsername);
                                         holder.tvUserStatus.setText(requestUserStatus);
-
+                                        // TODO: Make it update realtime
                                         holder.btnAccept.setOnClickListener(v -> firebaseUtil.getContactsRef().child(list_user_id).child(currentUserID).child("Contact").setValue("Saved").addOnCompleteListener(task -> {
                                             if (task.isSuccessful()) {
                                                 firebaseUtil.getContactsRef().child(currentUserID).child(list_user_id).child("Contact").setValue("Saved").addOnCompleteListener(task1 -> {

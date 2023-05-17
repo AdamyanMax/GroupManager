@@ -26,7 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.List;
 import java.util.Objects;
 
-public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment {
+public class CreateGroupSheetDialogFragment extends BottomSheetDialogFragment {
     private GroupCreationAdapter adapter;
 
     @Nullable

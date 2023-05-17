@@ -90,5 +90,9 @@
     <string name="card_is_scrollable">Card is scrollable</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="delete_friend">Delete friend</string>
+    <string name="delete_contact">Delete Contact?</string>
+    <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete "</string>
+    <string name="from_the_chat_list">" from the chat list?"</string>
 
 </resources>
