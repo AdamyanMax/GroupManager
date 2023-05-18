@@ -9,11 +9,11 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
+import com.example.manage.Helpers.FirebaseManager;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.OperationCallback;
 import com.example.manage.Helpers.ProgressBarManager;
 import com.example.manage.R;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -21,9 +21,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -42,7 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvUsername, tvUserStatus;
     private MaterialButton btnSendMessageRequest, btnDeclineRequest;
     private ProgressBarManager progressBarManager;
-
+    private FirebaseManager firebaseManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +49,7 @@ public class ProfileActivity extends AppCompatActivity {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
         progressBarManager = new ProgressBarManager(this);
+        firebaseManager = new FirebaseManager();
 
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
         currentState = CURRENT_STATE_NEW;
@@ -169,59 +167,38 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void removeSpecificContact() {
-        firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        btnSendMessageRequest.setEnabled(true);
-                        currentState = CURRENT_STATE_NEW;
-                        btnSendMessageRequest.setText(R.string.send_message);
-                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
-//                        btnSendMessageRequest.setBackgroundResource(R.drawable.bg_profile_buttons_end);
-                        btnDeclineRequest.setVisibility(View.INVISIBLE);
-                        btnDeclineRequest.setEnabled(false);
-                    }
-                });
+        firebaseManager.removeChatData(senderUserID, receiverUserID, new OperationCallback() {
+            @Override
+            public void onSuccess() {
+                btnSendMessageRequest.setEnabled(true);
+                currentState = CURRENT_STATE_NEW;
+                btnSendMessageRequest.setText(R.string.send_message);
+                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_send_message));
+                btnDeclineRequest.setVisibility(View.INVISIBLE);
+                btnDeclineRequest.setEnabled(false);
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
+                Log.e(TAG, "Error removing contact: ", exception);
             }
         });
     }
 
     private void acceptChatRequest() {
-        List<Task<Void>> tasks = new ArrayList<>();
-
-        Task<Void> task1 = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
-            // Handle error
-        });
-        tasks.add(task1);
-
-        Task<Void> task2 = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved").addOnFailureListener(e -> {
-            // Handle error
-        });
-        tasks.add(task2);
-
-        Task<Void> task3 = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue().addOnFailureListener(e -> {
-            // Handle error
-        });
-        tasks.add(task3);
-
-        Task<Void> task4 = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue().addOnFailureListener(e -> {
-            // Handle error
-        });
-        tasks.add(task4);
-
         progressBarManager.show("Accepting request...");
 
-        Tasks.whenAllComplete(tasks).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                // All tasks were successful, hide the loading bar
+        firebaseManager.acceptChatRequest(senderUserID, receiverUserID, new OperationCallback() {
+            @Override
+            public void onSuccess() {
                 progressBarManager.hide();
-
-                // Update UI
                 onAcceptSuccess();
-            } else {
-                // At least one task failed, hide the loading bar and show an error message
+            }
+
+            @Override
+            public void onFailure(Exception exception) {
                 progressBarManager.hide();
-                Log.e(TAG, "Error accepting chat request: ", task.getException());
+                Log.e(TAG, "Error accepting chat request: ", exception);
             }
         });
     }
@@ -237,46 +214,39 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cancelChatRequest() {
-        firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue().addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        btnSendMessageRequest.setEnabled(true);
-                        currentState = CURRENT_STATE_NEW;
-                        btnSendMessageRequest.setText(R.string.send_message);
-                        btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_send_message));
+        firebaseManager.removeChatData(senderUserID, receiverUserID, new OperationCallback() {
+            @Override
+            public void onSuccess() {
+                btnSendMessageRequest.setEnabled(true);
+                currentState = CURRENT_STATE_NEW;
+                btnSendMessageRequest.setText(R.string.send_message);
+                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_send_message));
+                btnDeclineRequest.setVisibility(View.INVISIBLE);
+                btnDeclineRequest.setEnabled(false);
+            }
 
-                        btnDeclineRequest.setVisibility(View.INVISIBLE);
-                        btnDeclineRequest.setEnabled(false);
-
-                    }
-                });
+            @Override
+            public void onFailure(Exception exception) {
+                // Handle the error
+                Log.e(TAG, "Error canceling chat request: ", exception);
             }
         });
     }
 
     private void sendChatRequest() {
-        firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent").addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received").addOnCompleteListener(task1 -> {
-                    if (task1.isSuccessful()) {
-                        HashMap<String, String> chatNotificationMap = new HashMap<>();
-                        chatNotificationMap.put("from", senderUserID);
-                        chatNotificationMap.put("type", "request");
+        firebaseManager.sendChatRequest(senderUserID, receiverUserID, new OperationCallback() {
+            @Override
+            public void onSuccess() {
+                btnSendMessageRequest.setEnabled(true);
+                currentState = CURRENT_STATE_REQUEST_SENT;
+                btnSendMessageRequest.setText(R.string.cancel_chat_request);
+                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(ProfileActivity.this, R.drawable.ic_cross));
+            }
 
-                        firebaseUtil.getNotificationsRef().child(receiverUserID).push().setValue(chatNotificationMap).addOnCompleteListener(task2 -> {
-                            if (task2.isSuccessful()) {
-                                btnSendMessageRequest.setEnabled(true);
-                                currentState = CURRENT_STATE_REQUEST_SENT;
-                                btnSendMessageRequest.setText(R.string.cancel_chat_request);
-                                btnSendMessageRequest.setIcon(ContextCompat.getDrawable(this, R.drawable.ic_cross));
-
-                            }
-                        });
-
-
-                    }
-                });
+            @Override
+            public void onFailure(Exception exception) {
+                // Handle the error
+                Log.e(TAG, "Error sending chat request: ", exception);
             }
         });
     }

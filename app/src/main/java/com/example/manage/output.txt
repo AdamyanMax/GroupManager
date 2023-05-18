@@ -1,0 +1,60 @@
+Folder PATH listing
+Volume serial number is 3433-3A85
+C:.
+|   MainActivity.java
+|   output.txt
+|   
++---Adapter
+|       ContactsAdapter.java
+|       FindFriendsAdapter.java
+|       GroupCreationAdapter.java
+|       GroupsAdapter.java
+|       MessagesAdapter.java
+|       TabAccessorAdapter.java
+|       
++---Authentication
+|       LoginActivity.java
+|       RegisterActivity.java
+|       
++---Chats
+|   |   ChatActivity.java
+|   |   ChatsFragment.java
+|   |   
+|   +---Image
+|   |       FullScreenImageActivity.java
+|   |       
+|   \---Profile
+|           FilesFragment.java
+|           ImagesFragment.java
+|           
++---Contacts
+|       ContactsFragment.java
+|       
++---Groups
+|       GroupChatActivity.java
+|       GroupsFragment.java
+|       
++---Helpers
+|       FirebaseUtil.java
+|       ProgressBarManager.java
+|       
++---Menu
+|   |   SettingsActivity.java
+|   |   
+|   +---FindFriends
+|   |       FindFriendsActivity.java
+|   |       ProfileActivity.java
+|   |       
+|   \---ImageCropper
+|           CropperActivity.java
+|           
++---Module
+|       Contacts.java
+|       Messages.java
+|       
++---Requests
+|       RequestsFragment.java
+|       
+\---ui
+        CreateGroupSheetDialogFragment.java
+        
