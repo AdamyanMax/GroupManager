@@ -19,7 +19,6 @@ import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -99,7 +98,6 @@ public class ChatsFragment extends Fragment {
 
                                     getLastMessage(userIDs, holder.tvUserLastMessage);
 
-
                                     holder.itemView.setOnClickListener(v -> {
                                         Intent chatIntent = new Intent(getContext(), ChatActivity.class);
                                         chatIntent.putExtra("visit_user_id", userIDs);
@@ -131,8 +129,7 @@ public class ChatsFragment extends Fragment {
     }
 
     private void getLastMessage(String userId, TextView tvUserLastStatus) {
-        FirebaseUser currentUser = mAuth.getCurrentUser() != null ? mAuth.getCurrentUser() : null;
-        String currentUserID = currentUser.getUid();
+        String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
         firebaseUtil.getMessagesRef().child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
-    android:minHeight="76dp"
+    android:maxHeight="76dp"
     android:padding="8dp">
 
 
@@ -38,10 +38,12 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@+id/ll_accept_decline_layout"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toEndOf="@+id/flProfile"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -49,8 +51,9 @@
             android:id="@+id/tv_display_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="120dp"
             android:text="Name"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:textColor="@color/dark_teal"
             android:textSize="20sp"
             tools:ignore="HardcodedText" />
@@ -60,8 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
-            android:maxWidth="140dp"
-            android:maxLines="2"
+            android:maxLines="1"
             android:text="Status"
             android:textColor="@color/grey"
             android:textSize="15sp"
