@@ -33,7 +33,9 @@
             android:layout_height="12dp"
             android:layout_gravity="bottom|end"
             android:src="@drawable/ic_circle_solid"
-            android:visibility="invisible" />
+            android:layout_marginEnd="3dp"
+            android:layout_marginBottom="3dp"
+            android:visibility="visible" />
     </FrameLayout>
 
     <LinearLayout
@@ -51,9 +53,9 @@
             android:id="@+id/tv_display_username"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Name"
             android:ellipsize="end"
             android:maxLines="1"
+            android:text="Name"
             android:textColor="@color/dark_teal"
             android:textSize="20sp"
             tools:ignore="HardcodedText" />
@@ -73,14 +75,17 @@
     <LinearLayout
         android:id="@+id/ll_accept_decline_layout"
         android:layout_width="0dp"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:gravity="center"
         android:orientation="horizontal"
+        app:layout_constraintWidth_default="wrap"
+
+        android:visibility="gone"
+
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/linearLayout"
-        app:layout_constraintTop_toTopOf="parent"
-        android:visibility="gone">
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <com.google.android.material.button.MaterialButton
@@ -93,6 +98,9 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="14sp"
+
+            android:visibility="gone"
+
             app:backgroundTint="@color/colorPrimary"
             app:rippleColor="@color/colorPrimaryDark" />
 
@@ -107,12 +115,33 @@
             android:textAllCaps="false"
             android:textColor="@color/colorPrimary"
             android:textSize="14sp"
+
+            android:visibility="gone"
+
             app:backgroundTint="@android:color/transparent"
             app:rippleColor="@color/colorAccent"
             app:strokeColor="@color/colorPrimary"
             app:strokeWidth="1dp" />
 
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_request_cancel"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:letterSpacing="0"
+            android:text="@string/cancel"
+            android:textAllCaps="false"
+            android:textColor="@color/colorPrimary"
+            android:textSize="14sp"
+
+            android:visibility="gone"
+
+            app:backgroundTint="@android:color/transparent"
+            app:rippleColor="@color/colorAccent"
+            app:strokeColor="@color/colorPrimary"
+            app:strokeWidth="1dp" />
     </LinearLayout>
 
     <com.google.android.material.checkbox.MaterialCheckBox

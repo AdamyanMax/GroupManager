@@ -44,7 +44,7 @@ import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Chats.Profile.FilesFragment;
 import com.example.manage.Chats.Profile.ImagesFragment;
 import com.example.manage.Helpers.FirebaseUtil;
-import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.MainActivity;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
@@ -89,7 +89,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private final List<Messages> messagesList = new ArrayList<>();
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
-    private ProgressBarManager progressBarManager;
+    private TextProgressBarController progressBarController;
     private PopupWindow popupWindow;
     private String messageReceiverID, messageSenderID, saveCurrentTime, saveCurrentDate;
     private TextView tvUsername, tvUserLastSeen, tvChatProfileUsername, tvChatProfileUserStatus;
@@ -197,7 +197,7 @@ public class ChatActivity extends AppCompatActivity {
 
         etMessageInput = findViewById(R.id.et_input_private_message);
 
-        progressBarManager = new ProgressBarManager(this);
+        progressBarController = new TextProgressBarController(this);
         userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
 
         messagesAdapter = new MessagesAdapter(messagesList);
@@ -610,7 +610,7 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void uploadAndSendImageMessage(Uri imageUri) {
-        progressBarManager.show("Sending the image...");
+        progressBarController.show("Sending the image...");
 
         Pair<String, String> messageRefs = getMessageRefs(messageSenderID, messageReceiverID);
         String messageSenderRef = messageRefs.first;
@@ -647,16 +647,16 @@ public class ChatActivity extends AppCompatActivity {
                         messageImageBody).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
                         .addOnFailureListener(e -> Log.e("uploadAndSendImageMessage", e + ""));
 
-                progressBarManager.hide();
+                progressBarController.hide();
             } else {
                 Toast.makeText(ChatActivity.this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                progressBarManager.hide();
+                progressBarController.hide();
             }
         });
     }
 
     private void uploadAndSendFileMessage(Uri fileUri, String fileName, String fileSize) {
-        progressBarManager.show("Sending the file...");
+        progressBarController.show("Sending the file...");
 
         Pair<String, String> messageRefs = getMessageRefs(messageSenderID, messageReceiverID);
         String messageSenderRef = messageRefs.first;
@@ -697,10 +697,10 @@ public class ChatActivity extends AppCompatActivity {
                         messageFileBody).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
                         .addOnFailureListener(e -> Log.e("uploadAndSendFileMessage", e + ""));
 
-                progressBarManager.hide();
+                progressBarController.hide();
             } else {
                 Toast.makeText(ChatActivity.this, "Error: " + Objects.requireNonNull(task.getException()).getMessage(), Toast.LENGTH_SHORT).show();
-                progressBarManager.hide();
+                progressBarController.hide();
             }
         });
     }

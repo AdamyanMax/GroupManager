@@ -13,8 +13,9 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Module.Contacts;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.ProgressBar.ProgressBarHandler;
+import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -34,6 +35,7 @@ public class ChatsFragment extends Fragment {
     private RecyclerView rvChatList;
     private DatabaseReference ChatsUserIdRef;
     private FirebaseAuth mAuth;
+    private ProgressBarHandler progressBarHandler;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -43,6 +45,7 @@ public class ChatsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View vPrivateChats = inflater.inflate(R.layout.fragment_chats, container, false);
+        progressBarHandler = new ProgressBarHandler(vPrivateChats);
 
         rvChatList = vPrivateChats.findViewById(R.id.rv_private_chats);
         rvChatList.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -58,6 +61,9 @@ public class ChatsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
+        progressBarHandler.show();
+
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(ChatsUserIdRef, Contacts.class)
                 .build();
@@ -121,6 +127,12 @@ public class ChatsFragment extends Fragment {
                     public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
                         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
                         return new ChatsViewHolder(view);
+                    }
+
+                    @Override
+                    public void onDataChanged() {
+                        // When data has loaded, hide the progress bar
+                        progressBarHandler.hide();
                     }
                 };
 

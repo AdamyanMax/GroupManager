@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_network_error_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:visibility="gone">
+
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="@string/oops_no_connection"
+        android:src="@drawable/ic_no_internet" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="72dp"
+        android:layout_marginBottom="12dp"
+        android:fontFamily="@font/opensans"
+        android:text="@string/oops_no_connection"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="32sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/opensans"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="4dp"
+        android:text="@string/sit_tight_updates_will_auto_appear_once_back_online"
+        android:textSize="15sp" />
+    <!--        android:layout_marginBottom="64dp"-->
+
+</LinearLayout>

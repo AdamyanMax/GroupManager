@@ -94,5 +94,7 @@
     <string name="delete_contact">Delete Contact?</string>
     <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete "</string>
     <string name="from_the_chat_list">" from the chat list?"</string>
+    <string name="oops_no_connection">Oops, No Connection</string>
+    <string name="sit_tight_updates_will_auto_appear_once_back_online">Sit tight. Updates will auto-appear once back online.</string>
 
 </resources>

@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.manage.Helpers.FirebaseUtil;
-import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.MainActivity;
 import com.example.manage.Menu.ImageCropper.CropperActivity;
 import com.example.manage.R;
@@ -44,7 +44,7 @@ public class SettingsActivity extends AppCompatActivity {
     private CircleImageView civUserProfileImage;
     private String currentUserID;
     private StorageReference UserProfileImageRef;
-    private ProgressBarManager progressBarManager;
+    private TextProgressBarController progressBarController;
     private ImageButton ibBack;
 
     @Override
@@ -81,7 +81,7 @@ public class SettingsActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.et_set_user_name);
         etUserStatus = findViewById(R.id.et_set_profile_status);
         civUserProfileImage = findViewById(R.id.iv_set_profile_image);
-        progressBarManager = new ProgressBarManager(this);
+        progressBarController = new TextProgressBarController(this);
         ibBack = findViewById(R.id.ib_settings_back);
     }
 
@@ -89,7 +89,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == -1 && requestCode == REQUEST_CODE_IMAGE_PICKER) {
-            progressBarManager.show("Updating the profile image...");
+            progressBarController.show("Updating the profile image...");
 
             assert data != null;
             String result = data.getStringExtra("RESULT");
@@ -107,21 +107,21 @@ public class SettingsActivity extends AppCompatActivity {
                             firebaseUtil.getUsersRef().child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     Toast.makeText(SettingsActivity.this, "Image saved", Toast.LENGTH_SHORT).show();
-                                    progressBarManager.hide();
+                                    progressBarController.hide();
                                 } else {
                                     Toast.makeText(SettingsActivity.this, "Error: " + Objects.requireNonNull(task1.getException()), Toast.LENGTH_SHORT).show();
-                                    progressBarManager.hide();
+                                    progressBarController.hide();
                                 }
                             });
                         }).addOnFailureListener(e -> {
                             String message = e.getMessage();
                             Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                            progressBarManager.hide();
+                            progressBarController.hide();
                         });
                     } else {
                         String message = Objects.requireNonNull(task.getException()).toString();
                         Toast.makeText(SettingsActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                        progressBarManager.hide();
+                        progressBarController.hide();
                     }
                 });
             } else {

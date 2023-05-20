@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.manage.Helpers.FirebaseUtil;
-import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.MainActivity;
 import com.example.manage.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private FirebaseAuth mAuth;
     private Button btnLogin;
-    private ProgressBarManager progressBar;
+    private TextProgressBarController progressBar;
     private EditText etUserEmail, etUserPassword;
     private TextView tvNeedAccountLink;
 
@@ -49,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
 
         tvNeedAccountLink = findViewById(R.id.tv_login_has_account_link);
 
-        progressBar = new ProgressBarManager(this);
+        progressBar = new TextProgressBarController(this);
     }
 
     private void AllowUserToLogin() {

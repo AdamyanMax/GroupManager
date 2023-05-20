@@ -12,7 +12,7 @@ import androidx.core.content.ContextCompat;
 import com.example.manage.Helpers.FirebaseManager;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Helpers.OperationCallback;
-import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +38,7 @@ public class ProfileActivity extends AppCompatActivity {
     private CircleImageView civProfileImage;
     private TextView tvUsername, tvUserStatus;
     private MaterialButton btnSendMessageRequest, btnDeclineRequest;
-    private ProgressBarManager progressBarManager;
+    private TextProgressBarController progressBarController;
     private FirebaseManager firebaseManager;
 
     @Override
@@ -48,7 +48,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-        progressBarManager = new ProgressBarManager(this);
+        progressBarController = new TextProgressBarController(this);
         firebaseManager = new FirebaseManager();
 
         receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
@@ -179,26 +179,26 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Exception exception) {
-                Log.e(TAG, "Error removing contact: ", exception);
+            public void onFailure(Exception error) {
+                Log.e(TAG, "Error removing contact: ", error);
             }
         });
     }
 
     private void acceptChatRequest() {
-        progressBarManager.show("Accepting request...");
+        progressBarController.show("Accepting request...");
 
         firebaseManager.acceptChatRequest(senderUserID, receiverUserID, new OperationCallback() {
             @Override
             public void onSuccess() {
-                progressBarManager.hide();
+                progressBarController.hide();
                 onAcceptSuccess();
             }
 
             @Override
-            public void onFailure(Exception exception) {
-                progressBarManager.hide();
-                Log.e(TAG, "Error accepting chat request: ", exception);
+            public void onFailure(Exception error) {
+                progressBarController.hide();
+                Log.e(TAG, "Error accepting chat request: ", error);
             }
         });
     }
@@ -226,9 +226,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Exception exception) {
+            public void onFailure(Exception error) {
                 // Handle the error
-                Log.e(TAG, "Error canceling chat request: ", exception);
+                Log.e(TAG, "Error canceling chat request: ", error);
             }
         });
     }
@@ -244,9 +244,9 @@ public class ProfileActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Exception exception) {
+            public void onFailure(Exception error) {
                 // Handle the error
-                Log.e(TAG, "Error sending chat request: ", exception);
+                Log.e(TAG, "Error sending chat request: ", error);
             }
         });
     }

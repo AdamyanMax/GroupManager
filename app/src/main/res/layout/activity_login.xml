@@ -104,5 +104,5 @@
 
     </LinearLayout>
 
-    <include layout="@layout/progress_bar_layout" />
+    <include layout="@layout/progress_bar_with_text_layout" />
 </LinearLayout>

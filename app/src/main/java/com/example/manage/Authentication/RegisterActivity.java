@@ -11,7 +11,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.manage.Helpers.FirebaseUtil;
-import com.example.manage.Helpers.ProgressBarManager;
+import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.MainActivity;
 import com.example.manage.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -26,7 +26,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etUserEmail, etUserPassword;
     private TextView tvAlreadyHasAccountLink;
     private FirebaseAuth mAuth;
-    private ProgressBarManager progressBarManager;
+    private TextProgressBarController progressBarController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(password)) {
             Toast.makeText(this, "Please enter a password", Toast.LENGTH_SHORT).show();
         } else {
-            progressBarManager.show("Creating a new account");
+            progressBarController.show("Creating a new account");
 
 
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
@@ -64,11 +64,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                     sendToMainActivity();
                     Toast.makeText(RegisterActivity.this, "Account created successfully", Toast.LENGTH_SHORT).show();
-                    progressBarManager.hide();
+                    progressBarController.hide();
                 } else {
                     String message = Objects.requireNonNull(task.getException()).toString();
                     Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
-                    progressBarManager.hide();
+                    progressBarController.hide();
                 }
             });
         }
@@ -94,6 +94,6 @@ public class RegisterActivity extends AppCompatActivity {
 
         tvAlreadyHasAccountLink = findViewById(R.id.tv_register_need_account_link);
 
-        progressBarManager = new ProgressBarManager(this);
+        progressBarController = new TextProgressBarController(this);
     }
 }
