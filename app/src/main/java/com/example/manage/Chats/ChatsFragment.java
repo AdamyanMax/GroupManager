@@ -36,6 +36,7 @@ public class ChatsFragment extends Fragment {
     private DatabaseReference ChatsUserIdRef;
     private FirebaseAuth mAuth;
     private ProgressBarHandler progressBarHandler;
+    private FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -53,7 +54,7 @@ public class ChatsFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        ChatsUserIdRef = firebaseUtil.getMessagesRef().child(currentUserID);
+        ChatsUserIdRef = firebaseUtil.getContactsRef().child(currentUserID);
 
         return vPrivateChats;
     }
@@ -67,77 +68,82 @@ public class ChatsFragment extends Fragment {
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>()
                 .setQuery(ChatsUserIdRef, Contacts.class)
                 .build();
-        FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter =
-                new FirebaseRecyclerAdapter<Contacts, ChatsViewHolder>(options) {
+        adapter = new FirebaseRecyclerAdapter<Contacts, ChatsViewHolder>(options) {
+            @Override
+            protected void onBindViewHolder(@NonNull ChatsViewHolder holder, int position, @NonNull Contacts model) {
+                final String userIDs = getRef(position).getKey();
+                final String[] profileImage = {"default_image"};
+
+                assert userIDs != null;
+                firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
                     @Override
-                    protected void onBindViewHolder(@NonNull ChatsViewHolder holder, int position, @NonNull Contacts model) {
-                        final String userIDs = getRef(position).getKey();
-                        final String[] profileImage = {"default_image"};
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (snapshot.exists()) {
+                            if (snapshot.child("userState").hasChild("state")) {
+                                String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
 
-                        assert userIDs != null;
-                        firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                if (snapshot.exists()) {
-                                    if (snapshot.child("userState").hasChild("state")) {
-                                        String state = Objects.requireNonNull(snapshot.child("userState").child("state").getValue()).toString();
+                                if (state.equals("online")) {
+                                    holder.civOnlineIcon.setVisibility(View.VISIBLE);
+                                } else if (state.equals("offline")) {
 
-                                        if (state.equals("online")) {
-                                            holder.civOnlineIcon.setVisibility(View.VISIBLE);
-                                        } else if (state.equals("offline")) {
-
-                                            holder.civOnlineIcon.setVisibility(View.INVISIBLE);
-                                        }
-
-                                    } else {
-                                        holder.civOnlineIcon.setVisibility(View.INVISIBLE);
-                                    }
-
-                                    if (snapshot.hasChild("image")) {
-                                        profileImage[0] = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
-                                        Picasso.get().load(profileImage[0]).into(holder.civProfileImage);
-                                    }
-                                    final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
-                                    final String status = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
-
-                                    holder.tvUsername.setText(name);
-
-                                    getLastMessage(userIDs, holder.tvUserLastMessage);
-
-                                    holder.itemView.setOnClickListener(v -> {
-                                        Intent chatIntent = new Intent(getContext(), ChatActivity.class);
-                                        chatIntent.putExtra("visit_user_id", userIDs);
-                                        chatIntent.putExtra("visit_username", name);
-                                        chatIntent.putExtra("visit_image", profileImage[0]);
-                                        chatIntent.putExtra("visit_user_status", status);
-                                        startActivity(chatIntent);
-                                    });
+                                    holder.civOnlineIcon.setVisibility(View.INVISIBLE);
                                 }
+
+                            } else {
+                                holder.civOnlineIcon.setVisibility(View.INVISIBLE);
                             }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
+                            if (snapshot.hasChild("image")) {
+                                profileImage[0] = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
+                                Picasso.get().load(profileImage[0]).into(holder.civProfileImage);
                             }
-                        });
+                            final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
+                            final String status = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
+
+                            holder.tvUsername.setText(name);
+
+                            getLastMessage(userIDs, holder.tvUserLastMessage);
+
+                            holder.itemView.setOnClickListener(v -> {
+                                Intent chatIntent = new Intent(getContext(), ChatActivity.class);
+                                chatIntent.putExtra("visit_user_id", userIDs);
+                                chatIntent.putExtra("visit_username", name);
+                                chatIntent.putExtra("visit_image", profileImage[0]);
+                                chatIntent.putExtra("visit_user_status", status);
+                                startActivity(chatIntent);
+                            });
+                        }
                     }
 
-                    @NonNull
                     @Override
-                    public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
-                        return new ChatsViewHolder(view);
-                    }
+                    public void onCancelled(@NonNull DatabaseError error) {
 
-                    @Override
-                    public void onDataChanged() {
-                        // When data has loaded, hide the progress bar
-                        progressBarHandler.hide();
                     }
-                };
+                });
+            }
+
+            @NonNull
+            @Override
+            public ChatsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.user_display_layout, parent, false);
+                return new ChatsViewHolder(view);
+            }
+
+            @Override
+            public void onDataChanged() {
+                // When data has loaded, hide the progress bar
+                progressBarHandler.hide();
+            }
+        };
 
         rvChatList.setAdapter(adapter);
         adapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        adapter.stopListening();
     }
 
     private void getLastMessage(String userId, TextView tvUserLastStatus) {
@@ -176,8 +182,6 @@ public class ChatsFragment extends Fragment {
             }
         });
     }
-
-
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         CircleImageView civProfileImage, civOnlineIcon;
         TextView tvUserLastMessage, tvUsername;

@@ -119,7 +119,7 @@ public class RequestsFragment extends Fragment {
                                             }
                                         }));
 
-                                        holder.btnDecline.setOnClickListener(v -> firebaseManager.removeChatData(currentUserID, list_user_id, new OperationCallback() {
+                                        holder.btnDecline.setOnClickListener(v -> firebaseManager.removeChatRequest(currentUserID, list_user_id, new OperationCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 Toast.makeText(getContext(), R.string.chat_request_declined, Toast.LENGTH_SHORT).show();
@@ -159,7 +159,7 @@ public class RequestsFragment extends Fragment {
                                         holder.tvUserName.setText(requestUsername);
                                         holder.tvUserStatus.setText(requestUserStatus);
 
-                                        holder.btnCancel.setOnClickListener(v -> firebaseManager.removeChatData(currentUserID, list_user_id, new OperationCallback() {
+                                        holder.btnCancel.setOnClickListener(v -> firebaseManager.removeChatRequest(currentUserID, list_user_id, new OperationCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 Toast.makeText(getContext(), "Chat request canceled", Toast.LENGTH_SHORT).show();

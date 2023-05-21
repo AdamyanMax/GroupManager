@@ -40,7 +40,7 @@ import java.util.Objects;
 // TODO: Add online check for all activities except for Login/Signup activity
 public class MainActivity extends AppCompatActivity {
 
-    private final String[] titles = new String[]{"Chats", "Groups", "Contacts", "Requests"};
+    private final String[] titles = new String[]{"Chats", "Groups", "Requests"};
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private FirebaseAuth mAuth;
 

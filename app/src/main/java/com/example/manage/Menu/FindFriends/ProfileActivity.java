@@ -77,9 +77,7 @@ public class ProfileActivity extends AppCompatActivity {
                     tvUsername.setText(userName);
                     tvUserStatus.setText(userStatus);
 
-
                     manageChatRequests();
-
                 } else if (snapshot.exists()) {
                     String userName = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
                     String userStatus = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
@@ -167,7 +165,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void removeSpecificContact() {
-        firebaseManager.removeChatData(senderUserID, receiverUserID, new OperationCallback() {
+        firebaseManager.removeContact(senderUserID, receiverUserID, new OperationCallback() {
             @Override
             public void onSuccess() {
                 btnSendMessageRequest.setEnabled(true);
@@ -180,7 +178,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Exception error) {
-                Log.e(TAG, "Error removing contact: ", error);
+                Log.e(TAG, "Error removing contact: " + error);
             }
         });
     }
@@ -214,7 +212,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cancelChatRequest() {
-        firebaseManager.removeChatData(senderUserID, receiverUserID, new OperationCallback() {
+        firebaseManager.removeChatRequest(senderUserID, receiverUserID, new OperationCallback() {
             @Override
             public void onSuccess() {
                 btnSendMessageRequest.setEnabled(true);
