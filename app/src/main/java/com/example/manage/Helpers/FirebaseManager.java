@@ -19,7 +19,7 @@ public class FirebaseManager {
         firebaseUtil = new FirebaseUtil();
     }
 
-//    public LiveData<Contacts> getUserLiveData(String userId) {
+    //    public LiveData<Contacts> getUserLiveData(String userId) {
 //        firebaseUtil.getUsersRef().child(userId).addValueEventListener(new ValueEventListener() {
 //            @Override
 //            public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -69,16 +69,16 @@ public class FirebaseManager {
 //        return lastMessageLiveData;
 //    }
 
-    public void removeChatRequest(String senderUserID, String receiverUserID, OperationCallback callback) {
-        DatabaseReference senderRef = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID);
-        DatabaseReference receiverRef = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID);
+    public void removeContact(String senderUserID, String receiverUserID, OperationCallback callback) {
+        DatabaseReference senderRef = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID);
+        DatabaseReference receiverRef = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID);
         List<Task<Void>> tasks = new ArrayList<>();
 
-        Task<Void> removeSenderChatRequest = senderRef.removeValue();
-        tasks.add(removeSenderChatRequest);
+        Task<Void> removeSenderContact = senderRef.removeValue();
+        tasks.add(removeSenderContact);
 
-        Task<Void> removeReceiverChatRequest = receiverRef.removeValue();
-        tasks.add(removeReceiverChatRequest);
+        Task<Void> removeReceiverContact = receiverRef.removeValue();
+        tasks.add(removeReceiverContact);
 
         Task<Void> combinedTask = Tasks.whenAll(tasks);
 
@@ -91,16 +91,16 @@ public class FirebaseManager {
         });
     }
 
-    public void removeContact(String senderUserID, String receiverUserID, OperationCallback callback) {
-        DatabaseReference senderRef = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID);
-        DatabaseReference receiverRef = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID);
+    public void declineChatRequest(String senderUserID, String receiverUserID, OperationCallback callback) {
+        DatabaseReference senderRef = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID);
+        DatabaseReference receiverRef = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID);
         List<Task<Void>> tasks = new ArrayList<>();
 
-        Task<Void> removeSenderContact = senderRef.removeValue();
-        tasks.add(removeSenderContact);
+        Task<Void> removeSenderChatRequest = senderRef.removeValue();
+        tasks.add(removeSenderChatRequest);
 
-        Task<Void> removeReceiverContact = receiverRef.removeValue();
-        tasks.add(removeReceiverContact);
+        Task<Void> removeReceiverChatRequest = receiverRef.removeValue();
+        tasks.add(removeReceiverChatRequest);
 
         Task<Void> combinedTask = Tasks.whenAll(tasks);
 

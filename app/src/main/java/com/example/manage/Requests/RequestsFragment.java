@@ -64,7 +64,6 @@ public class RequestsFragment extends Fragment {
         progressBarHandler.show();
 
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getChatRequestsRef().child(currentUserID), Contacts.class).build();
-        // TODO: Make it update in realtime
         adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
             @NonNull
             @Override
@@ -119,7 +118,7 @@ public class RequestsFragment extends Fragment {
                                             }
                                         }));
 
-                                        holder.btnDecline.setOnClickListener(v -> firebaseManager.removeChatRequest(currentUserID, list_user_id, new OperationCallback() {
+                                        holder.btnDecline.setOnClickListener(v -> firebaseManager.declineChatRequest(currentUserID, list_user_id, new OperationCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 Toast.makeText(getContext(), R.string.chat_request_declined, Toast.LENGTH_SHORT).show();
@@ -159,7 +158,7 @@ public class RequestsFragment extends Fragment {
                                         holder.tvUserName.setText(requestUsername);
                                         holder.tvUserStatus.setText(requestUserStatus);
 
-                                        holder.btnCancel.setOnClickListener(v -> firebaseManager.removeChatRequest(currentUserID, list_user_id, new OperationCallback() {
+                                        holder.btnCancel.setOnClickListener(v -> firebaseManager.declineChatRequest(currentUserID, list_user_id, new OperationCallback() {
                                             @Override
                                             public void onSuccess() {
                                                 Toast.makeText(getContext(), "Chat request canceled", Toast.LENGTH_SHORT).show();

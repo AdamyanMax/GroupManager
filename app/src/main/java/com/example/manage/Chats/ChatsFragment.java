@@ -30,7 +30,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatsFragment extends Fragment {
+public class ChatsFragment extends Fragment{
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private RecyclerView rvChatList;
     private DatabaseReference ChatsUserIdRef;
@@ -182,6 +182,7 @@ public class ChatsFragment extends Fragment {
             }
         });
     }
+
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         CircleImageView civProfileImage, civOnlineIcon;
         TextView tvUserLastMessage, tvUsername;

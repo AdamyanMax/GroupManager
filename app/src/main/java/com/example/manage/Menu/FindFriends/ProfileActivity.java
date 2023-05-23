@@ -212,7 +212,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void cancelChatRequest() {
-        firebaseManager.removeChatRequest(senderUserID, receiverUserID, new OperationCallback() {
+        firebaseManager.declineChatRequest(senderUserID, receiverUserID, new OperationCallback() {
             @Override
             public void onSuccess() {
                 btnSendMessageRequest.setEnabled(true);
