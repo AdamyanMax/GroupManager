@@ -26,8 +26,8 @@
         android:id="@+id/iv_set_profile_image"
         android:layout_width="250dp"
         android:layout_height="250dp"
-        android:layout_marginTop="48dp"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="48dp"
         android:contentDescription="@string/cd_user_profile_image"
         android:src="@drawable/user_default_profile_pic"
         app:civ_border_color="@color/colorPrimary"
@@ -91,12 +91,8 @@
         app:layout_constraintStart_toStartOf="@+id/iv_set_profile_image"
         app:layout_constraintTop_toBottomOf="@+id/et_set_profile_status" />
 
-    <ProgressBar
-        android:id="@+id/pb"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:visibility="gone"
+    <include
+        layout="@layout/progress_bar_with_text_layout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

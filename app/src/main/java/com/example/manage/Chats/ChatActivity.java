@@ -167,7 +167,6 @@ public class ChatActivity extends AppCompatActivity {
         finish();
     }
 
-
     private void initializeControllers() {
         Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
         setSupportActionBar(chatToolBar);
@@ -223,14 +222,10 @@ public class ChatActivity extends AppCompatActivity {
             @NonNull
             @Override
             public Fragment createFragment(int position) {
-                switch (position) {
-                    case 0:
-                        return new ImagesFragment();
-                    case 1:
-                        return new FilesFragment();
-                    default:
-                        return null;
+                if (position == 1) {
+                    return new FilesFragment();
                 }
+                return new ImagesFragment();
             }
 
             @Override

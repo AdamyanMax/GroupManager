@@ -158,9 +158,7 @@ public class MainActivity extends AppCompatActivity {
     private void requestNewGroup() {
         CreateGroupSheetDialogFragment bottomSheetDialogFragment = new CreateGroupSheetDialogFragment();
         bottomSheetDialogFragment.show(getSupportFragmentManager(), "myBottomSheet");
-
     }
-
 
 //    private void createNewGroup(String groupName) {
 //        firebaseUtil.getGroupsRef().child(groupName).setValue("").addOnCompleteListener(task -> {
@@ -171,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class); // TODO: Change to AuthenticationActivity
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();

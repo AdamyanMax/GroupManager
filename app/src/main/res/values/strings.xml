@@ -88,13 +88,20 @@
     <string name="enter_group_name">Enter group name</string>
     <string name="create_a_new_group">Create a new group</string>
     <string name="card_is_scrollable">Card is scrollable</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="delete_friend">Delete friend</string>
     <string name="delete_contact">Delete Contact?</string>
     <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete "</string>
     <string name="from_the_chat_list">" from the chat list?"</string>
     <string name="oops_no_connection">Oops, No Connection</string>
     <string name="sit_tight_updates_will_auto_appear_once_back_online">Sit tight. Updates will auto-appear once back online.</string>
+    <string name="simplifying_chats_connecting_groups">Simplifying chats, connecting groups.</string>
+    <string name="app_icon">App icon</string>
+    <string name="start_messaging">Start messaging</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="swipe_to_sign_up">Swipe to sign up</string>
+    <string name="swipe_to_login">Swipe to login</string>
+    <string name="clear_chat_history">Clear chat history</string>
+    <string name="repeat_password">Repeat password</string>
 
 </resources>

@@ -3,9 +3,12 @@ package com.example.manage.Adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Helpers.FirebaseUtil;
@@ -78,6 +81,15 @@ public class GroupCreationAdapter extends FirebaseRecyclerAdapter<Contacts, Grou
                     }
 
                     holder.cbSelectUsers.setVisibility(View.VISIBLE);
+
+                    // Change the constraints to fix the issue with the not eclipsed status
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(holder.layout);
+
+                    constraintSet.connect(R.id.ll_display_name_status, ConstraintSet.END, R.id.cb_select_members, ConstraintSet.START, 0);
+
+                    constraintSet.applyTo(holder.layout);
+
                     holder.cbSelectUsers.setOnCheckedChangeListener((buttonView, isChecked) -> {
                         String userId = Objects.requireNonNull(snapshot.child("uid").getValue()).toString();
                         if (isChecked) {
@@ -113,8 +125,9 @@ public class GroupCreationAdapter extends FirebaseRecyclerAdapter<Contacts, Grou
     public static class GroupCreationViewHolder extends RecyclerView.ViewHolder {
         TextView tvUserName, tvUserStatus;
         CircleImageView civProfileImage, civOnlineIcon;
-
+        LinearLayout llNameStatus;
         MaterialCheckBox cbSelectUsers;
+        ConstraintLayout layout;
 
         public GroupCreationViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -124,7 +137,8 @@ public class GroupCreationAdapter extends FirebaseRecyclerAdapter<Contacts, Grou
             civProfileImage = itemView.findViewById(R.id.civ_display_profile_image);
             civOnlineIcon = itemView.findViewById(R.id.civ_display_online);
             cbSelectUsers = itemView.findViewById(R.id.cb_select_members);
-
+            llNameStatus = itemView.findViewById(R.id.ll_display_name_status);
+            layout = itemView.findViewById(R.id.cl_user_display_layout);
         }
     }
 

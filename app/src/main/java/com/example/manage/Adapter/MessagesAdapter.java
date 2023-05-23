@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -288,29 +289,48 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         alertDialog.show();
     }
 
+
+    private void deleteForEveryone(final int position) {
+        // Delete for the receiver
+        firebaseUtil
+                .getMessagesRef()
+                .child(userMessagesList.get(position).getTo())
+                .child(userMessagesList.get(position).getFrom())
+                .child(userMessagesList.get(position).getMessage_id())
+                .removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    // Delete for the sender
+                    firebaseUtil
+                            .getMessagesRef()
+                            .child(userMessagesList.get(position).getFrom())
+                            .child(userMessagesList.get(position).getTo())
+                            .child(userMessagesList.get(position).getMessage_id())
+                            .removeValue()
+                            .addOnSuccessListener(aVoid2 -> {
+                                if (position < userMessagesList.size()) {
+                                    userMessagesList.remove(position);
+                                    notifyItemRemoved(position);
+                                }
+                            })
+                            .addOnFailureListener(e -> Log.e("DeleteForEveryone", "Failed to delete message for sender: " + e.getMessage()));
+                })
+                .addOnFailureListener(e -> Log.e("DeleteForEveryone", "Failed to delete message for receiver: " + e.getMessage()));
+    }
+
     private void deleteForMeReceiver(final int position) {
         firebaseUtil
                 .getMessagesRef()
                 .child(userMessagesList.get(position).getTo())
                 .child(userMessagesList.get(position).getFrom())
                 .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
-    }
-
-    private void deleteForEveryone(final int position) {
-        firebaseUtil
-                .getMessagesRef()
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
-
-        firebaseUtil
-                .getMessagesRef()
-                .child(userMessagesList.get(position).getFrom())
-                .child(userMessagesList.get(position).getTo())
-                .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+                .removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    if (position < userMessagesList.size()) {
+                        userMessagesList.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("DeleteForMeReceiver", "Failed to delete message: " + e.getMessage()));
     }
 
     private void deleteForMeSender(final int position) {
@@ -319,8 +339,16 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 .child(userMessagesList.get(position).getFrom())
                 .child(userMessagesList.get(position).getTo())
                 .child(userMessagesList.get(position).getMessage_id())
-                .removeValue();
+                .removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    if (position < userMessagesList.size()) {
+                        userMessagesList.remove(position);
+                        notifyItemRemoved(position);
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("DeleteForMeSender", "Failed to delete message: " + e.getMessage()));
     }
+
 
     private void showPopupMenu(View view, boolean isSender, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);

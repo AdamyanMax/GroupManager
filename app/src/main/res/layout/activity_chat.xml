@@ -20,10 +20,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layoutDirection="rtl"
-
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/chat_toolbar">
 
+        <!-- Sliding pane layout -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/sliding_pane"
             android:layout_width="0dp"
@@ -93,7 +93,7 @@
                 app:layout_constraintBottom_toBottomOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
+        <!-- Main content layout -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/main_content"
             android:layout_width="match_parent"
