@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
+    android:background="@color/white"
     tools:context=".Authentication.WelcomeFragment">
 
     <ImageView
@@ -12,7 +13,7 @@
         android:layout_width="165dp"
         android:layout_height="165dp"
         android:layout_marginTop="72dp"
-        android:src="@mipmap/ic_launcher_round"
+        android:src="@mipmap/ic_launcher"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -49,11 +50,13 @@
         android:layout_height="wrap_content"
         android:background="@drawable/bg_auth_button"
         android:minHeight="56dp"
+        android:textColor="@color/white"
         android:text="@string/start_messaging"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="VisualLintButtonSize" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="32dp"
-    tools:context=".Authentication.LoginActivity">
+    tools:context=".Authentication.AuthenticationActivity">
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_login_email"
@@ -21,10 +21,10 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_login_email"
             android:layout_width="match_parent"
-            android:textColor="@color/black"
-            android:inputType="textEmailAddress"
             android:layout_height="wrap_content"
-            android:hint="@string/email" />
+            android:hint="@string/email"
+            android:inputType="textEmailAddress"
+            android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -42,9 +42,9 @@
             android:id="@+id/et_login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:hint="@string/password"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textColor="@color/black" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -65,21 +65,20 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="42dp"
         android:layout_marginEnd="6dp"
-        android:textSize="15sp"
         android:text="@string/swipe_to_sign_up"
-        app:layout_constraintEnd_toStartOf="@+id/imageView2"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toStartOf="@+id/gv_fast_forward"
         app:layout_constraintTop_toBottomOf="@+id/btn_login" />
 
-    <ImageView
-        android:id="@+id/imageView2"
+    <com.cunoraz.gifview.library.GifView
+        android:id="@+id/gv_fast_forward"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:src="@drawable/ic_double_arrow_right"
+        app:gif="@drawable/gif_fast_forward"
+        android:importantForAccessibility="no"
         app:layout_constraintBottom_toBottomOf="@+id/textView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView"
-        app:tint="@color/colorPrimaryDark"
-        android:importantForAccessibility="no" />
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

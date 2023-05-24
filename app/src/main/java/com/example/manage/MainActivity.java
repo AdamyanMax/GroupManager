@@ -13,7 +13,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.manage.Adapter.TabAccessorAdapter;
-import com.example.manage.Authentication.LoginActivity;
+import com.example.manage.Authentication.AuthenticationActivity;
 import com.example.manage.Helpers.FirebaseUtil;
 import com.example.manage.Menu.FindFriends.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class); // TODO: Change to AuthenticationActivity
+        Intent loginIntent = new Intent(MainActivity.this, AuthenticationActivity.class); // TODO: Change to AuthenticationActivity
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();

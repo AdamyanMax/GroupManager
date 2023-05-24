@@ -49,12 +49,6 @@
             android:exported="false"
             android:parentActivityName=".MainActivity" />
         <activity
-            android:name=".Authentication.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Authentication.LoginActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

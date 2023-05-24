@@ -38,7 +38,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_IMAGE_PICKER = 101;
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
-    ActivityResultLauncher<String> mGetContent;
+    private ActivityResultLauncher<String> mGetContent;
     private Button btnUpgradeAccountSettings;
     private EditText etUsername, etUserStatus;
     private CircleImageView civUserProfileImage;
@@ -157,14 +157,12 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-
     private void sendToMainActivity() {
         Intent mainIntent = new Intent(SettingsActivity.this, MainActivity.class);
         mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(mainIntent);
         finish();
     }
-
 
     private void retrieveUserInfo() {
         firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
@@ -188,7 +186,7 @@ public class SettingsActivity extends AppCompatActivity {
                 } else {
                     // TODO: Make up your mind about this
                     etUsername.setVisibility(View.VISIBLE);
-                    Toast.makeText(SettingsActivity.this, R.string.please_provide_some_information_about_your_profile + "", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SettingsActivity.this, R.string.please_provide_some_information_about_your_profile, Toast.LENGTH_SHORT).show();
                 }
             }
 
