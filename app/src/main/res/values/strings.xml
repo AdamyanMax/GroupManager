@@ -89,7 +89,8 @@
     <string name="create_a_new_group">Create a new group</string>
     <string name="card_is_scrollable">Card is scrollable</string>
     <string name="delete_friend">Delete friend</string>
-    <string name="delete_contact">Delete Contact?</string>
+    <string name="delete_contact_alert_dialog">Delete Contact?</string>
+    <string name="delete_contact">Delete contact</string>
     <string name="are_you_sure_you_want_to_delete">"Are you sure you want to delete "</string>
     <string name="from_the_chat_list">" from the chat list?"</string>
     <string name="oops_no_connection">Oops, No Connection</string>
@@ -103,5 +104,8 @@
     <string name="swipe_to_login">Swipe to login</string>
     <string name="clear_chat_history">Clear chat history</string>
     <string name="repeat_password">Repeat password</string>
+    <string name="more_options">More options</string>
+    <string name="clear">Clear</string>
+    <string name="clear_chat_history_confirmation">Are you sure you want to clear the chat history?</string>
 
 </resources>

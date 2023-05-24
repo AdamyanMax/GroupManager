@@ -15,6 +15,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -31,6 +32,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -94,7 +96,7 @@ public class ChatActivity extends AppCompatActivity {
     private String messageReceiverID, messageSenderID, saveCurrentTime, saveCurrentDate;
     private TextView tvUsername, tvUserLastSeen, tvChatProfileUsername, tvChatProfileUserStatus;
     private CircleImageView civProfileImage, civChatProfileUserImage;
-    private ImageButton ibSendMessage, ibSendFile, ibDeleteUser;
+    private ImageButton ibSendMessage, ibSendFile;
     private EditText etMessageInput;
     private MessagesAdapter messagesAdapter;
     private RecyclerView rvUserMessagesList;
@@ -129,19 +131,55 @@ public class ChatActivity extends AppCompatActivity {
 
         displayLastSeen();
 
-        ibDeleteUser.setOnClickListener(v -> new MaterialAlertDialogBuilder(this)
-                .setTitle(R.string.delete_contact)
-                .setMessage(getString(R.string.are_you_sure_you_want_to_delete) + messageReceiverName + getString(R.string.from_the_chat_list))
-                .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
-                    // Dismiss the dialog
-                    dialogInterface.dismiss();
-                })
-                .setPositiveButton(R.string.delete, (dialogInterface, i) -> {
-                    sendUserToMainActivity();
-                    // Remove the contact
-                    removeSpecificContact();
-                })
-                .show());
+        ImageButton moreOptionsButton = findViewById(R.id.ib_custom_more_options);
+        moreOptionsButton.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(ChatActivity.this, v);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.private_chat_menu, popup.getMenu());
+
+            popup.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
+                if (id == R.id.delete_user) {
+                    // Handle user deletion here
+                    new MaterialAlertDialogBuilder(this)
+                            .setTitle(R.string.delete_contact_alert_dialog)
+                            .setMessage(getString(R.string.are_you_sure_you_want_to_delete) + messageReceiverName + getString(R.string.from_the_chat_list))
+                            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                                // Dismiss the dialog
+                                dialogInterface.dismiss();
+                            })
+                            .setPositiveButton(R.string.delete, (dialogInterface, i) -> {
+                                sendUserToMainActivity();
+                                // Remove the contact
+                                removeSpecificContact();
+                            })
+                            .show();
+                    return true;
+                } else if (id == R.id.clear_chat) {
+                    // Handle chat clearing here
+                    new MaterialAlertDialogBuilder(ChatActivity.this)
+                            .setTitle(R.string.clear_chat_history)
+                            .setMessage(R.string.clear_chat_history_confirmation)
+                            .setNegativeButton(R.string.cancel, (dialogInterface, i) -> {
+                                // Dismiss the dialog
+                                dialogInterface.dismiss();
+                            })
+                            .setPositiveButton(R.string.clear, (dialogInterface, i) -> {
+                                // Clear chat history
+                                clearChatHistory(messageSenderID, messageReceiverID);
+                            })
+                            .show();
+
+                    popup.dismiss();
+
+                    return true;
+                }
+
+                return false;
+            });
+
+            popup.show();
+        });
 
         ibSendFile.setOnClickListener(this::showExpandableMenu);
         ibSendMessage.setOnClickListener(v -> uploadAndSendTextMessage());
@@ -192,7 +230,6 @@ public class ChatActivity extends AppCompatActivity {
 
         ibSendMessage = findViewById(R.id.ib_send_private_message);
         ibSendFile = findViewById(R.id.ib_send_file);
-        ibDeleteUser = findViewById(R.id.ib_custom_delete_user);
 
         etMessageInput = findViewById(R.id.et_input_private_message);
 
@@ -263,7 +300,6 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        messagesList.clear();
         childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
@@ -274,7 +310,7 @@ public class ChatActivity extends AppCompatActivity {
 
                     messagesList.add(messages);
 
-                    // Notify the adapter about the data set change.
+                    // TODO: Use something else instead of notifyDataSetChanged
                     messagesAdapter.notifyDataSetChanged();
 
                     rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
@@ -303,6 +339,20 @@ public class ChatActivity extends AppCompatActivity {
         };
 
         firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(childEventListener);
+        messagesList.clear();
+    }
+
+    private void clearChatHistory(String senderUserId, String receiverUserId) {
+        firebaseUtil.getMessagesRef().child(senderUserId).child(receiverUserId)
+                .removeValue()
+                .addOnSuccessListener(aVoid -> {
+                    // Clear the local message list as well
+                    int size = messagesList.size();
+                    messagesList.clear();
+                    // Notify the adapter that the items have been removed
+                    messagesAdapter.notifyItemRangeRemoved(0, size);
+                })
+                .addOnFailureListener(e -> Log.e("ClearChatHistory", "Failed to clear chat history: " + e.getMessage()));
     }
 
     @Override
@@ -320,6 +370,7 @@ public class ChatActivity extends AppCompatActivity {
         }
     }
 
+    // This method is used to remove the contact from both the users' contact list
     private void removeSpecificContact() {
         firebaseUtil.getContactsRef().child(messageSenderID).child(messageReceiverID).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -328,6 +379,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    // This method is used to toggle the visibility of the send button based on the content of the EditText
     private void toggleButtonsBasedOnEditTextContent(@NonNull EditText etMessageInput, ImageButton ibSendFile, ImageButton ibSendMessage) {
         etMessageInput.addTextChangedListener(new TextWatcher() {
             @Override
@@ -353,6 +405,7 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    // This method is used to show the expandable menu when the user clicks on the menu button
     private void showExpandableMenu(@NonNull View view) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
         View customView = inflater.inflate(R.layout.expandable_menu_layout, null);
@@ -384,6 +437,7 @@ public class ChatActivity extends AppCompatActivity {
         menuLayout.startAnimation(scaleTranslateAnimation);
     }
 
+    // This method is used to create a menu item for the expandable menu
     private void createMenuItem(GridLayout menuLayout, @DrawableRes int iconRes, String text, View.OnClickListener onClickListener) {
         View menuItemView = LayoutInflater.from(this).inflate(R.layout.menu_attach_item_layout, menuLayout, false);
 
@@ -398,6 +452,7 @@ public class ChatActivity extends AppCompatActivity {
         menuLayout.addView(menuItemView);
     }
 
+    // This method is used to display the last seen status of the user
     private void displayLastSeen() {
         firebaseUtil.getMessagesRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
 
@@ -459,12 +514,6 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * This method retrieves the name of a file from a given Uri.
-     *
-     * @param uri the Uri from which the file name is to be retrieved.
-     * @return the name of the file as a String, or null if the name could not be retrieved.
-     */
     public String getFileName(@NonNull Uri uri) {
         String result = null;
         if (uri.getScheme().equals("content")) {
@@ -585,7 +634,13 @@ public class ChatActivity extends AppCompatActivity {
             String messageSenderRef = messageRefs.first;
             String messageReceiverRef = messageRefs.second;
 
-            String messagePushID = userMessageKeyRef.getKey();
+            String messagePushID = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
+
+            if (messagePushID == null) {
+                // handle the error
+                Log.e("uploadAndSendTextMessage", "Error creating unique key for the message");
+                return;
+            }
 
             Map<String, Object> messageTextBody = createMessageBody("text",
                     messageText,
@@ -611,7 +666,13 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = messageRefs.first;
         String messageReceiverRef = messageRefs.second;
 
-        String messagePushID = userMessageKeyRef.getKey();
+        String messagePushID = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
+
+        if (messagePushID == null) {
+            // handle the error
+            Log.e("uploadAndSendImageMessage", "Error creating unique key for the message");
+            return;
+        }
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("images");
         StorageReference imagePath = storageReference.child(messagePushID + ".jpg");
@@ -659,6 +720,12 @@ public class ChatActivity extends AppCompatActivity {
 
         userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
         String messagePushID = userMessageKeyRef.getKey();
+
+        if (messagePushID == null) {
+            // handle the error
+            Log.e("uploadAndSendFileMessage", "Error creating unique key for the message");
+            return;
+        }
 
         StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("files");
         StorageReference filePath = storageReference.child(messagePushID + "_" + fileName);

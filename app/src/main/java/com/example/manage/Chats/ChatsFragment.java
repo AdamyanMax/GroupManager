@@ -2,6 +2,7 @@ package com.example.manage.Chats;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class ChatsFragment extends Fragment{
     private FirebaseAuth mAuth;
     private ProgressBarHandler progressBarHandler;
     private FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter;
+    private String currentUserID;
 
     public ChatsFragment() {
         // Required empty public constructor
@@ -147,7 +149,12 @@ public class ChatsFragment extends Fragment{
     }
 
     private void getLastMessage(String userId, TextView tvUserLastStatus) {
-        String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
+        if (mAuth.getCurrentUser() != null) {
+            currentUserID = mAuth.getCurrentUser().getUid();
+        } else {
+            // handle the case where no user is signed in
+            Log.d("TAG", "No user is currently signed in");
+        }
 
         firebaseUtil.getMessagesRef().child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
