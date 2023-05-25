@@ -10,9 +10,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.manage.Helpers.FirebaseAuthHelper;
-import com.example.manage.Helpers.NavigateUtil;
 import com.example.manage.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -72,8 +72,12 @@ public class SignupFragment extends Fragment {
             mAuthHelper.signUp(email, password, new FirebaseAuthHelper.FirebaseAuthSignUpCallback() {
                 @Override
                 public void onSuccess() {
-                    // Handle success
-                    NavigateUtil.toMainActivity(getContext());
+                    // Create the action with the email argument
+                    AuthFragmentDirections.ActionAuthFragmentToEmailVerificationFragment action =
+                            AuthFragmentDirections.actionAuthFragmentToEmailVerificationFragment(email);
+
+                    // Navigate to the EmailVerificationFragment using the action
+                    NavHostFragment.findNavController(SignupFragment.this).navigate(action);
                 }
 
                 @Override

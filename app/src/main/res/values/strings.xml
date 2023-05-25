@@ -78,5 +78,11 @@
     <string name="clear_chat_history_confirmation">Are you sure you want to clear the chat history?</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="verification_check_icon">Verification check icon</string>
+    <string name="awaiting_email_verification">Awaiting Email Verification</string>
+    <string name="not_you">(Not you?)</string>
+    <string name="we_ve_sent_a_verification_link_to_your_email_address">We\'ve sent a verification link to your email address.</string>
+    <string name="after_verifying_please">After verifying, please </string>
+    <string name="refresh">refresh.</string>
 
 </resources>

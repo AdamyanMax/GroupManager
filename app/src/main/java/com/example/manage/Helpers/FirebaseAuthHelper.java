@@ -1,11 +1,14 @@
 package com.example.manage.Helpers;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthEmailException;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
+import com.google.firebase.auth.FirebaseUser;
 
 public class FirebaseAuthHelper {
 
@@ -14,6 +17,7 @@ public class FirebaseAuthHelper {
     public FirebaseAuthHelper(FirebaseAuth mAuth) {
         this.mAuth = mAuth;
     }
+
 
     public void signIn(String email, String password, FirebaseAuthSignInCallback callback) {
         mAuth.signInWithEmailAndPassword(email, password)
@@ -63,7 +67,20 @@ public class FirebaseAuthHelper {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        callback.onSuccess();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null) {
+                            user.sendEmailVerification()
+                                    .addOnCompleteListener(verificationTask -> {
+                                        if (verificationTask.isSuccessful()) {
+                                            callback.onSuccess();
+                                        } else {
+                                            // Handle failed verification email sending here, if necessary
+                                            Log.e("signUp", "Failed to send verification email.", verificationTask.getException());
+                                        }
+                                    });
+                        } else {
+                            Log.e("signUp", "User is unexpectedly null after successful sign up.");
+                        }
                     } else {
                         Exception e = task.getException();
                         if (e != null) {
@@ -82,6 +99,53 @@ public class FirebaseAuthHelper {
                 });
     }
 
+    public void deleteUser(FirebaseAuthDeleteUserCallback callback) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            currentUser.delete()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            callback.onSuccess();
+                        } else {
+                            Log.e("FirebaseAuthHelper", "Error deleting user", task.getException());
+                            // Add null check before calling getMessage()
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                            callback.onError(errorMessage);
+                        }
+                    });
+        } else {
+            callback.onError("No current user");
+        }
+    }
+
+    public void refreshUser(FirebaseAuthRefreshUserCallback callback) {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            currentUser.reload()
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            callback.onSuccess();
+                        } else {
+                            Log.e("FirebaseAuthHelper", "Error refreshing user", task.getException());
+                            String errorMessage = task.getException() != null ? task.getException().getMessage() : "Unknown error";
+                            callback.onError(errorMessage);
+                        }
+                    });
+        } else {
+            callback.onError("No current user");
+        }
+    }
+
+    public boolean isEmailVerified() {
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        return currentUser != null && currentUser.isEmailVerified();
+    }
+
+    public interface FirebaseAuthRefreshUserCallback {
+        void onSuccess();
+
+        void onError(String message);
+    }
 
     public interface FirebaseAuthSignInCallback {
         void onSuccess();
@@ -107,6 +171,12 @@ public class FirebaseAuthHelper {
         void onWeakPassword();
 
         void onUserCollision();
+
+        void onError(String message);
+    }
+
+    public interface FirebaseAuthDeleteUserCallback {
+        void onSuccess();
 
         void onError(String message);
     }
