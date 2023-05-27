@@ -1,7 +1,8 @@
 package com.example.manage.Module;
 
 public class Contacts {
-    public String name, status, image;
+    public String name, username, status, image;
+
 
     public Contacts() {
     }
@@ -10,6 +11,14 @@ public class Contacts {
         this.name = name;
         this.status = status;
         this.image = image;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {

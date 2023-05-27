@@ -289,7 +289,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         alertDialog.show();
     }
 
-    // TODO: Also delete from the firebase storage
+    // TODO: Also delete from the firebase storage for image and file type messages
     private void deleteForEveryone(final int position) {
         // Delete for the receiver
         firebaseUtil

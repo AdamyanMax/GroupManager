@@ -9,8 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Module.Contacts;
 import com.example.manage.Menu.FindFriends.ProfileActivity;
+import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -20,9 +20,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class FindFriendsAdapter extends FirebaseRecyclerAdapter<Contacts, FindFriendsAdapter.FindFriendsViewHolder> {
+    private final String filterType;
 
-    public FindFriendsAdapter(@NonNull FirebaseRecyclerOptions<Contacts> options) {
+    public FindFriendsAdapter(@NonNull FirebaseRecyclerOptions<Contacts> options, String filterType) {
         super(options);
+        this.filterType = filterType;
     }
 
     @NonNull
@@ -34,7 +36,11 @@ public class FindFriendsAdapter extends FirebaseRecyclerAdapter<Contacts, FindFr
 
     @Override
     protected void onBindViewHolder(@NonNull FindFriendsViewHolder holder, int position, @NonNull Contacts model) {
-        holder.name.setText(model.getName());
+        if (filterType.equals("username")) {
+            holder.name.setText(model.getUsername());
+        } else {
+            holder.name.setText(model.getName());
+        }
         holder.status.setText(model.getStatus());
         Picasso.get().load(model.getImage()).placeholder(R.drawable.user_default_profile_pic).into(holder.profileImage);
 

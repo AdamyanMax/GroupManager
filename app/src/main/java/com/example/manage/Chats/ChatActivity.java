@@ -35,6 +35,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,8 +47,8 @@ import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Chats.Profile.FilesFragment;
 import com.example.manage.Chats.Profile.ImagesFragment;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.NavigateUtil;
 import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
-import com.example.manage.MainActivity;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.gms.tasks.Task;
@@ -149,7 +150,8 @@ public class ChatActivity extends AppCompatActivity {
                                 dialogInterface.dismiss();
                             })
                             .setPositiveButton(R.string.delete, (dialogInterface, i) -> {
-                                sendUserToMainActivity();
+                                //
+                                NavigateUtil.toMainActivity(getApplicationContext());
                                 // Remove the contact
                                 removeSpecificContact();
                             })
@@ -196,13 +198,6 @@ public class ChatActivity extends AppCompatActivity {
         TabLayout tabLayout = findViewById(R.id.tab_layout);
 
         setupTabLayoutForProfile(viewPager, tabLayout);
-    }
-
-    private void sendUserToMainActivity() {
-        Intent mainIntent = new Intent(ChatActivity.this, MainActivity.class);
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(mainIntent);
-        finish();
     }
 
     private void initializeControllers() {
@@ -285,7 +280,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void configureSlidingPane() {
-        slidingPaneLayout.setSliderFadeColor(Color.TRANSPARENT);
+        int transparentColor = ContextCompat.getColor(this, android.R.color.transparent);
+        slidingPaneLayout.setBackgroundColor(transparentColor);
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 

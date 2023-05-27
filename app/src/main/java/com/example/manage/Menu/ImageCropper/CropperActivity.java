@@ -5,7 +5,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.manage.R;
@@ -18,6 +19,23 @@ public class CropperActivity extends AppCompatActivity {
 
     String result;
     Uri fileUri;
+    private final ActivityResultLauncher<Intent> mCropContent = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    final Uri resultUri = UCrop.getOutput(result.getData());
+                    if (resultUri != null) {
+                        Intent returnIntent = new Intent();
+                        returnIntent.putExtra("RESULT", resultUri.toString());
+                        setResult(RESULT_OK, returnIntent);
+                        finish();
+                    }
+                } else if (result.getResultCode() == UCrop.RESULT_ERROR && result.getData() != null) {
+                    final Throwable cropError = UCrop.getError(result.getData());
+                    if (cropError != null) {
+                        Toast.makeText(this, cropError.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,16 +46,17 @@ public class CropperActivity extends AppCompatActivity {
 
         String destinationUri = UUID.randomUUID().toString() + ".jpg";
 
-        // Use mainly 'options.' for customization. More at: https://github.com/Yalantis/uCrop#customization
         UCrop.Options options = new UCrop.Options();
         options.setCircleDimmedLayer(true);
         options.setCropGridColor(262626);
 
-        UCrop.of(fileUri, Uri.fromFile(new File(getCacheDir(), destinationUri)))
+        Intent uCropIntent = UCrop.of(fileUri, Uri.fromFile(new File(getCacheDir(), destinationUri)))
                 .withOptions(options)
                 .withAspectRatio(1, 1)
                 .withMaxResultSize(400, 400)
-                .start(CropperActivity.this);
+                .getIntent(CropperActivity.this);
+
+        mCropContent.launch(uCropIntent);
     }
 
     private void readIntent() {
@@ -46,24 +65,5 @@ public class CropperActivity extends AppCompatActivity {
             result = intent.getStringExtra("DATA");
             fileUri = Uri.parse(result);
         }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
-            assert data != null;
-            final Uri resultUri = UCrop.getOutput(data);
-            Intent returnIntent = new Intent();
-            returnIntent.putExtra("RESULT", resultUri + "");
-            setResult(-1, returnIntent);
-            finish();
-        } else if (requestCode == UCrop.RESULT_ERROR) {
-            assert data != null;
-            final Throwable cropError = UCrop.getError(data);
-            Toast.makeText(this, cropError + "", Toast.LENGTH_SHORT).show();
-        }
-
-
     }
 }

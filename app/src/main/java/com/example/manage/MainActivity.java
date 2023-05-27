@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
         firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (!(snapshot.child("name").exists())) {
+                if (!(snapshot.child("username").exists())) {
                     sendUserToSettingsActivity();
                 }
             }
@@ -110,7 +110,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
     }
 
     @Override
@@ -170,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     private void sendUserToLoginActivity() {
-        Intent loginIntent = new Intent(MainActivity.this, AuthenticationActivity.class); // TODO: Change to AuthenticationActivity
+        Intent loginIntent = new Intent(MainActivity.this, AuthenticationActivity.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();

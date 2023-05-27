@@ -2,6 +2,7 @@ package com.example.manage.Menu.FindFriends;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
@@ -16,8 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.FindFriendsAdapter;
-import com.example.manage.Module.Contacts;
 import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 
@@ -27,6 +29,9 @@ public class FindFriendsActivity extends AppCompatActivity {
 
     private final FirebaseUtil firebaseUtil = new FirebaseUtil();
     private RecyclerView rvFindFriends;
+    private String selectedFilter = "name";
+    private FindFriendsAdapter adapter;
+    private String lastQueryText = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +47,25 @@ public class FindFriendsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Find Friends");
 
+        executeSearch(lastQueryText);
+    }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (adapter != null) {
+            adapter.startListening();
+        } else {
+            Log.e("FindFriendsActivity", "onStart: Adapter is null");
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
     }
 
     @Override
@@ -52,10 +75,38 @@ public class FindFriendsActivity extends AppCompatActivity {
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
 
-        // Customize the search view
         customizeSearchView(searchView, searchItem);
 
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_filter) {
+            View menuItemView = findViewById(R.id.action_filter);
+            showFilterPopup(menuItemView);
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showFilterPopup(View v) {
+        PopupMenu popup = new PopupMenu(this, v);
+        popup.inflate(R.menu.menu_filter);
+
+        popup.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_name) {
+                selectedFilter = "name";
+            } else if (item.getItemId() == R.id.action_username) {
+                selectedFilter = "username";
+            }
+
+            executeSearch(lastQueryText);
+
+            return true;
+        });
+
+        popup.show();
     }
 
     private void customizeSearchView(@NonNull SearchView searchView, MenuItem searchItem) {
@@ -65,8 +116,13 @@ public class FindFriendsActivity extends AppCompatActivity {
         ImageView closeIcon = searchView.findViewById(androidx.appcompat.R.id.search_close_btn);
         closeIcon.setColorFilter(ContextCompat.getColor(this, R.color.colorAccent), PorterDuff.Mode.SRC_IN);
 
+        // Hide the close icon initially
+        closeIcon.setVisibility(View.GONE);
+
+        // Show the close icon when the SearchView is clicked
         searchView.setOnSearchClickListener(v -> closeIcon.setVisibility(View.VISIBLE));
 
+        // Hide the close icon when the SearchView is closed
         searchView.setOnCloseListener(() -> {
             closeIcon.setVisibility(View.GONE);
             return false;
@@ -89,38 +145,36 @@ public class FindFriendsActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                FirebaseRecyclerOptions<Contacts> options;
-
-                if (newText.isEmpty()) {
-                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef(), Contacts.class).build();
-                } else {
-                    options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef().orderByChild("name")
-                            .startAt(newText).endAt(newText + "\uf8ff"), Contacts.class).build();
-                }
-
-                FindFriendsAdapter adapter = new FindFriendsAdapter(options);
-
-                rvFindFriends.setAdapter(adapter);
-
-                adapter.startListening();
+                lastQueryText = newText;
+                executeSearch(newText);
 
                 return true;
             }
         });
     }
 
+    private void executeSearch(@NonNull String queryText) {
+        FirebaseRecyclerOptions<Contacts> options;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+        if (queryText.isEmpty()) {
+            options = new FirebaseRecyclerOptions.Builder<Contacts>()
+                    .setQuery(firebaseUtil.getUsersRef(), Contacts.class)
+                    .build();
+        } else {
+            options = new FirebaseRecyclerOptions.Builder<Contacts>()
+                    .setQuery(
+                            firebaseUtil.getUsersRef().orderByChild(selectedFilter)
+                                    .startAt(queryText)
+                                    .endAt(queryText + "\uf8ff"),
+                            Contacts.class
+                    )
+                    .build();
+        }
 
-        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getUsersRef(), Contacts.class).build();
-
-        FindFriendsAdapter adapter = new FindFriendsAdapter(options);
+        adapter = new FindFriendsAdapter(options, selectedFilter);
 
         rvFindFriends.setAdapter(adapter);
 
         adapter.startListening();
     }
-
 }
