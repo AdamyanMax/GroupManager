@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.ProgressBar.ProgressBarHandler;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
@@ -32,7 +32,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChatsFragment extends Fragment{
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private RecyclerView rvChatList;
     private DatabaseReference ChatsUserIdRef;
     private FirebaseAuth mAuth;
@@ -56,7 +56,7 @@ public class ChatsFragment extends Fragment{
         mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        ChatsUserIdRef = firebaseUtil.getContactsRef().child(currentUserID);
+        ChatsUserIdRef = firebaseDatabaseReferences.getContactsRef().child(currentUserID);
 
         return vPrivateChats;
     }
@@ -77,7 +77,7 @@ public class ChatsFragment extends Fragment{
                 final String[] profileImage = {"default_image"};
 
                 assert userIDs != null;
-                firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
+                firebaseDatabaseReferences.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (snapshot.exists()) {
@@ -156,7 +156,7 @@ public class ChatsFragment extends Fragment{
             Log.d("TAG", "No user is currently signed in");
         }
 
-        firebaseUtil.getMessagesRef().child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getMessagesRef().child(currentUserID).child(userId).limitToLast(1).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (isAdded()) {

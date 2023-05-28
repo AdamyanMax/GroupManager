@@ -14,7 +14,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.manage.Adapter.TabAccessorAdapter;
 import com.example.manage.Authentication.AuthenticationActivity;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Menu.FindFriends.FindFriendsActivity;
 import com.example.manage.Menu.SettingsActivity;
 import com.example.manage.ui.CreateGroupSheetDialogFragment;
@@ -41,7 +41,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     private final String[] titles = new String[]{"Chats", "Groups", "Requests"};
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private FirebaseAuth mAuth;
 
     @Override
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void verifyUserExistence() {
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!(snapshot.child("username").exists())) {
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        firebaseUtil.getUsersRef().child(currentUserID).child("userState")
+        firebaseDatabaseReferences.getUsersRef().child(currentUserID).child("userState")
                 .updateChildren(onlineStateMap);
 
     }

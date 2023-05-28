@@ -46,7 +46,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.manage.Adapter.MessagesAdapter;
 import com.example.manage.Chats.Profile.FilesFragment;
 import com.example.manage.Chats.Profile.ImagesFragment;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.NavigateUtil;
 import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.Module.Messages;
@@ -91,7 +91,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
     private final List<Messages> messagesList = new ArrayList<>();
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private TextProgressBarController progressBarController;
     private PopupWindow popupWindow;
     private String messageReceiverID, messageSenderID, saveCurrentTime, saveCurrentDate;
@@ -199,6 +199,93 @@ public class ChatActivity extends AppCompatActivity {
 
         setupTabLayoutForProfile(viewPager, tabLayout);
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        childEventListener = new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                Messages messages = snapshot.getValue(Messages.class);
+
+                if (messages != null) {
+                    messages.setMessage_id(snapshot.getKey());
+
+                    messagesList.add(messages);
+
+                    int newMessagePosition = messagesList.size() - 1;
+                    messagesAdapter.notifyItemInserted(newMessagePosition);
+
+                    rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
+
+                    // New code for handling status begins here
+                    if (!messageSenderID.equals(messages.getFrom())) {
+                        // This means you are the receiver of the message.
+                        // Now update the status to delivered if it was sent
+                        if (messages.getStatus().equals("sent")) {
+                            updateMessageStatus(messages.getMessage_id(), "delivered");
+                        }
+                    } else if (messages.getStatus().equals("delivered")) {
+                        // This means you are the sender and the message has been delivered
+                        // Here you can update the status to seen if needed
+                        updateMessageStatus(messages.getMessage_id(), "seen");
+                    }
+
+                }
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+                if (snapshot.hasChild("status")) {
+                    String updatedStatus = snapshot.child("status").getValue(String.class);
+                    // Message Id
+                    String messageId = snapshot.getKey();
+
+                    for (int i = 0; i < messagesList.size(); i++) {
+                        Messages message = messagesList.get(i);
+                        if (message.getMessage_id().equals(messageId)) {
+                            message.setStatus(updatedStatus);
+                            // Refresh the RecyclerView
+                            messagesAdapter.notifyItemChanged(i);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        };
+
+        firebaseDatabaseReferences.getMessagesRef().child(messageReceiverID).child(messageSenderID).addChildEventListener(childEventListener);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (childEventListener != null) {
+            firebaseDatabaseReferences.getMessagesRef().child(messageSenderID).child(messageReceiverID).removeEventListener(childEventListener);
+            firebaseDatabaseReferences.getMessagesRef().child(messageReceiverID).child(messageSenderID).removeEventListener(childEventListener);
+            childEventListener = null;
+        }
+        messagesList.clear(); // Clear the list here when activity is no longer visible
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        messagesList.clear(); // Clear the list here as a failsafe
+    }
+
 
     private void initializeControllers() {
         Toolbar chatToolBar = findViewById(R.id.chat_toolbar);
@@ -229,7 +316,7 @@ public class ChatActivity extends AppCompatActivity {
         etMessageInput = findViewById(R.id.et_input_private_message);
 
         progressBarController = new TextProgressBarController(this);
-        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
+        userMessageKeyRef = firebaseDatabaseReferences.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
 
         messagesAdapter = new MessagesAdapter(messagesList);
         rvUserMessagesList = findViewById(R.id.rv_private_chat_list_of_messages);
@@ -294,53 +381,8 @@ public class ChatActivity extends AppCompatActivity {
         slidingPane.setLayoutParams(layoutParams);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        childEventListener = new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-                Messages messages = snapshot.getValue(Messages.class);
-
-                if (messages != null) {
-                    messages.setMessage_id(snapshot.getKey());
-
-                    messagesList.add(messages);
-
-                    // TODO: Use something else instead of notifyDataSetChanged
-                    messagesAdapter.notifyDataSetChanged();
-
-                    rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
-                }
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        };
-
-        firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).addChildEventListener(childEventListener);
-        messagesList.clear();
-    }
-
     private void clearChatHistory(String senderUserId, String receiverUserId) {
-        firebaseUtil.getMessagesRef().child(senderUserId).child(receiverUserId)
+        firebaseDatabaseReferences.getMessagesRef().child(senderUserId).child(receiverUserId)
                 .removeValue()
                 .addOnSuccessListener(aVoid -> {
                     // Clear the local message list as well
@@ -352,26 +394,11 @@ public class ChatActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Log.e("ClearChatHistory", "Failed to clear chat history: " + e.getMessage()));
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        messagesList.clear();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (childEventListener != null) {
-            firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).removeEventListener(childEventListener);
-            childEventListener = null;
-        }
-    }
-
     // This method is used to remove the contact from both the users' contact list
     private void removeSpecificContact() {
-        firebaseUtil.getContactsRef().child(messageSenderID).child(messageReceiverID).removeValue().addOnCompleteListener(task -> {
+        firebaseDatabaseReferences.getContactsRef().child(messageSenderID).child(messageReceiverID).removeValue().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                firebaseUtil.getContactsRef().child(messageReceiverID).child(messageSenderID).removeValue();
+                firebaseDatabaseReferences.getContactsRef().child(messageReceiverID).child(messageSenderID).removeValue();
             }
         });
     }
@@ -451,7 +478,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // This method is used to display the last seen status of the user
     private void displayLastSeen() {
-        firebaseUtil.getUsersRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -610,9 +637,29 @@ public class ChatActivity extends AppCompatActivity {
         messageBody.put("message_id", messageId);
         messageBody.put("time", time);
         messageBody.put("date", date);
+        messageBody.put("status", "sent");
 
         return messageBody;
     }
+
+    private void updateMessageStatus(String messageId, String status) {
+        DatabaseReference senderRef = firebaseDatabaseReferences.getMessagesRef()
+                .child(messageSenderID)
+                .child(messageReceiverID)
+                .child(messageId);
+
+        DatabaseReference receiverRef = firebaseDatabaseReferences.getMessagesRef()
+                .child(messageReceiverID)
+                .child(messageSenderID)
+                .child(messageId);
+
+        Map<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put("status", status);
+
+        senderRef.updateChildren(statusUpdate);
+        receiverRef.updateChildren(statusUpdate);
+    }
+
 
     @NonNull
     private Task<Void> updateFirebaseDatabase(String messageSenderRef, String messageReceiverRef, String messagePushID, Map<String, Object> messageBody) {
@@ -620,7 +667,7 @@ public class ChatActivity extends AppCompatActivity {
         messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageBody);
         messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageBody);
 
-        return firebaseUtil.getRootRef().updateChildren(messageBodyDetails);
+        return firebaseDatabaseReferences.getRootRef().updateChildren(messageBodyDetails);
     }
 
     private void uploadAndSendTextMessage() {
@@ -631,7 +678,7 @@ public class ChatActivity extends AppCompatActivity {
             String messageSenderRef = messageRefs.first;
             String messageReceiverRef = messageRefs.second;
 
-            String messagePushID = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
+            String messagePushID = firebaseDatabaseReferences.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
 
             if (messagePushID == null) {
                 // handle the error
@@ -650,8 +697,19 @@ public class ChatActivity extends AppCompatActivity {
                     messageReceiverRef,
                     messagePushID,
                     messageTextBody
-            ).addOnSuccessListener(aVoid -> etMessageInput.setText(""))
-                    .addOnFailureListener(e -> Log.e("uploadAndSendTextMessage", e + ""));
+            ).addOnSuccessListener(aVoid -> {
+                        etMessageInput.setText("");
+                        updateFirebaseDatabase(messageSenderRef,
+                                messageReceiverRef,
+                                messagePushID,
+                                messageTextBody
+                        ).addOnSuccessListener(task -> {
+                                    etMessageInput.setText("");
+                                    updateMessageStatus(messagePushID, "delivered");
+                                })
+                                .addOnFailureListener(e -> Log.e("uploadAndSendTextMessage", e.getMessage()));
+                    })
+                    .addOnFailureListener(e -> Log.e("uploadAndSendTextMessage", e.getMessage()));
 
         }
     }
@@ -663,7 +721,7 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = messageRefs.first;
         String messageReceiverRef = messageRefs.second;
 
-        String messagePushID = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
+        String messagePushID = firebaseDatabaseReferences.getMessagesRef().child(messageSenderID).child(messageReceiverID).push().getKey();
 
         if (messagePushID == null) {
             // handle the error
@@ -715,7 +773,7 @@ public class ChatActivity extends AppCompatActivity {
         String messageSenderRef = messageRefs.first;
         String messageReceiverRef = messageRefs.second;
 
-        userMessageKeyRef = firebaseUtil.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
+        userMessageKeyRef = firebaseDatabaseReferences.getMessagesRef().child(messageSenderID).child(messageReceiverID).push();
         String messagePushID = userMessageKeyRef.getKey();
 
         if (messagePushID == null) {

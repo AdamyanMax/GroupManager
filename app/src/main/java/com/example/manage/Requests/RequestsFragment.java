@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Helpers.FirebaseManager;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.OperationCallback;
 import com.example.manage.Helpers.ProgressBar.ProgressBarHandler;
 import com.example.manage.Module.Contacts;
@@ -35,7 +35,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class RequestsFragment extends Fragment {
     private static final String TAG = "RequestsFragment";
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private final FirebaseManager firebaseManager = new FirebaseManager();
     private RecyclerView rvRequestsList;
     private String currentUserID;
@@ -63,7 +63,7 @@ public class RequestsFragment extends Fragment {
         super.onStart();
         progressBarHandler.show();
 
-        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseUtil.getChatRequestsRef().child(currentUserID), Contacts.class).build();
+        FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseDatabaseReferences.getChatRequestsRef().child(currentUserID), Contacts.class).build();
         adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
             @NonNull
             @Override
@@ -91,7 +91,7 @@ public class RequestsFragment extends Fragment {
                                 holder.btnAccept.setVisibility(View.VISIBLE);
                                 holder.btnDecline.setVisibility(View.VISIBLE);
                                 assert list_user_id != null;
-                                firebaseUtil.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                firebaseDatabaseReferences.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.hasChild("image")) {
@@ -144,7 +144,7 @@ public class RequestsFragment extends Fragment {
                                 holder.btnDecline.setVisibility(View.GONE);
 
                                 assert list_user_id != null;
-                                firebaseUtil.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
+                                firebaseDatabaseReferences.getUsersRef().child(list_user_id).addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         if (snapshot.hasChild("image")) {

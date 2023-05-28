@@ -11,7 +11,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.constraintlayout.widget.ConstraintSet;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -30,7 +30,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class GroupCreationAdapter extends FirebaseRecyclerAdapter<Contacts, GroupCreationAdapter.GroupCreationViewHolder> {
 
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private final List<String> selectedUsers = new ArrayList<>();
 
 
@@ -44,7 +44,7 @@ public class GroupCreationAdapter extends FirebaseRecyclerAdapter<Contacts, Grou
         String userIDs = getRef(position).getKey();
 
         assert userIDs != null;
-        firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
 

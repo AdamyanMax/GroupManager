@@ -17,7 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.NavigateUtil;
 import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.MainActivity;
@@ -42,7 +42,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class SettingsActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_IMAGE_PICKER = 101;
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
@@ -120,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         task.getResult().getStorage().getDownloadUrl().addOnSuccessListener(uri -> {
                             String downloadedUrl = uri.toString();
-                            firebaseUtil.getUsersRef().child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
+                            firebaseDatabaseReferences.getUsersRef().child(currentUserID).child("image").setValue(downloadedUrl).addOnCompleteListener(task1 -> {
                                 if (task1.isSuccessful()) {
                                     Toast.makeText(SettingsActivity.this, "Image saved", Toast.LENGTH_SHORT).show();
                                     progressBarController.hide();
@@ -179,7 +179,7 @@ public class SettingsActivity extends AppCompatActivity {
                     profileMap.put("username", setUsername);
                     profileMap.put("status", setStatus);
 
-                    firebaseUtil.getUsersRef().child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
+                    firebaseDatabaseReferences.getUsersRef().child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             Toast.makeText(SettingsActivity.this, R.string.account_created, Toast.LENGTH_SHORT).show();
                             NavigateUtil.toMainActivity(getApplicationContext());
@@ -211,7 +211,7 @@ public class SettingsActivity extends AppCompatActivity {
             profileMap.put("name", setName);
             profileMap.put("status", setStatus);
 
-            firebaseUtil.getUsersRef().child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
+            firebaseDatabaseReferences.getUsersRef().child(currentUserID).updateChildren(profileMap).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     sendToMainActivity();
                     Toast.makeText(SettingsActivity.this, R.string.profile_updated, Toast.LENGTH_SHORT).show();
@@ -224,7 +224,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void checkIfUsernameExists(String username, OnUsernameCheckListener listener) {
-        Query usernameQuery = firebaseUtil.getUsersRef().orderByChild("username").equalTo(username);
+        Query usernameQuery = firebaseDatabaseReferences.getUsersRef().orderByChild("username").equalTo(username);
         usernameQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -247,7 +247,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void retrieveUserInfo() {
-        firebaseUtil.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(currentUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists() && snapshot.hasChild("name") && snapshot.hasChild("image") && snapshot.hasChild("username")) {

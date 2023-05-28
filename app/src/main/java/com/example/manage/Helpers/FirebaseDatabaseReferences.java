@@ -3,10 +3,10 @@ package com.example.manage.Helpers;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class FirebaseUtil {
+public class FirebaseDatabaseReferences {
     private final DatabaseReference rootRef, usersRef, messagesRef, notificationsRef, chatRequestsRef, contactsRef, groupsRef;
 
-    public FirebaseUtil() {
+    public FirebaseDatabaseReferences() {
         rootRef = FirebaseDatabase.getInstance().getReference();
         usersRef = rootRef.child("Users");
         messagesRef = rootRef.child("Messages");

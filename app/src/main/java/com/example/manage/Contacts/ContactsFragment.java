@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.ContactsAdapter;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -21,7 +21,7 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.Objects;
 
 public class ContactsFragment extends Fragment {
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private RecyclerView rvContactList;
     private DatabaseReference ContactsUserIdRef;
 
@@ -47,7 +47,7 @@ public class ContactsFragment extends Fragment {
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        ContactsUserIdRef = firebaseUtil.getContactsRef().child(currentUserID);
+        ContactsUserIdRef = firebaseDatabaseReferences.getContactsRef().child(currentUserID);
 
         return contactView;
     }

@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.GroupCreationAdapter;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -53,10 +53,10 @@ public class CreateGroupSheetDialogFragment extends BottomSheetDialogFragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         String currentUserId = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
-        FirebaseUtil firebaseUtil = new FirebaseUtil();
+        FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
         FirebaseRecyclerOptions<Contacts> options =
                 new FirebaseRecyclerOptions.Builder<Contacts>()
-                        .setQuery(firebaseUtil.getContactsRef().child(currentUserId), Contacts.class)
+                        .setQuery(firebaseDatabaseReferences.getContactsRef().child(currentUserId), Contacts.class)
                         .build();
         // Initialize GroupCreationAdapter and set it as the adapter for the RecyclerView
         adapter = new GroupCreationAdapter(options);

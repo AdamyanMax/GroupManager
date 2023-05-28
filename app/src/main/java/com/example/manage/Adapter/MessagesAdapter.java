@@ -18,7 +18,7 @@ import androidx.appcompat.widget.PopupMenu;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Chats.Image.FullScreenImageActivity;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -40,7 +40,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     private static final int VIEW_TYPE_IMAGE_MESSAGE = 3;
 
     private final List<Messages> userMessagesList;
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private FirebaseAuth mAuth;
 
 
@@ -90,7 +90,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         String fromUserID = messages.getFrom();
         String fromMessageType = messages.getType();
 
-        DatabaseReference senderUserId = firebaseUtil.getUsersRef().child(fromUserID);
+        DatabaseReference senderUserId = firebaseDatabaseReferences.getUsersRef().child(fromUserID);
 
         senderUserId.addValueEventListener(new ValueEventListener() {
             @Override
@@ -133,6 +133,26 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         });
 
         if (isSender) {
+            String status = messages.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case "sent":
+                        holder.ivTextSeenSent.setImageResource(R.drawable.ic_sent);
+                        break;
+                    case "delivered":
+                        holder.ivTextSeenSent.setImageResource(R.drawable.ic_delivered);
+                        break;
+                    case "seen":
+                        holder.ivTextSeenSent.setImageResource(R.drawable.ic_seen);
+                        break;
+                }
+            } else {
+                // You could potentially set a default icon here
+                // holder.ivTextSeenSent.setImageResource(R.drawable.ic_default);
+                Log.e("handleTextMessages", "handleTextMessages: message status is null");
+            }
+
             holder.cardSenderText.setVisibility(View.VISIBLE);
             holder.tvSenderMessageText.setText(messages.getMessage());
             holder.tvSenderTextTime.setText(messages.getTime());
@@ -292,7 +312,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     // TODO: Also delete from the firebase storage for image and file type messages
     private void deleteForEveryone(final int position) {
         // Delete for the receiver
-        firebaseUtil
+        firebaseDatabaseReferences
                 .getMessagesRef()
                 .child(userMessagesList.get(position).getTo())
                 .child(userMessagesList.get(position).getFrom())
@@ -300,7 +320,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 .removeValue()
                 .addOnSuccessListener(aVoid -> {
                     // Delete for the sender
-                    firebaseUtil
+                    firebaseDatabaseReferences
                             .getMessagesRef()
                             .child(userMessagesList.get(position).getFrom())
                             .child(userMessagesList.get(position).getTo())
@@ -318,7 +338,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void deleteForMeReceiver(final int position) {
-        firebaseUtil
+        firebaseDatabaseReferences
                 .getMessagesRef()
                 .child(userMessagesList.get(position).getTo())
                 .child(userMessagesList.get(position).getFrom())
@@ -334,7 +354,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
     }
 
     private void deleteForMeSender(final int position) {
-        firebaseUtil
+        firebaseDatabaseReferences
                 .getMessagesRef()
                 .child(userMessagesList.get(position).getFrom())
                 .child(userMessagesList.get(position).getTo())
@@ -348,7 +368,6 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
                 })
                 .addOnFailureListener(e -> Log.e("DeleteForMeSender", "Failed to delete message: " + e.getMessage()));
     }
-
 
     private void showPopupMenu(View view, boolean isSender, int position) {
         PopupMenu popupMenu = new PopupMenu(view.getContext(), view);

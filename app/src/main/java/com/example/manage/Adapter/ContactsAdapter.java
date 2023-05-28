@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -24,7 +24,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ContactsAdapter extends FirebaseRecyclerAdapter<Contacts, ContactsAdapter.ContactsViewHolder> {
 
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
 
     public ContactsAdapter(@NonNull FirebaseRecyclerOptions<Contacts> options) {
         super(options);
@@ -35,7 +35,7 @@ public class ContactsAdapter extends FirebaseRecyclerAdapter<Contacts, ContactsA
         String userIDs = getRef(position).getKey();
 
         assert userIDs != null;
-        firebaseUtil.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(userIDs).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.exists()) {

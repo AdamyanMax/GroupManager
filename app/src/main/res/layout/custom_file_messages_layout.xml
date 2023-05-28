@@ -147,20 +147,19 @@
                 android:text="00:00 am"
                 android:textColor="@color/senderTimeColor"
                 android:textSize="12sp"
-                android:layout_marginEnd="4dp"
-                app:layout_constraintEnd_toStartOf="@+id/iv_file_sent_seen"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_sender_file_size"
                 tools:ignore="HardcodedText" />
 
-            <ImageView
-                android:id="@+id/iv_file_sent_seen"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:contentDescription="@string/seen_or_sent"
-                android:src="@drawable/ic_sent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_sender_file_size"
-                app:tint="@color/colorPrimaryDark" />
+<!--            <ImageView-->
+<!--                android:id="@+id/iv_file_sent_seen"-->
+<!--                android:layout_width="16dp"-->
+<!--                android:layout_height="16dp"-->
+<!--                android:contentDescription="@string/seen_or_sent"-->
+<!--                android:src="@drawable/ic_sent"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/tv_sender_file_size"-->
+<!--                app:tint="@color/colorPrimaryDark" />-->
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import com.example.manage.Helpers.FirebaseManager;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.OperationCallback;
 import com.example.manage.Helpers.ProgressBar.TextProgressBarController;
 import com.example.manage.R;
@@ -33,7 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String CURRENT_STATE_FRIENDS = "friends";
     private static final String CURRENT_STATE_REQUEST_RECEIVED = "request_received";
     private static final String NODE_REQUEST_TYPE = "request_type";
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private String receiverUserID, currentState, senderUserID;
     private CircleImageView civProfileImage;
     private TextView tvUsername, tvUserStatus;
@@ -65,7 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void retrieveUserInfo() {
-        firebaseUtil.getUsersRef().child(receiverUserID).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getUsersRef().child(receiverUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if ((snapshot.exists()) && (snapshot.hasChild("image"))) {
@@ -97,7 +97,7 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
     private void manageChatRequests() {
-        firebaseUtil.getChatRequestsRef().child(senderUserID).addValueEventListener(new ValueEventListener() {
+        firebaseDatabaseReferences.getChatRequestsRef().child(senderUserID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChild(receiverUserID)) {
@@ -117,7 +117,7 @@ public class ProfileActivity extends AppCompatActivity {
                         btnDeclineRequest.setOnClickListener(v -> cancelChatRequest());
                     }
                 } else {
-                    firebaseUtil.getContactsRef().child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
+                    firebaseDatabaseReferences.getContactsRef().child(senderUserID).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.hasChild(receiverUserID)) {

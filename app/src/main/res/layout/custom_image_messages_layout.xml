@@ -121,14 +121,14 @@
                         android:textSize="12sp"
                         tools:ignore="HardcodedText" />
 
-                    <ImageView
-                        android:id="@+id/iv_image_sent_seen"
-                        android:layout_width="17dp"
-                        android:layout_height="17dp"
-                        android:layout_marginStart="4dp"
-                        android:contentDescription="@string/seen_or_sent"
-                        android:src="@drawable/ic_sent"
-                        app:tint="@color/white" />
+<!--                    <ImageView-->
+<!--                        android:id="@+id/iv_image_sent_seen"-->
+<!--                        android:layout_width="17dp"-->
+<!--                        android:layout_height="17dp"-->
+<!--                        android:layout_marginStart="4dp"-->
+<!--                        android:contentDescription="@string/seen_or_sent"-->
+<!--                        android:src="@drawable/ic_sent"-->
+<!--                        app:tint="@color/white" />-->
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>

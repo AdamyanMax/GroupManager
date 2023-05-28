@@ -23,7 +23,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.R;
 import com.github.chrisbanes.photoview.PhotoView;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -44,7 +44,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
     // TODO: Save the user's scroll position in the ChatActivity
 
     private static final int PERMISSION_REQUEST_CODE = 100;
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private MaterialToolbar toolbar;
     private ConstraintLayout constraintLayout;
     private boolean isToolbarVisible = true;
@@ -108,7 +108,7 @@ public class FullScreenImageActivity extends AppCompatActivity {
     }
 
     private void fetchNameAndSetTextView(String uid) {
-        DatabaseReference userNameRef = firebaseUtil.getUsersRef().child(uid).child("name");
+        DatabaseReference userNameRef = firebaseDatabaseReferences.getUsersRef().child(uid).child("name");
 
         userNameRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

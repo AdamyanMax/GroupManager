@@ -11,12 +11,12 @@ import java.util.Objects;
 
 public class FirebaseManager {
     private static final String NODE_REQUEST_TYPE = "request_type";
-    private final FirebaseUtil firebaseUtil;
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences;
 //    private final MutableLiveData<Contacts> userLiveData = new MutableLiveData<>();
 //    private final MutableLiveData<String> lastMessageLiveData = new MutableLiveData<>();
 
     public FirebaseManager() {
-        firebaseUtil = new FirebaseUtil();
+        firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     }
 
     //    public LiveData<Contacts> getUserLiveData(String userId) {
@@ -70,8 +70,8 @@ public class FirebaseManager {
 //    }
 
     public void removeContact(String senderUserID, String receiverUserID, OperationCallback callback) {
-        DatabaseReference senderRef = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID);
-        DatabaseReference receiverRef = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID);
+        DatabaseReference senderRef = firebaseDatabaseReferences.getContactsRef().child(senderUserID).child(receiverUserID);
+        DatabaseReference receiverRef = firebaseDatabaseReferences.getContactsRef().child(receiverUserID).child(senderUserID);
         List<Task<Void>> tasks = new ArrayList<>();
 
         Task<Void> removeSenderContact = senderRef.removeValue();
@@ -92,8 +92,8 @@ public class FirebaseManager {
     }
 
     public void declineChatRequest(String senderUserID, String receiverUserID, OperationCallback callback) {
-        DatabaseReference senderRef = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID);
-        DatabaseReference receiverRef = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID);
+        DatabaseReference senderRef = firebaseDatabaseReferences.getChatRequestsRef().child(senderUserID).child(receiverUserID);
+        DatabaseReference receiverRef = firebaseDatabaseReferences.getChatRequestsRef().child(receiverUserID).child(senderUserID);
         List<Task<Void>> tasks = new ArrayList<>();
 
         Task<Void> removeSenderChatRequest = senderRef.removeValue();
@@ -116,16 +116,16 @@ public class FirebaseManager {
     public void acceptChatRequest(String senderUserID, String receiverUserID, OperationCallback callback) {
         List<Task<Void>> tasks = new ArrayList<>();
 
-        Task<Void> task1 = firebaseUtil.getContactsRef().child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved");
+        Task<Void> task1 = firebaseDatabaseReferences.getContactsRef().child(senderUserID).child(receiverUserID).child("Contacts").setValue("Saved");
         tasks.add(task1);
 
-        Task<Void> task2 = firebaseUtil.getContactsRef().child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved");
+        Task<Void> task2 = firebaseDatabaseReferences.getContactsRef().child(receiverUserID).child(senderUserID).child("Contacts").setValue("Saved");
         tasks.add(task2);
 
-        Task<Void> task3 = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue();
+        Task<Void> task3 = firebaseDatabaseReferences.getChatRequestsRef().child(senderUserID).child(receiverUserID).removeValue();
         tasks.add(task3);
 
-        Task<Void> task4 = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue();
+        Task<Void> task4 = firebaseDatabaseReferences.getChatRequestsRef().child(receiverUserID).child(senderUserID).removeValue();
         tasks.add(task4);
 
         Task<Void> combinedTask = Tasks.whenAll(tasks);
@@ -143,18 +143,18 @@ public class FirebaseManager {
         List<Task<Void>> tasks = new ArrayList<>();
 
         // Task to set "sent" request_type for sender
-        Task<Void> task1 = firebaseUtil.getChatRequestsRef().child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent");
+        Task<Void> task1 = firebaseDatabaseReferences.getChatRequestsRef().child(senderUserID).child(receiverUserID).child(NODE_REQUEST_TYPE).setValue("sent");
         tasks.add(task1);
 
         // Task to set "received" request_type for receiver
-        Task<Void> task2 = firebaseUtil.getChatRequestsRef().child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received");
+        Task<Void> task2 = firebaseDatabaseReferences.getChatRequestsRef().child(receiverUserID).child(senderUserID).child(NODE_REQUEST_TYPE).setValue("received");
         tasks.add(task2);
 
         // Task to add notification
         HashMap<String, String> chatNotificationMap = new HashMap<>();
         chatNotificationMap.put("from", senderUserID);
         chatNotificationMap.put("type", "request");
-        Task<Void> task3 = firebaseUtil.getNotificationsRef().child(receiverUserID).push().setValue(chatNotificationMap);
+        Task<Void> task3 = firebaseDatabaseReferences.getNotificationsRef().child(receiverUserID).push().setValue(chatNotificationMap);
         tasks.add(task3);
 
         // Run tasks simultaneously

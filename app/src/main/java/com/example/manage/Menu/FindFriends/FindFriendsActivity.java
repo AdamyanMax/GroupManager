@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.manage.Adapter.FindFriendsAdapter;
-import com.example.manage.Helpers.FirebaseUtil;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class FindFriendsActivity extends AppCompatActivity {
 
-    private final FirebaseUtil firebaseUtil = new FirebaseUtil();
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private RecyclerView rvFindFriends;
     private String selectedFilter = "name";
     private FindFriendsAdapter adapter;
@@ -158,12 +158,12 @@ public class FindFriendsActivity extends AppCompatActivity {
 
         if (queryText.isEmpty()) {
             options = new FirebaseRecyclerOptions.Builder<Contacts>()
-                    .setQuery(firebaseUtil.getUsersRef(), Contacts.class)
+                    .setQuery(firebaseDatabaseReferences.getUsersRef(), Contacts.class)
                     .build();
         } else {
             options = new FirebaseRecyclerOptions.Builder<Contacts>()
                     .setQuery(
-                            firebaseUtil.getUsersRef().orderByChild(selectedFilter)
+                            firebaseDatabaseReferences.getUsersRef().orderByChild(selectedFilter)
                                     .startAt(queryText)
                                     .endAt(queryText + "\uf8ff"),
                             Contacts.class

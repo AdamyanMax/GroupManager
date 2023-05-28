@@ -1,22 +1,13 @@
 package com.example.manage.Module;
 
 public class Messages {
-    private String from;
-    private String message;
-    private String type;
-    private String to;
-    private String message_id;
-    private String time;
-    private String date;
-    private String name;
+    private String from, message, type, to, message_id, time, date, name, fileName, fileSize, status;
 
-    private String fileName;
-    private String fileSize;
 
     public Messages() {
     }
 
-    public Messages(String from, String message, String type, String to, String messageID, String time, String date, String name) {
+    public Messages(String from, String message, String type, String to, String messageID, String time, String date, String name, String status) {
         this.from = from;
         this.message = message;
         this.type = type;
@@ -25,9 +16,10 @@ public class Messages {
         this.time = time;
         this.date = date;
         this.name = name;
+        this.status = status;
     }
 
-    public Messages(String message, String type, String from, String to, String messageId, String time, String date, String fileName, String fileSize) {
+    public Messages(String message, String type, String from, String to, String messageId, String time, String date, String fileName, String fileSize, String status) {
         this.message = message;
         this.type = type;
         this.from = from;
@@ -37,6 +29,7 @@ public class Messages {
         this.date = date;
         this.fileName = fileName;
         this.fileSize = fileSize;
+        this.status = status;
     }
 
     public String getFrom() {
@@ -53,6 +46,14 @@ public class Messages {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getType() {

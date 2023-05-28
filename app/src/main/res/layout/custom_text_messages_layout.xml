@@ -114,8 +114,7 @@
                 android:contentDescription="@string/seen_or_sent"
                 android:src="@drawable/ic_sent"
                 app:layout_constraintEnd_toEndOf="@+id/tv_sender_message"
-                app:layout_constraintTop_toBottomOf="@+id/tv_sender_message"
-/>
+                app:layout_constraintTop_toBottomOf="@+id/tv_sender_message" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
