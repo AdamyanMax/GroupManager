@@ -11,9 +11,9 @@
         android:id="@+id/civ_receiver_profile_image"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:visibility="gone"
-
         android:src="@drawable/user_default_profile_pic"
+
+        android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -97,25 +97,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="4dp"
                 android:text="00:00 am"
                 android:textColor="@color/senderTimeColor"
                 android:textSize="12sp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="4dp"
-                app:layout_constraintEnd_toStartOf="@+id/imageView3"
+                app:layout_constraintEnd_toStartOf="@+id/iv_text_sent_seen"
                 app:layout_constraintTop_toBottomOf="@+id/tv_sender_message"
                 tools:ignore="HardcodedText" />
 
             <ImageView
-                android:id="@+id/imageView3"
+                android:id="@+id/iv_text_sent_seen"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="2dp"
+                android:contentDescription="@string/seen_or_sent"
                 android:src="@drawable/ic_sent"
                 app:layout_constraintEnd_toEndOf="@+id/tv_sender_message"
                 app:layout_constraintTop_toBottomOf="@+id/tv_sender_message"
-                app:tint="@color/colorPrimaryDark"
-                android:contentDescription="@string/seen_or_sent" />
+/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

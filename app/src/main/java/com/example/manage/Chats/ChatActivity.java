@@ -451,7 +451,7 @@ public class ChatActivity extends AppCompatActivity {
 
     // This method is used to display the last seen status of the user
     private void displayLastSeen() {
-        firebaseUtil.getMessagesRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
+        firebaseUtil.getUsersRef().child(messageReceiverID).addValueEventListener(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {

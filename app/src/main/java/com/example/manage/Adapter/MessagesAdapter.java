@@ -374,6 +374,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
         // Text
         public TextView tvSenderMessageText, tvReceiverMessageText, tvReceiverTextTime, tvSenderTextTime;
         public androidx.cardview.widget.CardView cardSenderText, cardReceiverText;
+        public ImageView ivTextSeenSent;
 
         // Image
         public ImageView ivSenderImage, ivReceiverImage;
@@ -397,6 +398,7 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
 
             tvReceiverTextTime = itemView.findViewById(R.id.tv_receiver_message_time);
             tvSenderTextTime = itemView.findViewById(R.id.tv_sender_message_time);
+            ivTextSeenSent = itemView.findViewById(R.id.iv_text_sent_seen);
 
             cardSenderText = itemView.findViewById(R.id.card_sender_text);
             cardReceiverText = itemView.findViewById(R.id.card_receiver_text);
