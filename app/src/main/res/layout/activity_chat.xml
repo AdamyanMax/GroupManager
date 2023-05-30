@@ -29,7 +29,9 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_gravity="start"
-            android:layoutDirection="ltr">
+            android:layoutDirection="ltr"
+
+            >
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/civ_chat_profile_user_image"

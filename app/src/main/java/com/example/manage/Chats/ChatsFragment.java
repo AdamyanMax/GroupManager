@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.ProgressBar.ProgressBarHandler;
 import com.example.manage.Module.Contacts;
+import com.example.manage.Module.Messages;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -31,7 +32,7 @@ import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChatsFragment extends Fragment{
+public class ChatsFragment extends Fragment {
     private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private RecyclerView rvChatList;
     private DatabaseReference ChatsUserIdRef;
@@ -97,7 +98,7 @@ public class ChatsFragment extends Fragment{
 
                             if (snapshot.hasChild("image")) {
                                 profileImage[0] = Objects.requireNonNull(snapshot.child("image").getValue()).toString();
-                                Picasso.get().load(profileImage[0]).into(holder.civProfileImage);
+                                Picasso.get().load(profileImage[0]).placeholder(R.drawable.user_default_profile_pic).into(holder.civProfileImage);
                             }
                             final String name = Objects.requireNonNull(snapshot.child("name").getValue()).toString();
                             final String status = Objects.requireNonNull(snapshot.child("status").getValue()).toString();
@@ -105,6 +106,8 @@ public class ChatsFragment extends Fragment{
                             holder.tvUsername.setText(name);
 
                             getLastMessage(userIDs, holder.tvUserLastMessage);
+
+                            getUnreadMessagesCount(userIDs, holder.tvUnreadMessagesCount);  // Assuming you have this TextView in your ViewHolder
 
                             holder.itemView.setOnClickListener(v -> {
                                 Intent chatIntent = new Intent(getContext(), ChatActivity.class);
@@ -190,9 +193,48 @@ public class ChatsFragment extends Fragment{
         });
     }
 
+    private void getUnreadMessagesCount(String userId, TextView tvUnreadMessagesCount) {
+        if (mAuth.getCurrentUser() != null) {
+            currentUserID = mAuth.getCurrentUser().getUid();
+        } else {
+            Log.d("TAG", "No user is currently signed in");
+        }
+
+        DatabaseReference reference = firebaseDatabaseReferences.getMessagesRef();
+
+        reference.child(currentUserID).child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                long unreadCount = 0;
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Messages message = snapshot.getValue(Messages.class); // Assuming you have a Messages class to map the snapshot
+                    if (message != null) {
+                        if (message.getFrom().equals(userId) && message.getStatus().equals("delivered")) {
+                            unreadCount++;
+                        }
+                    }
+                }
+
+                if (unreadCount > 0) {
+                    tvUnreadMessagesCount.setText(String.valueOf(unreadCount));
+                    tvUnreadMessagesCount.setVisibility(View.VISIBLE);
+                } else {
+                    tvUnreadMessagesCount.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle possible errors.
+                Log.e("getUnreadMessagesCount", "onCancelled: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
     public static class ChatsViewHolder extends RecyclerView.ViewHolder {
         CircleImageView civProfileImage, civOnlineIcon;
-        TextView tvUserLastMessage, tvUsername;
+        TextView tvUserLastMessage, tvUsername, tvUnreadMessagesCount;
 
         public ChatsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -201,6 +243,7 @@ public class ChatsFragment extends Fragment{
             tvUsername = itemView.findViewById(R.id.tv_display_username);
             tvUserLastMessage = itemView.findViewById(R.id.tv_display_user_status);
             civOnlineIcon = itemView.findViewById(R.id.civ_display_online);
+            tvUnreadMessagesCount = itemView.findViewById(R.id.tv_display_unread_messages_count);
         }
     }
 }

@@ -187,8 +187,8 @@ public class ChatActivity extends AppCompatActivity {
         ibSendMessage.setOnClickListener(v -> uploadAndSendTextMessage());
 
         civProfileImage.setOnClickListener(v -> {
-            if (!slidingPaneLayout.isOpen()) {
-                slidingPaneLayout.openPane();
+            if (slidingPaneLayout.isOpen()) {
+                slidingPaneLayout.closePane();
             }
         });
 
@@ -217,21 +217,21 @@ public class ChatActivity extends AppCompatActivity {
 
                     rvUserMessagesList.smoothScrollToPosition(Objects.requireNonNull(rvUserMessagesList.getAdapter()).getItemCount());
 
-                    // New code for handling status begins here
                     if (!messageSenderID.equals(messages.getFrom())) {
                         // This means you are the receiver of the message.
                         // Now update the status to delivered if it was sent
                         if (messages.getStatus().equals("sent")) {
                             updateMessageStatus(messages.getMessage_id(), "delivered");
                         }
-                    } else if (messages.getStatus().equals("delivered")) {
-                        // This means you are the sender and the message has been delivered
-                        // Here you can update the status to seen if needed
-                        updateMessageStatus(messages.getMessage_id(), "seen");
+                        // Check if the message is from the other user and its status is "delivered"
+                        else if (messages.getStatus().equals("delivered")) {
+                            // Update the status to "seen"
+                            updateMessageStatus(messages.getMessage_id(), "seen");
+                        }
                     }
-
                 }
             }
+
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (snapshot.hasChild("status")) {
@@ -269,6 +269,7 @@ public class ChatActivity extends AppCompatActivity {
 
         firebaseDatabaseReferences.getMessagesRef().child(messageReceiverID).child(messageSenderID).addChildEventListener(childEventListener);
     }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -279,7 +280,6 @@ public class ChatActivity extends AppCompatActivity {
         }
         messagesList.clear(); // Clear the list here when activity is no longer visible
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();

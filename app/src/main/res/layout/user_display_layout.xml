@@ -33,9 +33,9 @@
             android:layout_width="12dp"
             android:layout_height="12dp"
             android:layout_gravity="bottom|end"
-            android:src="@drawable/ic_circle_solid"
             android:layout_marginEnd="3dp"
             android:layout_marginBottom="3dp"
+            android:src="@drawable/ic_circle_solid"
             android:visibility="invisible" />
     </FrameLayout>
 
@@ -79,8 +79,10 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:orientation="horizontal"
-        app:layout_constrainedWidth="true"
+
         android:visibility="gone"
+
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/ll_display_name_status"
@@ -152,6 +154,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!--    TODO: Add a line at the bottom using View-->
+    <TextView
+        android:id="@+id/tv_display_unread_messages_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_unread_messages_count"
+        android:gravity="center"
+        android:maxWidth="40dp"
+        android:maxHeight="40dp"
+        android:minWidth="32dp"
+        android:minHeight="32dp"
+        android:padding="6dp"
+        android:text="0"
+
+        android:visibility="gone"
+
+        android:textColor="@color/colorAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="HardcodedText" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
