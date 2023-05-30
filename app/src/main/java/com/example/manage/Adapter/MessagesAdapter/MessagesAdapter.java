@@ -1,4 +1,4 @@
-package com.example.manage.Adapter;
+package com.example.manage.Adapter.MessagesAdapter;
 
 import android.app.Activity;
 import android.content.Context;
@@ -61,6 +61,12 @@ public class MessagesAdapter extends RecyclerView.Adapter<MessagesAdapter.Messag
             return VIEW_TYPE_IMAGE_MESSAGE;
         }
     }
+
+    public void removeItem(int position) {
+        userMessagesList.remove(position);
+        notifyItemRemoved(position);
+    }
+
 
 
     @NonNull

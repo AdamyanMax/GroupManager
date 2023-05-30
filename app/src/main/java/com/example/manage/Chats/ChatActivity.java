@@ -43,7 +43,7 @@ import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.example.manage.Adapter.MessagesAdapter;
+import com.example.manage.Adapter.MessagesAdapter.MessagesAdapter;
 import com.example.manage.Chats.Profile.FilesFragment;
 import com.example.manage.Chats.Profile.ImagesFragment;
 import com.example.manage.Helpers.FirebaseDatabaseReferences;
