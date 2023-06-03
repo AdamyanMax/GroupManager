@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class ChatsFragment extends Fragment {
     private DatabaseReference ChatsUserIdRef;
     private FirebaseAuth mAuth;
     private LinearProgressBarHandler linearProgressBarHandler;
+    private LinearLayout llNoChatsLayout;
     private FirebaseRecyclerAdapter<Contacts, ChatsViewHolder> adapter;
     private String currentUserID;
 
@@ -53,6 +55,10 @@ public class ChatsFragment extends Fragment {
 
         rvChatList = vPrivateChats.findViewById(R.id.rv_private_chats);
         rvChatList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // The LinearLayout that is displayed when there are no chats
+        llNoChatsLayout = vPrivateChats.findViewById(R.id.ll_no_chats_layout);
+
 
         mAuth = FirebaseAuth.getInstance();
         String currentUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
@@ -117,6 +123,14 @@ public class ChatsFragment extends Fragment {
                                 chatIntent.putExtra("visit_user_status", status);
                                 startActivity(chatIntent);
                             });
+                        }else {
+                            if (getItemCount() == 0) {
+                                llNoChatsLayout.setVisibility(View.VISIBLE);
+                                rvChatList.setVisibility(View.GONE);
+                            } else {
+                                llNoChatsLayout.setVisibility(View.GONE);
+                                rvChatList.setVisibility(View.VISIBLE);
+                            }
                         }
                     }
 

@@ -94,5 +94,9 @@
     <string name="search_by_name">Search by name</string>
     <string name="date_parsing_failed">Date parsing failed</string>
     <string name="user_last_seen_unavailable">"User last seen unavailable "</string>
+    <string name="no_contacts">No Contacts</string>
+    <string name="here">here</string>
+    <string name="you_can_find_them">You can find them</string>
+    <string name="no_chats">No Chats</string>
 
 </resources>
