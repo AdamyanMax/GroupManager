@@ -1,5 +1,11 @@
 package com.example.manage.Helpers;
 
+import static com.example.manage.Helpers.ChatHelper.ChatConstants.MESSAGES;
+
+import android.util.Pair;
+
+import androidx.annotation.NonNull;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.database.DatabaseReference;
@@ -7,12 +13,14 @@ import com.google.firebase.database.DatabaseReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class FirebaseManager {
     private static final String NODE_REQUEST_TYPE = "request_type";
     private final FirebaseDatabaseReferences firebaseDatabaseReferences;
-//    private final MutableLiveData<Contacts> userLiveData = new MutableLiveData<>();
+
+    //    private final MutableLiveData<Contacts> userLiveData = new MutableLiveData<>();
 //    private final MutableLiveData<String> lastMessageLiveData = new MutableLiveData<>();
 
     public FirebaseManager() {
@@ -165,6 +173,39 @@ public class FirebaseManager {
                 callback.onFailure(task.getException());
             }
         });
+    }
+
+    @NonNull
+    public Pair<String, String> getMessageRefs(String senderId, String receiverId) {
+        String messageSenderRef = MESSAGES + senderId + "/" + receiverId;
+        String messageReceiverRef = MESSAGES + receiverId + "/" + senderId;
+        return new Pair<>(messageSenderRef, messageReceiverRef);
+    }
+    public void updateMessageStatus(String messageId, String status, String messageSenderID, String messageReceiverID) {
+        DatabaseReference senderRef = firebaseDatabaseReferences.getMessagesRef()
+                .child(messageSenderID)
+                .child(messageReceiverID)
+                .child(messageId);
+
+        DatabaseReference receiverRef = firebaseDatabaseReferences.getMessagesRef()
+                .child(messageReceiverID)
+                .child(messageSenderID)
+                .child(messageId);
+
+        Map<String, Object> statusUpdate = new HashMap<>();
+        statusUpdate.put("status", status);
+
+        senderRef.updateChildren(statusUpdate);
+        receiverRef.updateChildren(statusUpdate);
+    }
+
+    @NonNull
+    public Task<Void> updateFirebaseDatabase(String messageSenderRef, String messageReceiverRef, String messagePushID, Map<String, Object> messageBody) {
+        Map<String, Object> messageBodyDetails = new HashMap<>();
+        messageBodyDetails.put(messageSenderRef + "/" + messagePushID, messageBody);
+        messageBodyDetails.put(messageReceiverRef + "/" + messagePushID, messageBody);
+
+        return firebaseDatabaseReferences.getRootRef().updateChildren(messageBodyDetails);
     }
 
 }

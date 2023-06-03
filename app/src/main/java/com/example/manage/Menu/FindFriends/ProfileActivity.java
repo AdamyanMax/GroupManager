@@ -51,7 +51,7 @@ public class ProfileActivity extends AppCompatActivity {
         progressBarController = new TextProgressBarController(this);
         firebaseManager = new FirebaseManager();
 
-        receiverUserID = getIntent().getExtras().get("visit_user_id").toString();
+        receiverUserID = getIntent().getExtras().get("profile_visit_user_id").toString();
         currentState = CURRENT_STATE_NEW;
         senderUserID = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 

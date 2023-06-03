@@ -2,6 +2,7 @@ package com.example.manage.Adapter.MessagesAdapter;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -49,6 +50,24 @@ public class ImageMessageHandler {
 
 
         if (isSender) {
+            String status = messages.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case "sent":
+                        holder.ivImageSentSeen.setImageResource(R.drawable.ic_image_sent);
+                        break;
+                    case "delivered":
+                        holder.ivImageSentSeen.setImageResource(R.drawable.ic_image_delivered);
+                        break;
+                    case "seen":
+                        holder.ivImageSentSeen.setImageResource(R.drawable.ic_image_seen);
+                        break;
+                }
+            } else {
+                Log.e("handleImageMessages", "handleImageMessages: message status is null");
+            }
+
             holder.cardSenderImage.setVisibility(View.VISIBLE);
             holder.tvSenderImageTime.setText(messages.getTime());
             holder.civReceiverProfileImage.setVisibility(View.GONE);

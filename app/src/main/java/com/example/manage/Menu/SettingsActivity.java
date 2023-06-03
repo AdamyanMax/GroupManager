@@ -43,15 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE_IMAGE_PICKER = 101;
     private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
-    private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    cropImage(uri);
-                } else {
-                    // Error handling
-                    Toast.makeText(this, "Image selection failed.", Toast.LENGTH_SHORT).show();
-                }
-            });
+    private ActivityResultLauncher<String> mGetContent;
     private Button btnUpgradeAccountSettings;
     private EditText etUsername, etName, etUserStatus;
     private TextInputLayout tilUsername, tilName, tilProfileStatus;
@@ -81,6 +73,11 @@ public class SettingsActivity extends AppCompatActivity {
         retrieveUserInfo();
 
         civUserProfileImage.setOnClickListener(v -> mGetContent.launch("image/*"));
+        mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            Intent imageCropperActivityIntent = new Intent(SettingsActivity.this, CropperActivity.class);
+            imageCropperActivityIntent.putExtra("DATA", result.toString());
+            startActivityForResult(imageCropperActivityIntent, 101);
+        });
     }
 
     private void initializeFields() {
@@ -282,12 +279,6 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    private void cropImage(@NonNull Uri imageUri) {
-        Intent imageCropperActivityIntent = new Intent(SettingsActivity.this, CropperActivity.class);
-        imageCropperActivityIntent.putExtra("DATA", imageUri.toString());
-        startActivity(imageCropperActivityIntent);
     }
 
     public interface OnUsernameCheckListener {

@@ -26,17 +26,21 @@ import com.firebase.ui.database.FirebaseRecyclerOptions;
 import java.util.Objects;
 
 public class FindFriendsActivity extends AppCompatActivity {
+    // TODO: Crashes when navigating back from the ProfileActivity
 
     private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private RecyclerView rvFindFriends;
     private String selectedFilter = "name";
     private FindFriendsAdapter adapter;
     private String lastQueryText = "";
+    private FirebaseRecyclerOptions<Contacts> options;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_find_firends);
+
 
         rvFindFriends = findViewById(R.id.rv_find_friends);
         rvFindFriends.setLayoutManager(new LinearLayoutManager(this));
@@ -46,6 +50,14 @@ public class FindFriendsActivity extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Find Friends");
+
+        // Create the adapter here and set it to the RecyclerView
+        options = new FirebaseRecyclerOptions.Builder<Contacts>()
+                .setQuery(firebaseDatabaseReferences.getUsersRef(), Contacts.class)
+                .build();
+        adapter = new FindFriendsAdapter(options, selectedFilter);
+
+        rvFindFriends.setAdapter(adapter);
 
         executeSearch(lastQueryText);
     }
@@ -154,13 +166,7 @@ public class FindFriendsActivity extends AppCompatActivity {
     }
 
     private void executeSearch(@NonNull String queryText) {
-        FirebaseRecyclerOptions<Contacts> options;
-
-        if (queryText.isEmpty()) {
-            options = new FirebaseRecyclerOptions.Builder<Contacts>()
-                    .setQuery(firebaseDatabaseReferences.getUsersRef(), Contacts.class)
-                    .build();
-        } else {
+        if (!queryText.isEmpty()) {
             options = new FirebaseRecyclerOptions.Builder<Contacts>()
                     .setQuery(
                             firebaseDatabaseReferences.getUsersRef().orderByChild(selectedFilter)
@@ -169,12 +175,14 @@ public class FindFriendsActivity extends AppCompatActivity {
                             Contacts.class
                     )
                     .build();
+
+            adapter = new FindFriendsAdapter(options, selectedFilter);
+            rvFindFriends.setAdapter(adapter);
         }
 
-        adapter = new FindFriendsAdapter(options, selectedFilter);
-
-        rvFindFriends.setAdapter(adapter);
-
-        adapter.startListening();
+        if (adapter != null) {
+            adapter.startListening();
+        }
     }
+
 }

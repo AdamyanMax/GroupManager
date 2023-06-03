@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.manage.Helpers.FirebaseManager;
 import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.OperationCallback;
-import com.example.manage.Helpers.ProgressBar.ProgressBarHandler;
+import com.example.manage.Helpers.ProgressBar.LinearProgressBarHandler;
 import com.example.manage.Module.Contacts;
 import com.example.manage.R;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
@@ -40,7 +40,7 @@ public class RequestsFragment extends Fragment {
     private RecyclerView rvRequestsList;
     private String currentUserID;
     private FirebaseRecyclerAdapter<Contacts, RequestViewHolder> adapter;
-    private ProgressBarHandler progressBarHandler;
+    private LinearProgressBarHandler linearProgressBarHandler;
 
     public RequestsFragment() {
     }
@@ -48,7 +48,7 @@ public class RequestsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_requests, container, false);
-        progressBarHandler = new ProgressBarHandler(view);
+        linearProgressBarHandler = new LinearProgressBarHandler(view);
         rvRequestsList = view.findViewById(R.id.rv_chat_requests);
         rvRequestsList.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -61,7 +61,7 @@ public class RequestsFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        progressBarHandler.show();
+        linearProgressBarHandler.show();
 
         FirebaseRecyclerOptions<Contacts> options = new FirebaseRecyclerOptions.Builder<Contacts>().setQuery(firebaseDatabaseReferences.getChatRequestsRef().child(currentUserID), Contacts.class).build();
         adapter = new FirebaseRecyclerAdapter<Contacts, RequestViewHolder>(options) {
@@ -192,7 +192,7 @@ public class RequestsFragment extends Fragment {
             @Override
             public void onDataChanged() {
                 super.onDataChanged();
-                progressBarHandler.hide();
+                linearProgressBarHandler.hide();
             }
         };
         rvRequestsList.setAdapter(adapter);

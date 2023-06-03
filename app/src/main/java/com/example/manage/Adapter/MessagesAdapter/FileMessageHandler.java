@@ -2,12 +2,14 @@ package com.example.manage.Adapter.MessagesAdapter;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Module.Messages;
+import com.example.manage.R;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ public class FileMessageHandler {
                                           FirebaseDatabaseReferences firebaseDatabaseReferences,
                                           MessagesAdapter adapter) {
         holder.cardSenderFile.setOnLongClickListener(view -> {
+
             MessagePopupMenu.showPopupMenu(view,
                     isSender,
                     position,
@@ -30,6 +33,7 @@ public class FileMessageHandler {
             return true;
         });
         holder.cardReceiverFile.setOnLongClickListener(view -> {
+
             MessagePopupMenu.showPopupMenu(view,
                     isSender,
                     position,
@@ -48,6 +52,24 @@ public class FileMessageHandler {
                 userMessagesList));
 
         if (isSender) {
+            String status = messages.getStatus();
+
+            if (status != null) {
+                switch (status) {
+                    case "sent":
+                        holder.ivFileSentSeen.setImageResource(R.drawable.ic_sent);
+                        break;
+                    case "delivered":
+                        holder.ivFileSentSeen.setImageResource(R.drawable.ic_delivered);
+                        break;
+                    case "seen":
+                        holder.ivFileSentSeen.setImageResource(R.drawable.ic_seen);
+                        break;
+                }
+            } else {
+                Log.e("handleFileMessages", "handleFileMessages: message status is null");
+            }
+
             holder.cardSenderFile.setVisibility(View.VISIBLE);
 
             holder.civReceiverProfileImage.setVisibility(View.GONE);

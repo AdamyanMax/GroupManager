@@ -92,5 +92,7 @@
     <string name="filter">Filter</string>
     <string name="search_by_username">Search by username</string>
     <string name="search_by_name">Search by name</string>
+    <string name="date_parsing_failed">Date parsing failed</string>
+    <string name="user_last_seen_unavailable">"User last seen unavailable "</string>
 
 </resources>

@@ -42,14 +42,15 @@ public class FindFriendsAdapter extends FirebaseRecyclerAdapter<Contacts, FindFr
             holder.name.setText(model.getName());
         }
         holder.status.setText(model.getStatus());
-        Picasso.get().load(model.getImage()).placeholder(R.drawable.user_default_profile_pic).into(holder.profileImage);
+        Picasso.get().load(model.getImage()).placeholder(R.drawable.user_default_profile_pic).error(R.drawable.user_default_profile_pic).into(holder.profileImage);
 
+        String visit_user_id = getRef(position).getKey();
+        holder.itemView.setTag(visit_user_id);
         holder.itemView.setOnClickListener(v -> {
-            String visit_user_id = getRef(position).getKey();
-
-            Intent profileIntent = new Intent(holder.itemView.getContext(), ProfileActivity.class);
-            profileIntent.putExtra("visit_user_id", visit_user_id);
-            holder.itemView.getContext().startActivity(profileIntent);
+            String profile_visit_user_id = (String) v.getTag();
+            Intent profileIntent = new Intent(v.getContext(), ProfileActivity.class);
+            profileIntent.putExtra("profile_visit_user_id", profile_visit_user_id);
+            v.getContext().startActivity(profileIntent);
         });
     }
 
