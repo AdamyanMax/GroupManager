@@ -2,6 +2,7 @@ package com.example.manage.Authentication;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,10 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SignupFragment extends Fragment {
 
@@ -72,12 +77,33 @@ public class SignupFragment extends Fragment {
             mAuthHelper.signUp(email, password, new FirebaseAuthHelper.FirebaseAuthSignUpCallback() {
                 @Override
                 public void onSuccess() {
-                    // Create the action with the email argument
-                    AuthFragmentDirections.ActionAuthFragmentToEmailVerificationFragment action =
-                            AuthFragmentDirections.actionAuthFragmentToEmailVerificationFragment(email);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                Log.w("createNewAccount", "Fetching FCM registration token failed", task.getException());
+                                return;
+                            }
 
-                    // Navigate to the EmailVerificationFragment using the action
-                    NavHostFragment.findNavController(SignupFragment.this).navigate(action);
+                            // Get new FCM registration token
+                            String token = task.getResult();
+
+                            // Save the token in your DB, associated with this user
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
+                            String userId = user.getUid();
+                            databaseReference.child(userId).child("device_token").setValue(token);
+
+                            // Create the action with the email argument
+                            AuthFragmentDirections.ActionAuthFragmentToEmailVerificationFragment action =
+                                    AuthFragmentDirections.actionAuthFragmentToEmailVerificationFragment(email);
+
+                            // Navigate to the EmailVerificationFragment using the action
+                            NavHostFragment.findNavController(SignupFragment.this).navigate(action);
+                        });
+                    } else {
+                        // Handle null user scenario
+                        Toast.makeText(getContext(), "Error: User is null", Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override

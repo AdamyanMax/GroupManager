@@ -21,6 +21,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -235,6 +237,20 @@ public class ProfileActivity extends AppCompatActivity {
         firebaseManager.sendChatRequest(senderUserID, receiverUserID, new OperationCallback() {
             @Override
             public void onSuccess() {
+                String notificationId = firebaseDatabaseReferences.getNotificationsRef().child(receiverUserID).push().getKey();
+                Map<String, String> chatNotification = new HashMap<>();
+                chatNotification.put("from", senderUserID);
+                if (notificationId != null) {
+                    firebaseDatabaseReferences.getNotificationsRef().child(receiverUserID).child(notificationId).setValue(chatNotification)
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "Notification added successfully");
+                                } else {
+                                    Log.d(TAG, "Failed to add notification");
+                                }
+                            });
+                }
+
                 btnSendMessageRequest.setEnabled(true);
                 currentState = CURRENT_STATE_REQUEST_SENT;
                 btnSendMessageRequest.setText(R.string.cancel_chat_request);

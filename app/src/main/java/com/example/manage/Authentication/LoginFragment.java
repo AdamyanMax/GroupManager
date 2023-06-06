@@ -2,10 +2,12 @@ package com.example.manage.Authentication;
 
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +19,10 @@ import com.example.manage.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginFragment extends Fragment {
 
@@ -61,8 +67,30 @@ public class LoginFragment extends Fragment {
             mAuthHelper.signIn(email, password, new FirebaseAuthHelper.FirebaseAuthSignInCallback() {
                 @Override
                 public void onSuccess() {
-                    NavigateUtil.toMainActivity(getContext());
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (user != null) {
+                        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(task -> {
+                            if (!task.isSuccessful()) {
+                                Log.w("AllowUserToLogin", "Fetching FCM registration token failed", task.getException());
+                                return;
+                            }
+
+                            // Get new FCM registration token
+                            String token = task.getResult();
+
+                            // Save the token in your DB, associated with this user
+                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
+                            String userId = user.getUid();
+                            databaseReference.child(userId).child("device_token").setValue(token);
+
+                            NavigateUtil.toMainActivity(getContext());
+                        });
+                    } else {
+                        // Handle null user scenario
+                        Toast.makeText(getContext(), "Error: User is null", Toast.LENGTH_SHORT).show();
+                    }
                 }
+
 
                 @Override
                 public void onUserDoesNotExist() {

@@ -20,11 +20,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class FindFriendsAdapter extends FirebaseRecyclerAdapter<Contacts, FindFriendsAdapter.FindFriendsViewHolder> {
-    private final String filterType;
+    private String filterType;
 
     public FindFriendsAdapter(@NonNull FirebaseRecyclerOptions<Contacts> options, String filterType) {
         super(options);
         this.filterType = filterType;
+    }
+
+    public void changeFilterType(String newFilterType) {
+        this.filterType = newFilterType;
+        notifyItemRangeChanged(0, getItemCount());
     }
 
     @NonNull

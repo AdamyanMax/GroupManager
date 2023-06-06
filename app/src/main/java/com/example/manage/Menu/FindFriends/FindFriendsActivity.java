@@ -56,7 +56,6 @@ public class FindFriendsActivity extends AppCompatActivity {
                 .setQuery(firebaseDatabaseReferences.getUsersRef(), Contacts.class)
                 .build();
         adapter = new FindFriendsAdapter(options, selectedFilter);
-
         rvFindFriends.setAdapter(adapter);
 
         executeSearch(lastQueryText);
@@ -77,8 +76,29 @@ public class FindFriendsActivity extends AppCompatActivity {
         super.onStop();
         if (adapter != null) {
             adapter.stopListening();
+        } else {
+            Log.e("FindFriendsActivity", "onStop: Adapter is null");
         }
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (adapter != null) {
+            adapter.startListening();
+        } else {
+            Log.e("FindFriendsActivity", "onResume: Adapter is null");
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (adapter != null) {
+            adapter.stopListening();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -141,10 +161,16 @@ public class FindFriendsActivity extends AppCompatActivity {
         });
 
         closeIcon.setOnClickListener(v -> {
+            // Clear the search view query
             searchView.setQuery("", false);
-            searchView.setIconified(true);
+            // Clear the search view focus
             searchView.clearFocus();
 
+            searchView.setIconified(true);
+            // Hide the close icon
+            closeIcon.setVisibility(View.GONE);
+            // Refresh the list
+            executeSearch("");
             // Collapse the SearchView
             searchItem.collapseActionView();
         });
@@ -176,13 +202,24 @@ public class FindFriendsActivity extends AppCompatActivity {
                     )
                     .build();
 
+        } else {
+            // If query text is empty, reset the adapter to show the full list
+            options = new FirebaseRecyclerOptions.Builder<Contacts>()
+                    .setQuery(firebaseDatabaseReferences.getUsersRef(), Contacts.class)
+                    .build();
+
+        }
+        if (adapter != null) {
+            adapter.updateOptions(options);
+        } else {
             adapter = new FindFriendsAdapter(options, selectedFilter);
             rvFindFriends.setAdapter(adapter);
         }
-
         if (adapter != null) {
             adapter.startListening();
+            adapter.changeFilterType(selectedFilter);
         }
     }
+
 
 }
