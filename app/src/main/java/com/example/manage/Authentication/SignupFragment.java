@@ -14,14 +14,13 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.manage.Helpers.FirebaseAuthHelper;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class SignupFragment extends Fragment {
@@ -29,6 +28,7 @@ public class SignupFragment extends Fragment {
     private FirebaseAuthHelper mAuthHelper;
     private TextInputLayout tilUserEmail, tilUserPassword, tilUserRepeatPassword;
     private TextInputEditText etUserEmail, etUserPassword, etUserRepeatPassword;
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
 
     @Nullable
     @Override
@@ -89,9 +89,8 @@ public class SignupFragment extends Fragment {
                             String token = task.getResult();
 
                             // Save the token in your DB, associated with this user
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
                             String userId = user.getUid();
-                            databaseReference.child(userId).child("device_token").setValue(token);
+                            firebaseDatabaseReferences.getUsersRef().child(userId).child("device_token").setValue(token);
 
                             // Create the action with the email argument
                             AuthFragmentDirections.ActionAuthFragmentToEmailVerificationFragment action =

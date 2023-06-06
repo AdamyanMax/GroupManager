@@ -14,19 +14,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.manage.Helpers.FirebaseAuthHelper;
+import com.example.manage.Helpers.FirebaseDatabaseReferences;
 import com.example.manage.Helpers.NavigateUtil;
 import com.example.manage.R;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 public class LoginFragment extends Fragment {
 
     private FirebaseAuthHelper mAuthHelper;
+    private final FirebaseDatabaseReferences firebaseDatabaseReferences = new FirebaseDatabaseReferences();
     private TextInputLayout tilUserEmail, tilUserPassword;
     private TextInputEditText etUserEmail, etUserPassword;
 
@@ -79,9 +79,8 @@ public class LoginFragment extends Fragment {
                             String token = task.getResult();
 
                             // Save the token in your DB, associated with this user
-                            DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users");
                             String userId = user.getUid();
-                            databaseReference.child(userId).child("device_token").setValue(token);
+                            firebaseDatabaseReferences.getUsersRef().child(userId).child("device_token").setValue(token);
 
                             NavigateUtil.toMainActivity(getContext());
                         });
