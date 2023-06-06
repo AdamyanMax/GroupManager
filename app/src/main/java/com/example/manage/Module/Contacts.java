@@ -6,9 +6,9 @@ public class Contacts {
 
     public Contacts() {
     }
-
-    public Contacts(String name, String status, String image) {
+    public Contacts(String name, String username, String status, String image) {
         this.name = name;
+        this.username = username;
         this.status = status;
         this.image = image;
     }
