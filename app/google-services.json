@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:690870499273:android:f75f2a2986497fa5b65a18",
         "android_client_info": {
-          "package_name": "com.example.manage"
+          "package_name": "com.chat.group_manager"
         }
       },
       "oauth_client": [

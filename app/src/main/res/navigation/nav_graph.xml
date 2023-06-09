@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/welcomeFragment"
-        android:name="com.example.manage.Authentication.WelcomeFragment"
+        android:name="com.chat.group_manager.Authentication.WelcomeFragment"
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome">
         <action
@@ -21,7 +21,7 @@
 
     <fragment
         android:id="@+id/authFragment"
-        android:name="com.example.manage.Authentication.AuthFragment"
+        android:name="com.chat.group_manager.Authentication.AuthFragment"
         android:label="fragment_auth"
         tools:layout="@layout/fragment_auth" >
         <action
@@ -34,7 +34,7 @@
     </fragment>
     <fragment
         android:id="@+id/emailVerificationFragment"
-        android:name="com.example.manage.Authentication.EmailVerificationFragment"
+        android:name="com.chat.group_manager.Authentication.EmailVerificationFragment"
         android:label="fragment_email_verification"
         tools:layout="@layout/fragment_email_verification" >
         <!-- move argument here -->

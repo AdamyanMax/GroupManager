@@ -6,11 +6,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.manage'
+    namespace 'com.chat.group_manager'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.manage"
+        applicationId "com.chat.group_manager"
         minSdk 25
         targetSdk 33
         versionCode 1
@@ -44,8 +44,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging'
 
     implementation 'com.github.Cutta:GifView:1.6'
-    // TODO: The nav lib causes the sliding pane to act strangely
-    def nav_version = "2.5.3"
+    def nav_version = "2.6.0"
     implementation "androidx.navigation:navigation-fragment:$nav_version"
     implementation "androidx.navigation:navigation-ui:$nav_version"
     implementation 'com.firebaseui:firebase-ui-database:8.0.2'
